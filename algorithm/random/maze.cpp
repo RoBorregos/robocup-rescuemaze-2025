@@ -251,7 +251,7 @@ void dfs(unordered_map<coord, Tile>& map){
                     oppositeDir = Directions::left;
                     break;
             }
-            if(currTile->adjacentTiles_[static_cast<int>(dir)] == NULL){
+            if(currTile->adjacent Tiles_[static_cast<int>(dir)] == NULL){
                 if (currCoord.z == 1 && nextCoord.z == 1){
                     wall =  checkForWall(maze, dir, currCoord);
                 }else{

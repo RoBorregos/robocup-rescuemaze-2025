@@ -1,6 +1,6 @@
 #include <iostream>
-#include "coord1.h"
-#include "Tile1.cpp"
+#include "coord.h"
+#include "Tile.cpp"
 using namespace std;
 vector<vector<char> > RealMaze = {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
@@ -65,7 +65,7 @@ vector<vector<char> > discoverMaze ={
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'}, // 5.
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
 };
-
+int steps = 0; 
 coord robotCoord = {1,1,1};
 
 const int rows = 17;
@@ -126,6 +126,7 @@ void printMaze(vector<vector<char> > maze){
         }
         cout << endl;
     }
+    steps++;
 }
 
 void search(bool visited[rows][cols], coord current, int directions[4][2], int backstep[rows][cols], int& cnt, bool& pathFound){
@@ -177,6 +178,8 @@ int main(){
     int cnt = 0;
     bool pathFound = false;
     search(visited, robotCoord, directions, backstep, cnt, pathFound);
+
+    cout << "Amount of steps" << steps << endl;
     return 0;
 }
 /*
@@ -198,4 +201,5 @@ Output:
 # . . X . . . . . . # 
 # * . * . * . * . * # 
 # # # # # # # # # # # 
+Amount of steps 246
 */
