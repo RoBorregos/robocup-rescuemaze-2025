@@ -1,46 +1,44 @@
-#ifndef TILE_H
-#define TILE_H
+#ifndef Tile_h
+#define Tile_h
 
-#include <iostream>
-using namespace std; 
 #include "coord.h"
+#include <cstdint>
+#include "TileDirection.h"
 
-enum class Directions{
-    up = 0,
-    down = 1,
-    left = 2,
-    right = 3,
-    none
-};
-// bits for the data_ member
-const int VictimTileB =4;
-const int ObstacleTileB = 5;
-const int BlackTileB = 6;
-const int CheckPointTileB = 7;
+// Bits 0-3 are reserved for the walls. 
+constexpr uint8_t kVictimBit = 4;
+constexpr uint8_t kObstacleBit = 5;
+constexpr uint8_t kBlackTileBit = 6;
+constexpr uint8_t kCheckpointBit = 7;
 
-const int MinWeight = 1; 
-const int NumDirections = 4;
-constexpr coord InvalidPosition = coord{1000,1000,1000};
+constexpr uint8_t kNumberOfDirections = 4;
+
+constexpr uint8_t kWhiteTileWeight = 1;
+constexpr uint8_t kBlueTileWeight = 3; // 5 seconds
+constexpr uint8_t kRampWeight = 5;
+
+constexpr coord kInvalidPosition = coord{1000,1000,1000};
 
 class Tile{
-    public: 
+    public:
+        // TODO: SAVE RAMP INFORMATION.
         coord position_;
-        int weights_[NumDirections];
+        Tile *adjacentTiles_[kNumberOfDirections];
+        int weights_[kNumberOfDirections];
         char data_;
-        Tile *adjacentTiles_[NumDirections];
-        Tile(const coord& position);
         Tile();
-        void addAdjacentTile(const Directions direction, Tile *tile, const bool wall);
+        Tile(const coord& position);
+        void addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall);
         void setPosition(const coord& position);
-        void setWall(const Directions direction, const bool wall);
-        bool hasWall(const Directions direction) const;
-        bool hasVictim();
-        void setViction();
-        bool hasObstacle();
+        void setWall(const TileDirection direction, const bool wall);
+        bool hasWall(const TileDirection direction) const;
+        bool hasVictim() const;
+        void setVictim();
+        bool hasObstacle() const;
         void setObstacle();
-        bool hasBlackTile();
+        bool hasBlackTile() const;
         void setBlackTile();
-        bool hasCheckpoint();
+        bool hasCheckpoint() const;
         void setCheckpoint();
 };
 

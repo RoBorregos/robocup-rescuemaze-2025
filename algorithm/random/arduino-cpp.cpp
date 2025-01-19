@@ -6,6 +6,11 @@
 
 using namespace std; 
 
+unsigned long iterations = 0;
+bool hasArrived = false;
+uint16_t robotOrientation = 0;
+coord robotCoord = coord{1,1,1};
+
 #include "Tile.cpp"
 
 constexpr Directions directions[] = {Directions::up, Directions::down, Directions::left, Directions::right};
@@ -30,7 +35,6 @@ vector<vector<char> > maze = {
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
-
 vector<vector<char> > mazeSecondLevel = {
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
@@ -51,6 +55,39 @@ vector<vector<char> > mazeSecondLevel = {
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
+
+void turnRobot(const int targetOrientation){
+    int difference = targetOrientation - robotOrientation;
+    if(difference == 0){
+        return;
+    }
+    if(difference == 90 || difference == -270){
+        cout << "turn right" << endl;
+        robotOrientation = (robotOrientation + 90) % 360;
+    }else if(difference == -90 || difference == 270){
+        cout << "turn left" << endl;
+        robotOrientation = (robotOrientation + 270) % 360;
+    }else if(difference == 180 || difference == -180){
+        cout << "turn right" << endl;
+        robotOrientation = (robotOrientation + 180) % 360;
+    }
+}
+void followPath(stack<coord> path){
+    while(!path.empty()){
+        const coord& next = path.top();
+        path.pop();
+        if(next.x > robotCoord.x){
+            turnRobot(270);
+        }else if(next.x < robotCoord.x){
+            turnRobot(90);
+        }else if(next.y > robotCoord.y){
+            turnRobot(0);
+        }else if(next.y < robotCoord.y){
+            turnRobot(180);
+        }
+        robotCoord = next;
+    }
+}
 
 
 void printMaze(const vector<vector<char> >& maze){
