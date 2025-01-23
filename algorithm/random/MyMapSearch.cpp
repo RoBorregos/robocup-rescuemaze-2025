@@ -1,15 +1,16 @@
 #include <iostream>
+#include <vector>
 #include "coord.h"
 #include "Tile.cpp"
 using namespace std;
 vector<vector<char> > RealMaze = {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
-        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
+        {'#', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', '#'}, // 1.
         {'#', ' ', '.', ' ', '.', ' ', '.', '#', '.', '#', '#'},
-        {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
-        {'#', ' ', '.', '#', '.', ' ', '.', ' ', '.', '#', '#'},
-        {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'}, // 5.
-        {'#', ' ', '.', '#', '.', ' ', '.', '#', '.', ' ', '#'},
+        {'#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', ' ', '#'}, // 3.
+        {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', '#', '#'},
+        {'#', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'}, // 5.
+        {'#', '#', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
         {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 7.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#'}, // 9.
@@ -128,7 +129,6 @@ void printMaze(vector<vector<char> > maze){
     }
     steps++;
 }
-
 void search(bool visited[rows][cols], coord current, int directions[4][2], int backstep[rows][cols], int& cnt, bool& pathFound){
     int x = current.x;
     int y = current.y;
@@ -153,7 +153,7 @@ void search(bool visited[rows][cols], coord current, int directions[4][2], int b
                 printMaze(discoverMaze);
             }
             else{
-                discoverMaze[next.y- (directions[1][0]/2)][next.x-(directions[0][0]/2)] = 'X';
+                discoverMaze[next.y- (directions[0][1]/2)][next.x-(directions[0][0]/2)] = 'X';
                 printMaze(discoverMaze);
             }
         }
@@ -202,4 +202,23 @@ Output:
 # * . * . * . * . * # 
 # # # # # # # # # # # 
 Amount of steps 246
+
+# # # # # # # # # # # 
+# v . * X * X . . . # 
+# . . . . . . . . . # 
+# * X * . * X . . . # 
+# . . . . . . . . . # 
+# * X * . * X . . . # 
+# X . X . X . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+Amount of steps61
 */

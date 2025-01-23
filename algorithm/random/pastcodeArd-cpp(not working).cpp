@@ -3,6 +3,7 @@
 #include "Tile.cpp"
 using namespace std;
 vector<vector<char> > RealMaze = {
+        /*
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
         {'#', ' ', '.', ' ', '.', ' ', '.', '#', '.', '#', '#'},
@@ -20,6 +21,14 @@ vector<vector<char> > RealMaze = {
         {'#', ' ', '.', '#', '.', ' ', '.', '#', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
+        */
+        {'#', '#', '#', '#', '#', '#', '#'},
+        {'#', ' ', '#', ' ', ' ', ' ', '#'},
+        {'#', ' ', '.', ' ', '.', ' ', '#'},
+        {'#', ' ', '#', ' ', ' ', ' ', '#'},
+        {'#', ' ', '.', '#', '.', ' ', '#'},
+        {'#', ' ', ' ', ' ', ' ', ' ', '#'},
+        {'#', '#', '#', '#', '#', '#', '#'}
 };
 
 vector<vector<char> > UndescoverdMazeSecondLevel = {
@@ -71,7 +80,27 @@ coord robotCoord = {1,1,1};
 constexpr TileDirection directions[4] = {TileDirection::kRight, TileDirection::kUp, TileDirection::kLeft, TileDirection::kDown};
 char robotChar = 'v';
 int robotOrientation = 0;
-const int kMaxMapSize = 256;
+const int kMaxSize = 256;
+
+void ahead(coord next){
+    discoverMaze[robotCoord.y][robotCoord.x] = '*';
+    robotCoord = next;
+    discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
+}
+void back(coord past){
+    discoverMaze[robotCoord.y][robotCoord.x] = '*';
+    robotCoord = past;
+    discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
+}
+void printMaze(vector<vector<char> > maze){
+    for(int i = 0; i < maze.size(); ++i){
+        for(int j = 0; j < maze[i].size(); j++){
+            cout << maze[i][j] << " ";
+        }
+        cout << endl;
+    }
+    steps++;
+}
 
 void turnCharL(const char robo){
     if(robo == '<'){
@@ -100,17 +129,18 @@ void turnRobot(const int targetOrientation) {
     if (difference == 0) {
         return;
     }
-    if (difference == 90) {
+    if (difference == 90 || difference == -270) {
         turnCharR(robotChar);
         robotOrientation = (robotOrientation + 90) % 360;
-    } else if (difference == 270) {
+    } else if (difference == 270 || difference == -90) {
         turnCharL(robotChar);
         robotOrientation = (robotOrientation + 270) % 360;
-    } else if (difference == 180) {
+    } else if (difference == 180|| difference == -180) {
         turnCharR(robotChar);
         turnCharR(robotChar);
         robotOrientation = (robotOrientation + 180) % 360;
     }
+
 }
 void followPath(stack<coord>& path){
     while(!path.empty()){
@@ -125,8 +155,8 @@ void followPath(stack<coord>& path){
         } else if (next.y < robotCoord.y) {
             turnRobot(180);
         }
+        ahead(next);
         robotCoord = next;
-        discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
     }
 }
 bool checkForWall(const vector<vector<char> >& maze, const TileDirection& direction, const coord& robotCoord) {
@@ -142,23 +172,20 @@ bool checkForWall(const vector<vector<char> >& maze, const TileDirection& direct
     }
 }
 int getIndex(vector<coord> positions, const coord &find) {
-    for (uint8_t i = 0; i < positions.size(); ++i) {
+    for (int i = 0; i < positions.size(); ++i) {
         if (positions[i] == find) {
             return i;
         }
     }
     return -1;
 }
+
 void dijkstra(coord& start, coord& end,  vector<coord> positions, vector<Tile> tiles){
-    vector<bool> explored;
-    vector<int> distance;
+    vector<bool> explored(positions.size(), false);
+    vector<int> distance(positions.size(), INT_MAX);
     vector<coord> previousPositions;
     stack<coord> path;
 
-    for (int i = positions.size() - 1; i >= 0; --i) {
-        distance.push_back(INT_MAX);
-        explored.push_back(false);
-    }
     distance[getIndex(positions, start)] = 0;
     explored[getIndex(positions, start)] = true;
 
@@ -166,55 +193,74 @@ void dijkstra(coord& start, coord& end,  vector<coord> positions, vector<Tile> t
     int minDistance;
     while(!explored[getIndex(positions, end)]){
         for(TileDirection direction : directions){
-            Tile& currentTile = tiles[getIndex(positions, currentCoord)];
-            coord& adjacentCoord = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
+            const Tile& currentTile = tiles.at(getIndex(positions, currentCoord));
+            const coord& adjacentCoord = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
             
             if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction)){
-                int weight = currentTile.weights_[static_cast<int>(direction)] + distance[getIndex(positions, currentCoord)];
-                if(weight < distance[getIndex(positions, adjacentCoord)]){
-                    distance[getIndex(positions, adjacentCoord)] = weight;
-                    previousPositions[getIndex(positions, adjacentCoord)] = currentCoord;
+                const int weight = currentTile.weights_[static_cast<int>(direction)] + distance.at(getIndex(positions, currentCoord));
+                if(weight < distance.at(getIndex(positions, adjacentCoord))){
+                    distance.at(getIndex(positions, adjacentCoord)) = weight;
+                    previousPositions.at(getIndex(positions, adjacentCoord)) = currentCoord;
                 }
             }
         }
         minDistance = INT_MAX;
         for(int i = positions.size() - 1; i >= 0; --i){
-            coord& current = positions[i];
-            int currentDistance = distance[getIndex(positions, current)];
-            if(currentDistance < minDistance && !explored[getIndex(positions, current)]){
+            const coord& current = positions.at(i);
+            const int currentDistance = distance[getIndex(positions, current)];
+            if(currentDistance < minDistance && !explored.at(getIndex(positions, current))){
                 minDistance = currentDistance;
                 currentCoord = current;
             }
         }
-        explored[getIndex(positions, currentCoord)] = true;
+        explored.at(getIndex(positions, currentCoord)) = true;
     }
     coord current = end; 
     while (current != start){
         path.push(current);
-        current = previousPositions[getIndex(positions, current)];
-        path.push(start);
+        current = previousPositions.at(getIndex(positions, current));
     }
+    path.push(start);
+    followPath(path);
 }
 
-void dfs(vector<coord> positions, vector<Tile> tiles){
+void dfs(){
+
+    
+}
+int main(){
+    cout << "Initial Maze" << endl;
+    vector<coord> positions;
+    vector<Tile> tiles;
+    positions.push_back(robotCoord);
+    tiles.push_back(Tile(robotCoord));
+
     vector<coord> visitedMap;
     vector<bool> visited;
+    
     stack<coord> unvisited;
     Tile* currentTile;
-    bool wall;
-    bool alreadyConnected;
-    bool visitedFlag;
     coord nextCoord;
     TileDirection oppositeDirection;
     unvisited.push(robotCoord);
 
+
+    bool wall;
+    bool alreadyConnected;
+    bool visitedFlag;
+
+    cout << "Initial DFS" << endl;
+
     while(!unvisited.empty()){
         coord currentCoord = unvisited.top();
         unvisited.pop();
+        
+        cout << "Visiting (" << currentCoord.x << ", " << currentCoord.y << ")\n";
 
         visitedFlag = false;
+        // Check if the current coordinate has been visited
         for(int i = 0; i < visitedMap.size(); ++i){
-            if(visitedMap[i] == currentCoord){
+            if(visitedMap.at(i) == currentCoord){
                 visitedFlag = true;
                 break;
             }
@@ -222,6 +268,7 @@ void dfs(vector<coord> positions, vector<Tile> tiles){
         if (visitedFlag) {
             continue;
         }
+
         dijkstra(robotCoord, currentCoord, positions, tiles);
         robotCoord = currentCoord;
         visitedMap.push_back(currentCoord);
@@ -231,39 +278,39 @@ void dfs(vector<coord> positions, vector<Tile> tiles){
             switch(direction) {
                 case TileDirection::kRight:
                     nextCoord = coord{currentCoord.x + 2, currentCoord.y, 1}; // checkRamp(direction);
-                    currentTile = &tiles[getIndex(positions, currentCoord)];
+                    currentTile = &tiles.at(getIndex(positions, currentCoord));
                     oppositeDirection = TileDirection::kLeft;
                     break;
                 case TileDirection::kUp:
                     nextCoord = coord{currentCoord.x, currentCoord.y + 2, 1}; // checkRamp(direction);
-                    currentTile = &tiles[getIndex(positions, currentCoord)];
+                    currentTile = &tiles.at(getIndex(positions, currentCoord));
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
                     nextCoord = coord{currentCoord.x - 2, currentCoord.y, 1}; // checkRamp(direction);
-                    currentTile = &tiles[getIndex(positions, currentCoord)];
+                    currentTile = &tiles.at(getIndex(positions, currentCoord));
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
                     nextCoord = coord{currentCoord.x, currentCoord.y - 2, 1}; // checkRamp(direction);
-                    currentTile = &tiles[getIndex(positions, currentCoord)];
+                    currentTile = &tiles.at(getIndex(positions, currentCoord));
                     oppositeDirection = TileDirection::kUp;
                     break;
             }
             if(currentTile -> adjacentTiles_[static_cast<int>(direction)] == nullptr){
                 wall = false;
                 positions.push_back(nextCoord);
-                tiles[getIndex(positions, nextCoord)] = Tile(nextCoord);
-                Tile* nextTile = &tiles[getIndex(positions, nextCoord)];
-                if(nextTile -> position_ == kInvalidPosition){
-                    nextTile -> setPosition(nextCoord);
+                tiles.push_back(Tile(nextCoord));
+                Tile* nextTile = &tiles.at(getIndex(positions, nextCoord));
+                if(nextTile->position_ == kInvalidPosition){
+                    nextTile->setPosition(nextCoord);
                 }
                 currentTile -> addAdjacentTile(direction, nextTile, wall);
                 nextTile -> addAdjacentTile(oppositeDirection, currentTile, wall);
                 if(!wall){
                     visitedFlag = false;
                     for(int i = 0; i < visitedMap.size(); ++i){
-                        if(visitedMap[i] == nextCoord){
+                        if(visitedMap.at(i) == nextCoord){
                             visitedFlag = true;
                             break;
                         }
@@ -274,12 +321,8 @@ void dfs(vector<coord> positions, vector<Tile> tiles){
                 }
             }
         }
+        printMaze(discoverMaze);
     }
-}
-int main(){
-    vector<coord> tilesMap;
-    vector<Tile> tiles;
-    tilesMap.push_back(robotCoord);
-    tiles[getIndex(tilesMap, robotCoord)] = Tile(robotCoord);
-    dfs(tilesMap, tiles);
+    dfs();
+    printMaze(discoverMaze);
 }

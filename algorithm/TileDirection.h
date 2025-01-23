@@ -3,9 +3,9 @@
 
 enum class TileDirection {
     kUp = 0,
-    kLeft = 1,
+    kRight = 1,
     kDown = 2,
-    kRight = 3,
+    kLeft = 3,
     kNone
 };
 

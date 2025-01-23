@@ -13,7 +13,6 @@ Tile::Tile(){
 
 Tile::Tile(const coord& position) {
     this->position_ = position;
-
     for(uint8_t i = 0; i < kNumberOfDirections; ++i){
         adjacentTiles_[i] = nullptr;
         weights_[i] = 0;    
