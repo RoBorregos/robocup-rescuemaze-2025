@@ -73,7 +73,7 @@ vector<vector<char> > discoverMaze ={
 int steps = 0;
 coord robotCoord = {3,5,1};
 char robotChar = 'v';
-TileDirection directions[4] = {TileDirection::kRight,TileDirection::kDown,TileDirection::kLeft,TileDirection::kUp};
+TileDirection directions[4] = {TileDirection::kDown,TileDirection::kRight,TileDirection::kLeft,TileDirection::kUp};
 int robotOrientation = 0;
 const int kMaxSize = 256; 
 
@@ -185,14 +185,15 @@ void followPath(stack<coord>& path){
 void dijkstra(coord& start, coord& end, Map& tilesMap, vector<Tile>tiles){
     stack<coord> path;
     
-    vector<bool> explored;
-    vector<int> distance;
-    vector<coord> previousPositions;
-
+    vector<bool> explored(tilesMap.positions.size(), false);
+    vector<int> distance(tilesMap.positions.size(), INT_MAX);
+    vector<coord> previousPositions(tilesMap.positions.size(), kInvalidPosition);
+    /*
     for(int i = tilesMap.positions.size()-1; i>=0; --i){
         distance.push_back(INT_MAX);
         explored.push_back(false);
-    }
+    }*/
+
     distance[tilesMap.getIndex(start)] = 0;
     explored[tilesMap.getIndex(start)] = true;
     
@@ -207,10 +208,12 @@ void dijkstra(coord& start, coord& end, Map& tilesMap, vector<Tile>tiles){
                 int weight = currentTile.weights_[static_cast<int>(direction)] +distance[tilesMap.getIndex(current)];
                 //int adjacentIndex = tilesMap.getIndex(adjacent);
                 //if(adjacentIndex != -1){
+                //if(adjacent != kInvalidPosition){
                     if(weight < distance[tilesMap.getIndex(adjacent)]){
                         distance[tilesMap.getIndex(adjacent)] = weight;
                         previousPositions[tilesMap.getIndex(adjacent)] = current;
                     }
+                //}
                 //}
             }
         }
@@ -246,13 +249,8 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
 
     while(!unvisited.empty()){
         //constants for the directions
-        
-
         coord current = unvisited.top();
         unvisited.pop();
-        wall = false; 
-
-        
         //check two times for visited?? 
         for(int i = 0; i < visitedMap.positions.size(); ++i){
             if(visitedMap.positions[i] == current){
@@ -263,15 +261,17 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
         if (visitedFlag) {
             continue;
         }
-        dijkstra(robotCoord, current, visitedMap, tiles);
-
+        dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.positions.push_back(current);
         visited.push_back(true);
         //ahead(current);
         robotCoord = current;
-
         for(const TileDirection direction: directions){
+            wall = false; 
             coord wallCoord = {0,0,0};
+            if(checkForWall(RealMaze, direction, robotCoord)){
+                wall = true;
+            }
             switch(direction) {
                 case TileDirection::kRight:
                     next = coord{current.x + 2, current.y, 1};
@@ -305,13 +305,8 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
             //check for adjacentTiles and connecting them
             if(currentTile -> adjacentTiles_[static_cast<int>(direction)] == nullptr){
                 // if the tile is not in the map
-                
-                if(checkForWall(RealMaze, direction, robotCoord)){
-                    wall = true;
-                }
                 tilesMap.positions.push_back(next);
                 tiles[tilesMap.getIndex(next)] = Tile(next);
-
                 Tile* nextTile = &tiles[tilesMap.getIndex(next)];
                 
                 if(nextTile->position_ == kInvalidPosition){
@@ -339,7 +334,6 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
                 }
             }
         }
-
     }
     //coord end = {5,1,1};
     //dijkstra(robotCoord, end, visitedMap, tiles);
@@ -347,7 +341,7 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
 int main(){
     Map visitedMap = Map();
     Map tilesMap = Map();
-    vector<Tile> tiles;
+    vector<Tile> tiles(kMaxSize, Tile(kInvalidPosition));
     tilesMap.positions.push_back(robotCoord);
     tiles[tilesMap.getIndex(robotCoord)] = Tile(robotCoord);
     dfs(visitedMap, tiles, tilesMap);
@@ -530,6 +524,246 @@ Output:
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # # # # # # # # # # # 
-DFS Finalizado con 18 movimientos%   
-
+DFS Finalizado con 18 movimientos%  
+--------------------------------------------------
+BESTOUTPUT: 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . v . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X v . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X v . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X > . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X > . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X > . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . > . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . X . . . . # 
+# . X * . > X . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . X . . . . # 
+# . X * . > X . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . X . . . . # 
+# . X * . v X . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . X . . . . # 
+# . X * . v X . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . X . . . . # 
+# . X * . v X . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . X . . . . # 
+# . X * . * X . . . # 
+# . . . . . . . . . # 
+# . . . . v . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+DFS Finalizado con 14 movimientos%  
 */
