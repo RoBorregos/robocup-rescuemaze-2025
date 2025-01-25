@@ -1,0 +1,13 @@
+// double speed_setpoint=4;
+//     PID myPID(0.5,0,0.1,0);
+//     int reference_pwm=motor[1].getSpeed();
+//     double lastTics=motor[1].tics;
+//     delay(100);
+//     double speedTics=motor[1].tics-lastTics;
+//     double error=myPID.calculate_PID(speed_setpoint,speedTics);
+//     int speed=reference_pwm+error;
+//     motor[1].setSpeed(speed);
+//     Serial.print("tics:");
+//     Serial.println(motor[1].tics);
+//     Serial.println(speedTics);
+//     Serial.println(speed);
