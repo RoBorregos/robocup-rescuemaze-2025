@@ -120,6 +120,9 @@ float motors::nearWall(){
     }
     return changeAngle;
 }
+void motors::passObstacle(){
+    
+}
 int motors::findNearest(int number,int numbers[],int size){
     int nearest=numbers[0];
     float minDifference=abs(number-numbers[0]);

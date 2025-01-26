@@ -43,6 +43,7 @@ public:
     void ahead();
     void ahead_ultra();//borrar
     float nearWall();//ver
+    void passObstacle();
     int findNearest(int,int[],int);
     void back();
     void left();

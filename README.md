@@ -14,8 +14,8 @@ This repository contains the code and documentation for Team RoboRescue's autono
 ## Team Members
 - **Barbara** - Mechanic
 - **Samuel** - Electronic
-- **Fernanod** - Programming(Control)
-- **Dana White** - Programming(Algorithms)
+- **Fernando** - Programming(Control)
+- **Luis** - Programming(Algorithms)
 
 ## Robot Design
 Our robot is designed to ...
