@@ -1,12 +1,9 @@
-
-#include <iostream>
 #include "coord.h"
-#include "Tile.cpp"
-#include "Map.cpp"
-using namespace std;
+#include "Tile.h"
+#include "arrCustom.h"
+#include "Stack.h"
 
-vector<vector<char> > RealMaze = {
-        
+char RealMaze[17][11] = {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
@@ -17,16 +14,16 @@ vector<vector<char> > RealMaze = {
         {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'}, // 7.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'}, // 9.
+        {'#', ' ', '.', ' ', '.', '#', '.', ' ', '.', ' ', '#'},
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 1.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
-        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
-        {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 3.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
 
-vector<vector<char> > UndescoverdMazeSecondLevel = {
+char UndescoverdMazeSecondLevel[17][11] = {
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
     {'#', ' ', '.', ' ', '#', ' ', '#', '#', '#', '#', '#'},
@@ -50,7 +47,7 @@ Der: '>'
 Arriba: '^'
 Abajo: 'v'
 */
-vector<vector<char> > discoverMaze ={
+char discoverMaze[17][11] ={
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'}, // 1.
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'},
@@ -67,22 +64,24 @@ vector<vector<char> > discoverMaze ={
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'}, // 3.
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'},
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'}, // 5.
-    {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
+    {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
 
 int steps = 0;
+coord inicio = {3,5,1};
 coord robotCoord = {3,5,1};
 char robotChar = 'v';
 TileDirection directions[4] = {TileDirection::kDown,TileDirection::kRight,TileDirection::kLeft,TileDirection::kUp};
 int robotOrientation = 0;
 const int kMaxSize = 256; 
 
-void printMaze(vector<vector<char> > maze){
-    for(int i = 0; i < maze.size(); ++i){
-        for(int j = 0; j < maze[i].size(); j++){
-            cout << maze[i][j] << " ";
+void printMaze(char maze[17][11]){
+    for(int i = 0; i < 17; ++i){
+        for(int j = 0; j < 11; j++){
+            printf("%c ", maze[i][j]);
+            //cout << maze[i][j] << " ";
         }
-        cout << endl;
+        printf("\n");
     }
     steps++;
 }
@@ -114,7 +113,6 @@ void right(){
             break;
     }
     discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
-    printMaze(discoverMaze);
 }
 void left(){
     switch(robotChar){
@@ -132,9 +130,8 @@ void left(){
             break;
     }
     discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
-    printMaze(discoverMaze);
 }
-bool checkForWall(const vector<vector<char> >& maze, const TileDirection& direction, const coord& robotCoord) {
+bool checkForWall(const char maze[17][11], const TileDirection& direction, const coord& robotCoord) {
     switch(direction) {
         case TileDirection::kRight:
             return maze[robotCoord.y][robotCoord.x + 1] == '#';
@@ -144,7 +141,10 @@ bool checkForWall(const vector<vector<char> >& maze, const TileDirection& direct
             return maze[robotCoord.y][robotCoord.x - 1] == '#';
         case TileDirection::kDown:
             return maze[robotCoord.y - 1][robotCoord.x] == '#';
+        default: 
+            break;
     }
+
 }
 void turnRobot(const int targetOrientation) {
     int difference = targetOrientation - robotOrientation;
@@ -164,7 +164,7 @@ void turnRobot(const int targetOrientation) {
     }
     printMaze(discoverMaze);
 }
-void followPath(stack<coord>& path){
+void followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
         path.pop();
@@ -177,68 +177,68 @@ void followPath(stack<coord>& path){
         } else if (next.y < robotCoord.y) {
             turnRobot(180);
         }
-        
-        printMaze(discoverMaze);
         ahead(next);
+        printMaze(discoverMaze);
+        
     }
 }
-void dijkstra(coord& start, coord& end, Map& tilesMap, vector<Tile>tiles){
-    stack<coord> path;
+void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
+    Stack path;
     
-    vector<bool> explored(tilesMap.positions.size(), false);
-    vector<int> distance(tilesMap.positions.size(), INT_MAX);
-    vector<coord> previousPositions(tilesMap.positions.size(), kInvalidPosition);
+    arrCustom<bool> explored(tilesMap.getSize(), false);
+    arrCustom<int> distance(tilesMap.getSize(), INT_MAX);
+    arrCustom<coord> previousPositions(tilesMap.getSize(), kInvalidPosition);
     /*
     for(int i = tilesMap.positions.size()-1; i>=0; --i){
         distance.push_back(INT_MAX);
         explored.push_back(false);
     }*/
 
-    distance[tilesMap.getIndex(start)] = 0;
-    explored[tilesMap.getIndex(start)] = true;
+    distance.set(tilesMap.getIndex(start), 0);
+    explored.set(tilesMap.getIndex(start), true);
     
     coord current = start;
-    while(!explored[tilesMap.getIndex(end)]){
+    while(!explored.getValue(tilesMap.getIndex(end))){
         int minDist = INT_MAX;
         for(const TileDirection& direction : directions){
-            Tile& currentTile = tiles[tilesMap.getIndex(current)];
+            Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
             coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
             // find the distance to the adjacent tile
             if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction)){
-                int weight = currentTile.weights_[static_cast<int>(direction)] +distance[tilesMap.getIndex(current)];
+                int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
                 //int adjacentIndex = tilesMap.getIndex(adjacent);
                 //if(adjacentIndex != -1){
                 //if(adjacent != kInvalidPosition){
-                    if(weight < distance[tilesMap.getIndex(adjacent)]){
-                        distance[tilesMap.getIndex(adjacent)] = weight;
-                        previousPositions[tilesMap.getIndex(adjacent)] = current;
+                    if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
+                        distance.set(tilesMap.getIndex(adjacent),weight);
+                        previousPositions.set(tilesMap.getIndex(adjacent), current);
                     }
                 //}
                 //}
             }
         }
         //find the minimum distance to the path line
-        for(int i = tilesMap.positions.size() -1; i >= 0; --i){
-            coord& currentCoord = tilesMap.positions[i];
-            int currentDistance = distance[tilesMap.getIndex(currentCoord)];
-            if(currentDistance < minDist && !explored[tilesMap.getIndex(currentCoord)]){
+        for(int i = tilesMap.getSize() -1; i >= 0; --i){
+            coord& currentCoord = tilesMap.getValue(i);
+            int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));
+            if(currentDistance < minDist && !explored.getValue(tilesMap.getIndex(currentCoord))){
                 minDist = currentDistance;
                 current = currentCoord;
             }
         }
-        explored[tilesMap.getIndex(current)] = true;
+        explored.getValue(tilesMap.getIndex(current)) = true;
     }
     current = end;
     while(current != start){
         path.push(current);
-        current = previousPositions[tilesMap.getIndex(current)];
+        current = previousPositions.getValue(tilesMap.getIndex(current));
     }
     path.push(start);
     followPath(path);
 }
-void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
-    stack<coord> unvisited;
-    vector<bool> visited;
+void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
+    Stack unvisited;
+    arrCustom<bool> visited(visitedMap.getSize(), false);
     unvisited.push(robotCoord);//push the initial position
     
     coord next;
@@ -253,8 +253,8 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
         unvisited.pop();
         //check two times for visited?? 
         visitedFlag = false;
-        for(int i = 0; i < visitedMap.positions.size(); ++i){
-            if(visitedMap.positions[i] == current){
+        for(int i = 0; i < visitedMap.getSize(); ++i){
+            if(visitedMap.getValue(i) == current){
                 visitedFlag = true;
                 break;
             }
@@ -263,7 +263,7 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
             continue;
         }
         dijkstra(robotCoord, current, tilesMap, tiles);
-        visitedMap.positions.push_back(current);
+        visitedMap.push_back(current);
         visited.push_back(true);
         //ahead(current);
         robotCoord = current;
@@ -276,25 +276,25 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
             switch(direction) {
                 case TileDirection::kRight:
                     next = coord{current.x + 2, current.y, 1};
-                    currentTile = &tiles[tilesMap.getIndex(current)];
+                    currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x + 1, current.y, 1};
                     oppositeDirection = TileDirection::kLeft;
                     break;
                 case TileDirection::kUp:
                     next = coord{current.x, current.y + 2, 1};
-                    currentTile = &tiles[tilesMap.getIndex(current)];
+                    currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x, current.y + 1, 1};
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
                     next = coord{current.x - 2, current.y, 1};
-                    currentTile = &tiles[tilesMap.getIndex(current)];
+                    currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x - 1, current.y, 1};
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
                     next = coord{current.x, current.y - 2, 1};
-                    currentTile = &tiles[tilesMap.getIndex(current)];
+                    currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x, current.y - 1, 1};
                     oppositeDirection = TileDirection::kUp;
                     break;
@@ -306,9 +306,9 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
             //check for adjacentTiles and connecting them
             if(currentTile -> adjacentTiles_[static_cast<int>(direction)] == nullptr){
                 // if the tile is not in the map
-                tilesMap.positions.push_back(next);
-                tiles[tilesMap.getIndex(next)] = Tile(next);
-                Tile* nextTile = &tiles[tilesMap.getIndex(next)];
+                tilesMap.push_back(next);
+                tiles.getValue(tilesMap.getIndex(next)) = Tile(next);
+                Tile* nextTile = &tiles.getValue(tilesMap.getIndex(next));
                 
                 if(nextTile->position_ == kInvalidPosition){
                     nextTile->setPosition(next);
@@ -318,8 +318,8 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
                 nextTile -> addAdjacentTile(oppositeDirection, currentTile, wall);
                 if(!wall){
                     visitedFlag = false;
-                    for(int i = 0; i < visitedMap.positions.size(); ++i){
-                        if(visitedMap.positions[i] == next){
+                    for(int i = 0; i < visitedMap.getSize(); ++i){
+                        if(visitedMap.getValue(i) == next){
                             visitedFlag = true;
                             break;
                         }
@@ -336,40 +336,21 @@ void dfs(Map& visitedMap, vector<Tile>& tiles, Map& tilesMap){
             }
         }
     }
-    //coord end = {5,1,1};
-    //dijkstra(robotCoord, end, visitedMap, tiles);
+    //dijkstra(robotCoord, inicio, visitedMap, tiles);
 }
 int main(){
-    Map visitedMap = Map();
-    Map tilesMap = Map();
-    vector<Tile> tiles(kMaxSize, Tile(kInvalidPosition));
-    tilesMap.positions.push_back(robotCoord);
-    tiles[tilesMap.getIndex(robotCoord)] = Tile(robotCoord);
+    arrCustom<coord> visitedMap(256, kInvalidPosition);
+    arrCustom<coord> tilesMap(256, kInvalidPosition);
+    arrCustom<Tile> tiles(kMaxSize, Tile(kInvalidPosition));
+    tilesMap.push_back(robotCoord);
+    tiles.getValue(tilesMap.getIndex(robotCoord)) = Tile(robotCoord);
     dfs(visitedMap, tiles, tilesMap);
-    cout<<"DFS Finalizado con " << steps << " movimientos"; 
+    printf("DFS Finalizaado con %d movimienots", steps); 
     return 0;
 }
-//revisar la posición de la instancia dijkstra, 
-//y resolvelr el problema de lógica de como hacerle para las adjacent tiles del current coord ya que aun no se explora.
 
 /*
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
+Output:
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -391,8 +372,8 @@ int main(){
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X v . . . . . . # 
+# . . . . . . . . . # 
+# . . v . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -462,7 +443,7 @@ int main(){
 # . . X . . . . . . # 
 # . X * . . . . . . # 
 # . . . . . . . . . # 
-# . X v X . . . . . # 
+# . . v . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -532,8 +513,25 @@ int main(){
 # . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
+# . . v . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
 # . X v X . . . . . # 
-# . . X . . . . . . # 
+# . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -550,24 +548,7 @@ int main(){
 # . X * X . . . . . # 
 # . . . . . . . . . # 
 # . X v X . . . . . # 
-# . . X . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
-# . . . . . . . . . # 
-# . X < X . . . . . # 
-# . . X . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -583,9 +564,9 @@ int main(){
 # . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
-# . X ^ X . . . . . # 
-# . . X . . . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
+# . . v . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -600,9 +581,9 @@ int main(){
 # . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
-# . X ^ X . . . . . # 
-# . . X . . . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
+# . . v . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -617,10 +598,10 @@ int main(){
 # . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
-# . X ^ X . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X v . . . . . . # 
 # . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -632,12 +613,12 @@ int main(){
 # . . X . . . . . . # 
 # . X * . . . . . . # 
 # . . . . . . . . . # 
-# . X ^ X . . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X v . . . . . . # 
 # . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -649,46 +630,12 @@ int main(){
 # . . X . . . . . . # 
 # . X * . . . . . . # 
 # . . . . . . . . . # 
-# . X ^ X . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X ^ . . . . . . # 
-# . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
-# . . X . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
 # . X > . . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
 # . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -698,201 +645,133 @@ int main(){
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . X . . . . . . # 
-# . X > . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
-# . . X . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X > . . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
 # . X * . > . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
 # . . X . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # # # # # # # # # # # 
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . > X . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * . > . . . . # 
 # . . X . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # # # # # # # # # # # 
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . > X . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
-# . . . . . . . . . # 
-# . X * X . . . . . # 
 # . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . X . . . . # 
+# . X * . > . . . . # 
 # . . X . X . . . . # 
-# . X * . v X . . . # 
 # . . . . . . . . . # 
-# . X * X . . . . . # 
 # . . . . . . . . . # 
-# . X * X . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
 # . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . X . . . . # 
+# . X * . > . . . . # 
 # . . X . X . . . . # 
-# . X * . v X . . . # 
 # . . . . . . . . . # 
-# . X * X . . . . . # 
 # . . . . . . . . . # 
-# . X * X . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
 # . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . v X . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
+# . . . . X . . . . # 
+# . X * . * . > . . # 
 # . . X . X . . . . # 
-# . X * . * X . . . # 
 # . . . . . . . . . # 
-# . X * X v . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X v . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
+# . . . . X . . . . # 
+# . X * . * . > . . # 
 # . . X . X . . . . # 
-# . X * . * X . . . # 
 # . . . . . . . . . # 
-# . X * X v . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X v . . . . # 
 # . . . . . . . . . # 
 # . X * X . . . . . # 
+# . . . . X . . . . # 
+# . X * . * . > X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
 # . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . X . . . . # 
+# . X * . * . > X . # 
+# . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -901,32 +780,15 @@ int main(){
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
-# . . . . . . . . . # 
-# . X * X v . . . . # 
 # . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
-# . . . . . . . . . # 
-# . X * X v . . . . # 
-# . . X . X . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . X . . . . # 
+# . X * . * . ^ X . # 
+# . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -935,15 +797,15 @@ int main(){
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
-# . X * X * . . . . # 
+# . X * X . . . . . # 
 # . . . . . . . . . # 
-# . X * X v . . . . # 
-# . . X . X . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
+# . X * X . . ^ . . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -952,32 +814,236 @@ int main(){
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
-# . X * X * . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . ^ . . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . ^ X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . ^ X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . < X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X < . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X < . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X < . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X < . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X . . . . . # 
+# . . . . . . . . . # 
+# . X * X ^ . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X ^ . . . . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X ^ . . . . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X ^ . . . . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
+# . . . . . . . . . # 
+# . X * X ^ . . . . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X > . . . . # 
-# . . X . X . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
-# . . . . . . . . . # 
-# . X * X > . . . . # 
-# . . X . X . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -986,32 +1052,15 @@ int main(){
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
-# . . . . . . . . . # 
-# . X * X > . . . . # 
-# . . X . X . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X * . > . . # 
-# . . X . X . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
@@ -1020,170 +1069,290 @@ int main(){
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
-# . X * X * . . . . # 
+# . X * X * . > . . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X * . > X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
 # . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # # # # # # # # # # # 
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X * . > X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
-# . . . . . . . . . # 
-# . X * X * . ^ X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
-# . . . . . . . . . # 
-# . X * X * . ^ X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . . . . # 
-# . . . . . . . . . # 
-# . X * X * . ^ X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . ^ . . # 
 # . . . . . . . . . # 
 # . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
 # . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # # # # # # # # # # # 
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
+# . . X . . . . . . # 
+# . X * . . . . . . # 
 # . . . . . . . . . # 
 # . X * X * . ^ X . # 
 # . . . . . . . . . # 
 # . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
 # . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # # # # # # # # # # # 
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . ^ X . # 
+# . . X . . . . . . # 
+# . X * . . . ^ . . # 
 # . . . . . . . . . # 
 # . X * X * . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
 # . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # # # # # # # # # # # 
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X . . . # 
-# . . . . . . . . . # 
-# . X * X * . ^ X . # 
+# . . X . . . . . . # 
+# . X * . . . ^ . . # 
 # . . . . . . . . . # 
 # . X * X * . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
 # . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
 # # # # # # # # # # # 
 # # # # # # # # # # # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * X ^ . . # 
+# . . X . . . X . . # 
+# . X * . . X ^ X . # 
 # . . . . . . . . . # 
 # . X * X * . * X . # 
 # . . . . . . . . . # 
 # . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
 # . . X . X . X . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X ^ X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
 # . . . . . . . . . # 
 # . . . . . . . . . # 
 # # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X v X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X * X . # 
+# . . . . . . . . . # 
+# . X * X * . v X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X * X . # 
+# . . . . . . . . . # 
+# . X * X * . v X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X * X . # 
+# . . . . . . . . . # 
+# . X * X * . < X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X * X . # 
+# . . . . . . . . . # 
+# . X * X < . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X * X . # 
+# . . . . . . . . . # 
+# . X * X < . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . . X * X . # 
+# . . . . . . . . . # 
+# . X * X ^ . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . ^ X * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+# # # # # # # # # # # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . X . . . X . . # 
+# . X * . ^ X * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . . . . . . # 
+# . X * X * . * X . # 
+# . . . . X . . . . # 
+# . X * . * . * X . # 
+# . . X . X . X . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# . . . . . . . . . # 
+# # # # # # # # # # # 
+DFS Finalizaado con 59 movimienots% 
 */

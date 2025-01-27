@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/luisbenvenuto/Desktop/robocup-rescuemaze-2025/algorithm/moi'
-relocations:     []
-...

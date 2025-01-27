@@ -1,0 +1,36 @@
+
+{
+
+    "configurations": [
+
+        {
+
+            "name": "Mac",
+
+            "includePath": [
+
+                "${workspaceFolder}/**",
+
+                "/Users/luisbenvenuto/Desktop/robocup-rescuemaze-2025/algorithm"
+
+            ],
+
+            "defines": [],
+
+            "macFrameworkPath": [],
+
+            "compilerPath": "/usr/bin/clang",
+
+            "cStandard": "c11",
+
+            "cppStandard": "c++17",
+
+            "intelliSenseMode": "macos-clang-x64"
+
+        }
+
+    ],
+
+    "version": 4
+
+}
