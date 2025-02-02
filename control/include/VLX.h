@@ -2,21 +2,30 @@
 #define VLX_H
 #include "Pins.h"
 #include <Adafruit_VL53L0X.h>
+#include <Adafruit_Sensor.h>
+#include "SingleEMAFilter.h"
 #include <Wire.h>
 #include <Arduino.h>
 #include "MUX.H"
 
 namespace vlxID{
-    constexpr uint8_t frontLeft=0;
+    constexpr uint8_t right=0;
     constexpr uint8_t left=1;
-    constexpr uint8_t back=2;
-    constexpr uint8_t Right=3;
-    constexpr uint8_t frontRight=4;
+    constexpr uint8_t frontRight=2;
+    constexpr uint8_t frontLeft=3;
+    constexpr uint8_t front=4;
+    constexpr uint8_t back=5;
 }
+//canels del mux (provisonales)
+  //canal 3 front left 0x08
+  //canal 5 front right 0x20
+  //0x02 color
+  //0x04 right
 class VLX{
 private:
     MUX mux_;
     const int kDistanceToWall=15;
+    static constexpr double kMaxInitAttempts_ = 5;
 public:
     Adafruit_VL53L0X VLX_ = Adafruit_VL53L0X();
     VL53L0X_RangingMeasurementData_t measure;

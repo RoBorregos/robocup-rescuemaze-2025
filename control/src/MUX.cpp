@@ -7,12 +7,13 @@ MUX::MUX() {
 }
 
 void MUX::setNewChannel(const uint8_t tcaPos) {
-    this->tcaPos_ = tcaPos;
+    tcaPos_ = tcaPos;
 }
 
 void MUX::selectChannel(const uint8_t tcaPos) {
-    setNewChannel(tcaPos);
-    selectChannel();
+    Wire.beginTransmission(MUX_ADDR);
+    Wire.write(tcaPos);
+    Wire.endTransmission();
 }
 
 void MUX::selectChannel() {

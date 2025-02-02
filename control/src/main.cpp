@@ -6,10 +6,7 @@ void setup() {
   robot.setupMotors();
 }
 void loop() {
-  if(robot.vlx[vlxID::frontLeft].isWall()){
-    robot.right();
-  }else{
-    robot.ahead_ultra();
-  }
-  
+
+    robot.ahead();
+
 }

@@ -8,11 +8,12 @@ VLX::VLX(const uint8_t posMux){
 }
 
 void VLX::begin(){
+    mux_.selectChannel();
     if (!VLX_.begin()) {
         Serial.println("¡Error al iniciar el sensor VL53L0X!");
         while (1);
     }
-    Serial.println("VL53L0X iniciado correctamente.");    
+    Serial.println("VL53L0X iniciado correctamente.");  
 }
 
 void VLX::setMux(const uint8_t posMux) {
@@ -28,7 +29,7 @@ double VLX::getDistance(){
     distance=measure.RangeMilliMeter/10;
     return distance;
     }else{
-        return 0;
+        return 180;
     }
 }
 void VLX::printDistance(){
@@ -42,13 +43,13 @@ void VLX::printDistance(){
     }
     delay(500); 
     }
-    bool VLX::isWall(){
-        if(getDistance()<kDistanceToWall){
-            return true;
-        }else{
-            return false;
-        }
+bool VLX::isWall(){
+    if(getDistance()<kDistanceToWall){
+        return true;
+    }else{
+        return false;
     }
+}
 
 
 
