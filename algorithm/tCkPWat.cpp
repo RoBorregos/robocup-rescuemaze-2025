@@ -5,6 +5,9 @@
 #include "Tile.h"
 #include "arrCustom.h"
 #include "Stack.h"
+//c = checkpoint
+//o = obstacle
+//w = water
 
 char RealMaze[17][11] = {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
@@ -18,7 +21,7 @@ char RealMaze[17][11] = {
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', '#', ' ', '#', 'o', ' ', ' ', '#', ' ', '#'}, // 9.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', 'c', ' ', ' ', '#', ' ', '#'}, // 11.
+        {'#', ' ', '#', 'w', ' ', 'c', ' ', ' ', '#', ' ', '#'}, // 11.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 13.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
@@ -326,14 +329,15 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                 tilesSave.set(i, tiles.getValue(i));
             }
         }
-        if(checkObstacle(RealMaze, robotCoord) == true){
+        */
+        if(checkObstacle() == true){
             turnRobot(0);
             for(int i = 0; i < visitedMap.getSize(); ++i){
                 visitedMap.set(i, visitedMapSave.getValue(i));
                 tilesMap.set(i, tilesMapSave.getValue(i));
                 tiles.set(i, tilesSave.getValue(i));
             }
-        }*/
+        }
         
 
         for(const TileDirection direction: directions){
