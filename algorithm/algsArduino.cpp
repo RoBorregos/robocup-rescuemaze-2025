@@ -83,7 +83,6 @@ void printMaze(char maze[17][11]){
         }
         printf("\n");
     }
-    steps++;
 }
 
 void ahead(coord next){
@@ -91,6 +90,7 @@ void ahead(coord next){
     robotCoord = next;
     discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
     printMaze(discoverMaze);
+    steps++;
 }
 void back(coord past){
     discoverMaze[robotCoord.y][robotCoord.x] = '*';
@@ -163,6 +163,7 @@ void turnRobot(const int targetOrientation) {
         robotOrientation = (robotOrientation + 180) % 360;
     }
     printMaze(discoverMaze);
+    steps++;
 }
 void followPath(Stack& path){
     while(!path.empty()){
@@ -178,8 +179,7 @@ void followPath(Stack& path){
             turnRobot(180);
         }
         ahead(next);
-        printMaze(discoverMaze);
-        
+        //printMaze(discoverMaze);
     }
 }
 void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
@@ -334,6 +334,7 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                     }
                 }
             }
+            right();
         }
     }
     //dijkstra(robotCoord, inicio, visitedMap, tiles);

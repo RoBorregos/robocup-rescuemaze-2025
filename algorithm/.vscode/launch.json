@@ -8,7 +8,7 @@
             "name": "(lldb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/algorithm/moi",
+            "program": "${workspaceFolder}/algorithm/maze",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",
