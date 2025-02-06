@@ -12,14 +12,49 @@ void motor_::initialize(int in_1,int in_2,int en,int numMotor){
     pinMode(in2,OUTPUT);
     pinMode(enable,OUTPUT);
     pinMode(Pins::encoder[numMotor],INPUT);
-    
+    initEncoder(numMotor);
 }
 
 motor_::motor_(){
     //default constructor
 }
+void motor_::initEncoder(int motorId_) {
+     switch (motorId_) {
+        case (MotorID::kFrontLeft):{
+            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Encoder::frontLeftEncoder, RISING);
+            break;
+        }
+        case (MotorID::kFrontRight): {
+            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontRight]), Encoder::frontRightEncoder, RISING);
+            break;
+        }
+        case (MotorID::kBackLeft): {
+            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Encoder::backLeftEncoder, RISING);
+            break;
+        }
+        case (MotorID::kBackRight): {
+            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackRight]), Encoder::backRightEncoder, RISING);
+            break;
+        }
+        default: { 
+            break;
+        }
+    }
+}
+void motor_::updateTics(){
+    tics+=1;
+    deltaTics+=1;
+    unsigned long calculate_time=100;
+    unsigned long current_time=millis()-last_time;
+    if(current_time>=calculate_time){
+        ticsSpeed=deltaTics;
+        deltaTics=0;
+        last_time=millis();
+    }
+}
 void motor_::resetTics(){
     tics=0;
+    deltaTics=0;
 }
 int motor_::getTics(){
     return tics;
@@ -44,4 +79,7 @@ void motor_::stop(){
 }
 double motor_::getSpeed(){
     return speed;
+}
+int motor_::getTicsSpeed(){
+    return ticsSpeed;
 }

@@ -11,6 +11,7 @@
 // #include <math.h>
 class motors{
 private:
+    const int kTileLength=30;
     int edgeTileDistance=8.5;
     float targetAngle=0;
     unsigned long delayTime=350;
@@ -23,11 +24,16 @@ private:
     const double distancePerRev=wheelDiameter*PI;
     const double kTicsPerRev=496.0;
     const double kTicsPerTile=30*kTicsPerRev/distancePerRev;
-    //speed constants
-    const uint8_t kMinSpeedRotate=70;
-    const uint8_t kMaxSpeedRotate=160;
-    const uint8_t kMinSpeedFormard=70;
-    const uint8_t kMaxSpeedFormard=180;
+    //Pwm constants
+    uint8_t kMinPwmRotate=70;
+    uint8_t kMaxPwmRotate=160;
+    uint8_t kMinPwmFormard=70;
+    uint8_t kMaxPwmFormard=180;
+    //Speeds constants
+    const uint8_t kMinSpeedRotate=20;
+    const uint8_t kMaxSpeedRotate=60;
+    const uint8_t kMinSpeedFormard=20;//36
+    const uint8_t kMaxSpeedFormard=65;//70
     //ramp
     double kMinRampOrientation=10.0;
     float minDisToLateralWall=3;
@@ -52,16 +58,18 @@ public:
     void ahead_ultra();//borrar
     float nearWall();//ver
     double passObstacle();
-    int findNearest(int,int[],int);
+    int findNearest(int,int[],int,bool);
     void back();
     void left();
     void right();
-    void showSpeeds();
+    void printSpeeds();
     float calculateAngularDistance();
     void rotate(float);
-    float changeSpeedMove(bool,bool,int);
+    float changeSpeedMove(bool,bool,int,bool);
+    void changePwm(bool,double);
     void resetTics();
     double getAvergeTics();
+    double getTicsSpeed();
     void printAngle();
     void setupVlx(const uint8_t);
     void printTicsSpeed();

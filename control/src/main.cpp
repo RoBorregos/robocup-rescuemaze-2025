@@ -7,6 +7,9 @@ void setup() {
 }
 void loop() {
 
-    robot.ahead();
+    // Serial.println(robot.motor[0].tics);
+    // robot.vlx[vlxID::left].printDistance();
+    robot.vlx[vlxID::right].printDistance();
+    // robot.vlx[vlxID::back].printDistance();
 
 }

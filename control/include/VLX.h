@@ -9,12 +9,12 @@
 #include "MUX.H"
 
 namespace vlxID{
-    constexpr uint8_t right=0;
-    constexpr uint8_t left=1;
-    constexpr uint8_t frontRight=2;
-    constexpr uint8_t frontLeft=3;
-    constexpr uint8_t front=4;
-    constexpr uint8_t back=5;
+    constexpr uint8_t right=2;//
+    constexpr uint8_t left=4;////////////////////////
+    constexpr uint8_t frontRight=5;//
+    constexpr uint8_t frontLeft=3;//
+    //constexpr uint8_t front=4;
+    constexpr uint8_t back=0;//
 }
 //canels del mux (provisonales)
   //canal 3 front left 0x08
