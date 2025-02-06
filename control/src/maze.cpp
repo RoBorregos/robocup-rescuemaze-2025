@@ -15,24 +15,16 @@ void maze::followPath(Stack& path){
         Serial.println(next.y);
         path.pop();
         if (next.x > robotCoord.x) {
-            Serial.println("distra0");
             robot.rotate(270);
         } else if (next.x < robotCoord.x) {
-            Serial.println("distra1");
             robot.rotate(90);
         } else if (next.y > robotCoord.y) {
-            Serial.println("distra2");
             robot.rotate(0);
         } else if (next.y < robotCoord.y) {
-            Serial.println("distra3");
             robot.rotate(180);
-        }else{
-            Serial.println("else");
         }
-        Serial.println("ahead");
         robot.ahead();
     }
-    Serial.println(9);
 }
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
     Stack path;
@@ -69,7 +61,6 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         }
         explored.getValue(tilesMap.getIndex(current)) = true;
     }
-    Serial.println(7);
     current = end;
     while(current != start){
         path.push(current);
@@ -77,7 +68,6 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     }
     //first cell, avoid first ahead
     //if(start != end) path.push(start);
-    Serial.println(8);
     followPath(path);
 }
 void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
@@ -92,7 +82,6 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
     bool wall = false;
 
     while(!unvisited.empty()){
-        Serial.println(2);
         //constants for the directions
         coord current = unvisited.top();
         unvisited.pop();
@@ -107,7 +96,6 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         if (visitedFlag) {
             continue;
         }
-        Serial.println(3);
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
         visited.push_back(true);
@@ -169,9 +157,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                 }
             }
         }
-        Serial.println(10);
     }
-    Serial.println(11);
     dijkstra(robotCoord, inicio, visitedMap, tiles);
 }
 void maze::run_algs(){

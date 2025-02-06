@@ -1,7 +1,7 @@
 #ifndef TileDirection_h
 #define TileDirection_h
 
-enum class TileDirection {
+enum class TileDirection: uint8_t {
     kUp = 0,
     kRight = 1,
     kDown = 2,

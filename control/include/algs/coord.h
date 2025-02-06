@@ -1,9 +1,9 @@
 #ifndef COORD_H  // Check if COORD_H is already defined
 #define COORD_H
 struct coord{
-    int x;
-    int y;
-    int z;
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
     bool const operator==(const coord &o) const {
         return x == o.x && y == o.y && z == o.z;
     }

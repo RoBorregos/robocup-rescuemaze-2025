@@ -2,12 +2,12 @@
 #include "Tile.h"
 class Stack{
     private: 
-        int mark;
-        coord stack[10];
+        uint8_t mark;
+        coord stack[20];
     public:
         Stack(){
             mark = 0;
-            for(int i = 0; i < 10; i++){
+            for(int i = 0; i < 20; i++){
                 stack[i] = kInvalidPosition;
             }
         }
@@ -30,7 +30,7 @@ class Stack{
         bool empty(){
             return mark <= 0;
         }
-        int getSize(){
+        uint8_t getSize(){
             return mark;
         }
         void clear(){
