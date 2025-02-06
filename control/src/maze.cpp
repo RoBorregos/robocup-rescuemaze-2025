@@ -33,7 +33,6 @@ void maze::followPath(Stack& path){
         robot.ahead();
     }
     Serial.println(9);
-    delay(5000);
 }
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
     Stack path;
@@ -173,7 +172,6 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         Serial.println(10);
     }
     Serial.println(11);
-    delay(5000);
     dijkstra(robotCoord, inicio, visitedMap, tiles);
 }
 void maze::run_algs(){

@@ -18,8 +18,8 @@ constexpr int kBlueTileWeight = 3; // 5 seconds
 constexpr int kRampWeight = 5;
 
 constexpr coord kInvalidPosition = coord{1000,1000,1000};
-constexpr int kMaxInt = 700;
-constexpr int kMaxSize = 256;
+constexpr int kMaxInt = 100;
+constexpr int kMaxSize = 10;
 
 class Tile{
     public:

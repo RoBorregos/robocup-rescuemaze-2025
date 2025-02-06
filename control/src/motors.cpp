@@ -33,15 +33,12 @@ void motors::setupMotors(){
     Wire.begin();  // Inicializa el bus I2C
     setupVlx(vlxID::frontLeft);
     // setupVlx(vlxID::frontRight);
-    setupVlx(vlxID::left);
-    setupVlx(vlxID::right);
+    
     setupVlx(vlxID::back);
+    setupVlx(vlxID::right);
+    setupVlx(vlxID::left);
     bno.setupBNO();
     double distance=vlx[vlxID::frontLeft].getDistance();
-    Serial.println(distance);
-    vlx[vlxID::left].printDistance();
-    vlx[vlxID::right].printDistance();
-    vlx[vlxID::back].printDistance();
     delay(500);
     targetAngle=0;
 }
@@ -96,6 +93,7 @@ void motors::ahead(){
             // float changeAngle=nearWall();
             distance=vlx[vlxID::frontLeft].getDistance();
             Serial.println(distance);
+            Serial.println("ahead");
             bno.getOrientationX();
             float speed=changeSpeedMove(false,false,targetDistance,true);
             PID_speed(targetAngle/*+changeAngle*/,(targetAngle==0 ? z_rotation:angle),speed);
@@ -202,7 +200,10 @@ float motors::calculateAngularDistance(){
 void motors::rotate(float deltaAngle){
     Serial.println("rotate");
     targetAngle=deltaAngle;
+    Serial.println("rotate1");
+    delayMicroseconds(1);
     bno.getOrientationX();
+    Serial.println("rotate2");
     float currentAngle,rightAngularDistance, leftAngularDistance,minInterval,maxInterval,tolerance=1;
     bool hexadecimal;
     //calculate angular distance in both directions
@@ -224,6 +225,7 @@ void motors::rotate(float deltaAngle){
     //decide shortest route and rotate("?" es un operador ternario para remplazar if-else)
     (rightAngularDistance<=leftAngularDistance) ? setright():setleft();
     currentAngle=hexadecimal ? angle:z_rotation;
+    Serial.println("rotate3");
     while (currentAngle<minInterval||currentAngle>maxInterval){
         changeSpeedMove(false,true,0,false);
         bno.getOrientationX();

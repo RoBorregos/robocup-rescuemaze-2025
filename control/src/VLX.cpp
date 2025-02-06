@@ -9,6 +9,7 @@ VLX::VLX(const uint8_t posMux){
 
 void VLX::begin(){
     mux_.selectChannel();
+    VLX_.begin();
     if (!VLX_.begin()) {
         Serial.println("¡Error al iniciar el sensor VL53L0X!");
         while (1);

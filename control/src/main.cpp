@@ -13,6 +13,7 @@ void loop() {
     // Serial.println(robot.motor[0].tics);
     // robot.vlx[vlxID::left].printDistance();
     // robot.vlx[vlxID::right].printDistance();
+    // robot.rotate(90);
     m.run_algs();
     // robot.vlx[vlxID::back].printDistance();
 

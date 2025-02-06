@@ -3,11 +3,11 @@
 class Stack{
     private: 
         int mark;
-        coord stack[256];
+        coord stack[10];
     public:
         Stack(){
             mark = 0;
-            for(int i = 0; i < 256; i++){
+            for(int i = 0; i < 10; i++){
                 stack[i] = kInvalidPosition;
             }
         }

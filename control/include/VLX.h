@@ -10,7 +10,7 @@
 
 namespace vlxID{
     constexpr uint8_t right=2;//
-    constexpr uint8_t left=4;////////////////////////
+    constexpr uint8_t left=1;////////////////////////
     constexpr uint8_t frontRight=5;//
     constexpr uint8_t frontLeft=3;//
     //constexpr uint8_t front=4;
@@ -18,7 +18,7 @@ namespace vlxID{
 }
 //canels del mux (provisonales)
   //canal 3 front left 0x08
-  //canal 5 front right 0x20
+  //canal 5 front right 0x20-1
   //0x02 color
   //0x04 right
 class VLX{
