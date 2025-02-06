@@ -1,80 +1,46 @@
 #include "maze.h"
 
-coord inicio = {0,0,1};
-coord robotCoord = {0,0,1};
+coord inicio = {0,0,0};
+coord robotCoord = {0,0,0};
 TileDirection directions[4] = {TileDirection::kLeft,TileDirection::kDown,TileDirection::kRight,TileDirection::kUp};
 int robotOrientation = 0;
 maze::maze(){
 
 }
-//comentar en las pruebas
-/*
-void maze::right(){};
-void maze::left(){};
-void maze::ahead(){};
-bool maze::vlx(int num){return true;};
-
-void maze::rotate(const int targetOrientation) {
-    int difference = targetOrientation - robotOrientation;
-    if (difference == 0) {
-        return;
-    }
-    if (difference == 90 || difference == -270) {
-        robot.right();
-        robotOrientation = (robotOrientation + 90) % 360;
-    } else if (difference == 270 || difference == -90) {
-        robot.left();
-        robotOrientation = (robotOrientation + 270) % 360;
-    } else if (difference == 180|| difference == -180) {
-        robot.right();
-        robot.right();
-        robotOrientation = (robotOrientation + 180) % 360;
-    }
-}
-bool maze::isWall(const TileDirection& direction) {
-    switch(direction) {
-        case TileDirection::kUp:
-            return vlx(static_cast<int>(TileDirection::kUp));
-        case TileDirection::kRight:
-            return vlx(static_cast<int>(TileDirection::kRight));
-        case TileDirection::kDown:
-            return vlx(static_cast<int>(TileDirection::kDown));
-        case TileDirection::kLeft:
-            return vlx(static_cast<int>(TileDirection::kLeft));
-        default: 
-            break;
-    }
-}
-*/
 //comienza logica ---------------------------------------------------------
 void maze::followPath(Stack& path){
     while(!path.empty()){
-        coord next = path.top();
-            Serial.println(next.x);
-            Serial.println(next.y);
+        const coord& next = path.top();
+        Serial.println(next.x);
+        Serial.println(next.y);
         path.pop();
         if (next.x > robotCoord.x) {
+            Serial.println("distra0");
             robot.rotate(270);
         } else if (next.x < robotCoord.x) {
-            Serial.println("rotando");
+            Serial.println("distra1");
             robot.rotate(90);
         } else if (next.y > robotCoord.y) {
-            Serial.println("distra1");
+            Serial.println("distra2");
             robot.rotate(0);
         } else if (next.y < robotCoord.y) {
+            Serial.println("distra3");
             robot.rotate(180);
         }else{
             Serial.println("else");
         }
+        Serial.println("ahead");
         robot.ahead();
     }
+    Serial.println(9);
+    delay(5000);
 }
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
     Stack path;
     arrCustom<bool> explored(kMaxSize, false);
     arrCustom<int> distance(kMaxSize, kMaxInt);
     arrCustom<coord> previousPositions(kMaxSize, kInvalidPosition);
-
+    Serial.println(6);
     distance.set(tilesMap.getIndex(start), 0);
     explored.set(tilesMap.getIndex(start), true);
     
@@ -104,21 +70,22 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         }
         explored.getValue(tilesMap.getIndex(current)) = true;
     }
+    Serial.println(7);
     current = end;
     while(current != start){
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
     //first cell, avoid first ahead
-
-    if(start != end) path.push(start);
+    //if(start != end) path.push(start);
+    Serial.println(8);
     followPath(path);
 }
 void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
     Stack unvisited;
     arrCustom<bool> visited(kMaxSize, false);
     unvisited.push(robotCoord);
-    
+    Serial.println(1);
     coord next;
     Tile* currentTile;
     TileDirection oppositeDirection;
@@ -126,6 +93,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
     bool wall = false;
 
     while(!unvisited.empty()){
+        Serial.println(2);
         //constants for the directions
         coord current = unvisited.top();
         unvisited.pop();
@@ -140,40 +108,37 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         if (visitedFlag) {
             continue;
         }
+        Serial.println(3);
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
         visited.push_back(true);
         //ahead(current);
         robotCoord = current;
         for(const TileDirection direction: directions){
+            Serial.println(4);
             wall = false; 
-            coord wallCoord = {0,0,0};
-            if(robot.isWall(static_cast<int>(direction))){
+            if(robot.isWall(static_cast<int>(direction))){//robot.isWall(static_cast<int>(direction))
                 wall = true;
             }
             switch(direction) {
                 case TileDirection::kRight:
-                    next = coord{current.x + 1, current.y, 1};
+                    next = coord{current.x + 1, current.y, 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x + 1, current.y, 1};
                     oppositeDirection = TileDirection::kLeft;
                     break;
                 case TileDirection::kUp:
-                    next = coord{current.x, current.y + 1, 1};
+                    next = coord{current.x, current.y + 1, 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x, current.y + 1, 1};
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
-                    next = coord{current.x - 1, current.y, 1};
+                    next = coord{current.x - 1, current.y, 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x - 1, current.y, 1};
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
-                    next = coord{current.x, current.y - 1, 1};
+                    next = coord{current.x, current.y - 1, 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x, current.y - 1, 1};
                     oppositeDirection = TileDirection::kUp;
                     break;
             }
@@ -198,14 +163,17 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                             break;
                         }
                     }
-                    if(!visitedFlag){
-                        
+                    if(!visitedFlag){ 
+                        Serial.println(5);
                         unvisited.push(next);
                     }
                 }
             }
         }
+        Serial.println(10);
     }
+    Serial.println(11);
+    delay(5000);
     dijkstra(robotCoord, inicio, visitedMap, tiles);
 }
 void maze::run_algs(){
@@ -216,3 +184,279 @@ void maze::run_algs(){
     tiles.getValue(tilesMap.getIndex(robotCoord)) = Tile(robotCoord);
     dfs(visitedMap, tiles, tilesMap);
 }
+/*
+ *  Executing task: C:\Users\UsX\.platformio\penv\Scripts\platformio.exe device monitor 
+
+--- Terminal on COM3 | 115200 8-N-1
+--- Available filters and text transformations: colorize, debug, default, direct, esp32_exception_decoder, hexlify, log2file, nocontrol, printable, send_on_enter, time
+--- More details at https://bit.ly/pio-monitor-filters
+--- Quit: Ctrl+C | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H
+0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:1344
+load:0x40078000,len:13964
+load:0x40080400,len:3600
+entry 0x400805f0
+Running...
+1
+2
+3
+6
+7
+8
+9
+4
+5
+4
+5
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+1
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+2
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+3
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+4
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+5
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+6
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+7
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+8
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+9
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+10
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+11
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+12
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+13
+distra2
+ahead
+9
+4
+5
+4
+4
+5
+4
+5
+10
+2
+3
+6
+7
+8
+0
+14
+distra2
+ahead
+9*/

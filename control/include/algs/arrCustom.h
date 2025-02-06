@@ -32,11 +32,13 @@ public:
                 return i;
             }
         }
+        return -1;
     }
     T& getValue(size_t index) const {
         if (index < size && index >= 0) {
             return positions[index];
         }
+        return positions[0];
     }
     size_t getSize() const {
         return size;
