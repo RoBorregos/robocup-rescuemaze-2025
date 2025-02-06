@@ -2,8 +2,8 @@
 #include "algs/Tile.h"
 #include "algs/arrCustom.h"
 #include "algs/Stack.h"
-#include "coord.h"
-#include "motors.h"
+#include "algs/coord.h"
+#include "Encoder.h"
 
 class maze{
     public:
@@ -15,6 +15,7 @@ class maze{
         bool vlx(int num);
         bool isWall(const TileDirection& direction);
         */
+        maze();
         void followPath(Stack& path);
         void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles);
         void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap);

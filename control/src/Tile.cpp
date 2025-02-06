@@ -1,26 +1,21 @@
-#include<iostream>
-#include<map>
-using namespace std;
-
-#include "Tile.h"
+#include "algs/Tile.h"
 
 Tile::Tile(){
     this->position_ = kInvalidPosition;
 
-    for (int i = 0; i < kNumberOfDirections; ++i) {
-        adjacentTiles_[i] = NULL;
-        weights_[i] = 0;
+    for(uint8_t i = 0; i < kNumberOfDirections; ++i){
+        adjacentTiles_[i] = nullptr;
+        weights_[i] = 0;    
     }
-    
+
     this->data_ = '\0';
 }
 
 Tile::Tile(const coord& position) {
     this->position_ = position;
-
-    for (int i = 0; i < kNumberOfDirections; ++i) {
-        adjacentTiles_[i] = NULL;
-        weights_[i] = 0;
+    for(uint8_t i = 0; i < kNumberOfDirections; ++i){
+        adjacentTiles_[i] = nullptr;
+        weights_[i] = 0;    
     }
 
     this->data_ = '\0';
@@ -40,7 +35,7 @@ void Tile::setVictim() {
     this->data_ |= (1 << kVictimBit);
 }
 
-bool Tile::hasVictim() {
+bool Tile::hasVictim() const {
     return this->data_ & (1 << kVictimBit);
 }
 
@@ -48,7 +43,7 @@ void Tile::setObstacle() {
     this->data_ |= (1 << kObstacleBit);
 }
 
-bool Tile::hasObstacle() {
+bool Tile::hasObstacle() const {
     return this->data_ & (1 << kObstacleBit);
 }
 
@@ -56,7 +51,7 @@ void Tile::setBlackTile() {
     this->data_ |= (1 << kBlackTileBit);
 }
 
-bool Tile::hasBlackTile() {
+bool Tile::hasBlackTile() const {
     return this->data_ & (1 << kBlackTileBit);
 }
 
@@ -64,13 +59,13 @@ void Tile::setCheckpoint() {
     this->data_ |= (1 << kCheckpointBit);
 }
 
-bool Tile::hasCheckpoint() {
+bool Tile::hasCheckpoint() const {
     return this->data_ & (1 << kCheckpointBit);
 }
 
 void Tile::addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall) {
     adjacentTiles_[static_cast<int>(direction)] = tile;
-    weights_[static_cast<int>(direction)] = kMinWeight;
+    weights_[static_cast<int>(direction)] = kWhiteTileWeight;
     this->setWall(direction, wall);
 }
 

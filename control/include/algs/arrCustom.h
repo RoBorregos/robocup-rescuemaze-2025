@@ -1,4 +1,5 @@
 // CustomArray.h
+#include <cstddef>
 template <typename T>
 class arrCustom {
 private:

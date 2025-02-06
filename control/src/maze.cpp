@@ -1,10 +1,12 @@
 #include "maze.h"
 
-coord inicio = {0,0,0};
-coord robotCoord = {0,0,0};
+coord inicio = {0,0,1};
+coord robotCoord = {0,0,1};
 TileDirection directions[4] = {TileDirection::kLeft,TileDirection::kDown,TileDirection::kRight,TileDirection::kUp};
 int robotOrientation = 0;
+maze::maze(){
 
+}
 //comentar en las pruebas
 /*
 void maze::right(){};
@@ -47,18 +49,24 @@ bool maze::isWall(const TileDirection& direction) {
 //comienza logica ---------------------------------------------------------
 void maze::followPath(Stack& path){
     while(!path.empty()){
-        const coord& next = path.top();
+        coord next = path.top();
+            Serial.println(next.x);
+            Serial.println(next.y);
         path.pop();
         if (next.x > robotCoord.x) {
             robot.rotate(270);
         } else if (next.x < robotCoord.x) {
+            Serial.println("rotando");
             robot.rotate(90);
         } else if (next.y > robotCoord.y) {
+            Serial.println("distra1");
             robot.rotate(0);
         } else if (next.y < robotCoord.y) {
             robot.rotate(180);
+        }else{
+            Serial.println("else");
         }
-        robot.ahead_ultra();
+        robot.ahead();
     }
 }
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
@@ -102,6 +110,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
     //first cell, avoid first ahead
+
     if(start != end) path.push(start);
     followPath(path);
 }
@@ -144,25 +153,25 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
             switch(direction) {
                 case TileDirection::kRight:
-                    next = coord{current.x + 2, current.y, 1};
+                    next = coord{current.x + 1, current.y, 1};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x + 1, current.y, 1};
                     oppositeDirection = TileDirection::kLeft;
                     break;
                 case TileDirection::kUp:
-                    next = coord{current.x, current.y + 2, 1};
+                    next = coord{current.x, current.y + 1, 1};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x, current.y + 1, 1};
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
-                    next = coord{current.x - 2, current.y, 1};
+                    next = coord{current.x - 1, current.y, 1};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x - 1, current.y, 1};
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
-                    next = coord{current.x, current.y - 2, 1};
+                    next = coord{current.x, current.y - 1, 1};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x, current.y - 1, 1};
                     oppositeDirection = TileDirection::kUp;
@@ -190,6 +199,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                         }
                     }
                     if(!visitedFlag){
+                        
                         unvisited.push(next);
                     }
                 }
