@@ -11,7 +11,7 @@
 class motors{
 private:
     static constexpr uint8_t kTileLength=30;
-    static constexpr uint8_t edgeTileDistance=8;
+    static constexpr uint8_t edgeTileDistance=9;
     float targetAngle=0;
     static constexpr unsigned long delayTime=350;
     // PID myPID[4];

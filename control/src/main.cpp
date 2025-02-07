@@ -14,12 +14,14 @@ void loop() {
     // robot.vlx[vlxID::left].printDistance();
     // robot.vlx[vlxID::right].printDistance();
     // robot.rotate(90);
-    // m.run_algs();
+    m.run_algs();
+    /*
     if(robot.vlx[vlxID::frontLeft].isWall()){
       robot.right();
     }else{
       robot.ahead();
     }
+    */
     // robot.vlx[vlxID::back].printDistance();
 
 }
