@@ -3,18 +3,18 @@
 
 class PID{
 private:
-    double kp;
-    double ki;
-    double kd;
-    double last_error;
-    double last_time;
+    float kp;
+    float ki;
+    float kd;
+    float last_error;
+    float last_time;
 
 public:
-    PID(double,double,double,double);
+    PID(float,float,float,float);
     PID();
-    double calculate_PID(double,double);
-    void changeConstants(double,double,double,double);
-    double calculate_time=20;
+    double calculate_PID(float,float);
+    void changeConstants(float,float,float,float);
+    float calculate_time=20;
 
 };
 #endif

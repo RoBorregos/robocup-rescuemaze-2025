@@ -4,6 +4,7 @@
 #include "coord.h"
 #include <cstdint>
 #include "TileDirection.h"
+#include "Arduino.h"
 
 // Bits 0-3 are reserved for the walls. 
 constexpr uint8_t kVictimBit = 4;

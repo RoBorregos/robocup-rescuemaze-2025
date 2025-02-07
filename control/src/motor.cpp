@@ -3,7 +3,7 @@
 #include "Pins.h"
 #include "Encoder.h"
 
-void motor_::initialize(int in_1,int in_2,int en,int numMotor){
+void motor_::initialize(uint8_t in_1,uint8_t in_2,uint8_t en,uint8_t numMotor){
     in1=in_1;
     in2=in_2;
     enable=en;
@@ -18,7 +18,7 @@ void motor_::initialize(int in_1,int in_2,int en,int numMotor){
 motor_::motor_(){
     //default constructor
 }
-void motor_::initEncoder(int motorId_) {
+void motor_::initEncoder(uint8_t motorId_) {
      switch (motorId_) {
         case (MotorID::kFrontLeft):{
             attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Encoder::frontLeftEncoder, RISING);
@@ -59,7 +59,7 @@ void motor_::resetTics(){
 int motor_::getTics(){
     return tics;
 }
-void motor_::setSpeed(int velocity){
+void motor_::setSpeed(uint16_t velocity){
     speed=velocity;
     speed=constrain(speed,0,255);
     analogWrite(enable,speed);

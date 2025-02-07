@@ -1,5 +1,7 @@
 #ifndef COORD_H  // Check if COORD_H is already defined
 #define COORD_H
+#include "Arduino.h"
+
 struct coord{
     uint8_t x;
     uint8_t y;

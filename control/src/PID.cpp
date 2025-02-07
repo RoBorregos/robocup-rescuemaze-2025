@@ -1,7 +1,7 @@
 #include "PID.H"
 #include <Arduino.h>
 #include "Encoder.h"
-PID::PID(double kp_,double ki_,double kd_,double calculate_time_){
+PID::PID(float kp_,float ki_,float kd_,float calculate_time_){
     kp=kp_;
     ki=ki_;
     kd=kd_;
@@ -12,23 +12,23 @@ PID::PID(){
     ki=0.1;
     kd=0.8;
 }
-void PID::changeConstants(double kp_,double ki_,double kd_,double calculate_time_){
+void PID::changeConstants(float kp_,float ki_,float kd_,float calculate_time_){
     kp=kp_;
     ki=ki_;
     kd=kd_;
     calculate_time=calculate_time_;
 }
-double PID::calculate_PID(double setpoint, double input){
-    double current_time=millis();
-    double delta_time=current_time-last_time;
+double PID::calculate_PID(float setpoint, float input){
+    float current_time=millis();
+    float delta_time=current_time-last_time;
     if(delta_time>=calculate_time){
-        double error=setpoint-input;
-        double total_error=error+last_error;
+        float error=setpoint-input;
+        float total_error=error+last_error;
 
-        double proportional=kp*error;
-        double integral=ki*total_error;
-        double derivative=kd*(error-last_error)/(delta_time);
-        double output=proportional+integral+derivative;
+        float proportional=kp*error;
+        float integral=ki*total_error;
+        float derivative=kd*(error-last_error)/(delta_time);
+        float output=proportional+integral+derivative;
         last_error=error;
         last_time=current_time;
         return output;

@@ -37,38 +37,4 @@ namespace Pins{
         5 // FRONT_RIGHT   fine 3  
     };
 }
-
 #endif
-
-    ////////candidate-robot////////
-    // constexpr uint8_t pwmPin[4] = {
-    //     7,  // BACK_RIGHT (ENA_MT1)
-    //     5,  // BACK_LEFT (ENA_MT2)
-    //     6,  // FRONT_RIGHT (ENA_MT3)
-    //     10  // FRONT_LEFT (ENA_MT4)
-    // };
-
-    // constexpr uint8_t digitalOne[4] = {
-    //     33, // BACK_RIGHT (IN1_MT1)
-    //     31, // BACK_LEFT (IN1_MT2)
-    //     29, // FRONT_RIGHT (IN1_MT3)
-    //     27  // FRONT_LEFT (IN1_MT4)
-    // };
-
-    // constexpr uint8_t digitalTwo[4] = {
-    //     32, // BACK_RIGHT (IN2_MT1)
-    //     30, // BACK_LEFT (IN2_MT2)
-    //     28, // FRONT_RIGHT (IN2_MT3)
-    //     26  // FRONT_LEFT (IN2_MT4)
-    // };
-//////////////////////////////////
-//    const int ultrasonico[2]={
-//     2,//trig
-//     3,//echo
-//     }; 
-    // constexpr uint8_t encoder[4] = {
-    //     0, // BACK_RIGHT 34   34
-    //     0, // BACK_LEFT 35    35
-    //     18,  // FRONT_RIGHT 36
-    //     19 // FRONT_LEFT 39
-    // };

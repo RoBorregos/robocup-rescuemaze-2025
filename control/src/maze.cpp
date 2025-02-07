@@ -1,5 +1,5 @@
 #include "maze.h"
-
+#include "Arduino.h"
 coord inicio = {0,0,0};
 coord robotCoord = {0,0,0};
 TileDirection directions[4] = {TileDirection::kLeft,TileDirection::kDown,TileDirection::kRight,TileDirection::kUp};

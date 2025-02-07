@@ -33,7 +33,7 @@ void BNO::updateBNO(sensors_event_t &event) {
     bno_.getEvent(&event);
 }
 
-double BNO::getOrientationX() {
+float BNO::getOrientationX() {
     updateBNO(event_);
     angle=event_.orientation.x - phaseCorrection_;
     angle = angle - angle_initial;
@@ -50,17 +50,17 @@ double BNO::getOrientationX() {
     return angle;
 }
 
-double BNO::getOrientationY() {
+float BNO::getOrientationY() {
     updateBNO(event_);
     return event_.orientation.y;
 }
 
-void BNO::setPhaseCorrection(const double phaseCorrection) {
+void BNO::setPhaseCorrection(const float phaseCorrection) {
     phaseCorrection_ = phaseCorrection;
 }
 
 // Establecer corrección de fase para el eje Y
-void BNO::setPhaseCorrectionY(const double phaseCorrectionY) {
+void BNO::setPhaseCorrectionY(const float phaseCorrectionY) {
     phaseCorrectionY_ = phaseCorrectionY;
 }
 

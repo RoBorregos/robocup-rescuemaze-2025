@@ -24,7 +24,7 @@ void VLX::updateDistance() {
     mux_.selectChannel();
     VLX_.rangingTest(&measure, false);
 }
-double VLX::getDistance(){
+float VLX::getDistance(){
     updateDistance();
     if (measure.RangeStatus != 4) {
     distance=measure.RangeMilliMeter/10;
