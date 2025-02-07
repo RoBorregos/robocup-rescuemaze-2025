@@ -15,9 +15,9 @@ void maze::followPath(Stack& path){
         Serial.println(next.y);
         path.pop();
         if (next.x > robotCoord.x) {
-            robot.rotate(270);
-        } else if (next.x < robotCoord.x) {
             robot.rotate(90);
+        } else if (next.x < robotCoord.x) {
+            robot.rotate(270);
         } else if (next.y > robotCoord.y) {
             robot.rotate(0);
         } else if (next.y < robotCoord.y) {
