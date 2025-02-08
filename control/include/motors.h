@@ -8,17 +8,19 @@
 #include <SPI.h>
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
+
+constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
 class motors{
 private:
     static constexpr uint8_t kTileLength=30;
-    static constexpr uint8_t edgeTileDistance=9;
+    static constexpr uint8_t edgeTileDistance=8;
     float targetAngle=0;
     static constexpr unsigned long delayTime=350;
     // PID myPID[4];
     //vlx
     static constexpr uint8_t kNumVlx=5;
     static constexpr uint8_t maxVlxDistance=120;
-    static constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
+    
     //wheels
     static constexpr float wheelDiameter=8;
     static constexpr float distancePerRev=wheelDiameter*PI;
@@ -30,14 +32,15 @@ private:
     uint16_t kMinPwmFormard=70;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
-    static constexpr uint16_t kMinSpeedRotate=20;
+    static constexpr uint16_t kMinSpeedRotate=15;////////////////
     static constexpr uint16_t kMaxSpeedRotate=60;
     static constexpr uint16_t kMinSpeedFormard=20;//36
     static constexpr uint16_t kMaxSpeedFormard=65;//70
     //ramp
     static constexpr float kMinRampOrientation=10.0;
-    static constexpr float minDisToLateralWall=7;
-    static constexpr uint8_t maxChangeAngle=30;
+    static constexpr float minDisToLateralWall=2;
+    static constexpr float impactDisToLateralWall=2;
+    static constexpr uint8_t maxChangeAngle=2;
     static constexpr uint8_t kMinAngleRamp=10;
 public:
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();

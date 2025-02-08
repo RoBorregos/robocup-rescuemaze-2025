@@ -85,7 +85,8 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         //constants for the directions
         coord current = unvisited.top();
         unvisited.pop();
-
+        robot.wifiPrint("coord x",current.x);
+        robot.wifiPrint("coord y",current.y);
         visitedFlag = false;
         for(int i = 0; i < visitedMap.getSize(); ++i){
             if(visitedMap.getValue(i) == current){

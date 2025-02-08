@@ -14,14 +14,16 @@ void loop() {
     // robot.vlx[vlxID::left].printDistance();
     // robot.vlx[vlxID::right].printDistance();
     // robot.rotate(90);
-    m.run_algs();
-    /*
-    if(robot.vlx[vlxID::frontLeft].isWall()){
-      robot.right();
-    }else{
-      robot.ahead();
-    }
-    */
+    robot.vlx[vlxID::right].getDistance();
+    robot.wifiPrint("angulo",robot.vlx[vlxID::right].distance);
+    // m.run_algs();
+    
+    // if(robot.vlx[vlxID::frontLeft].isWall()){
+    //   robot.right();
+    // }else{
+    //   robot.ahead();
+    // }
+    
     // robot.vlx[vlxID::back].printDistance();
 
 }

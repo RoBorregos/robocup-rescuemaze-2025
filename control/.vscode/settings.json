@@ -2,6 +2,7 @@
     "cmake.sourceDirectory": "C:/Users/ferna/Documents/MAZE-Personal/lib/Arduino_Opta_Blueprint/fwUpdater/source",
     "files.associations": {
         "iterator": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "cmath": "cpp"
     }
 }

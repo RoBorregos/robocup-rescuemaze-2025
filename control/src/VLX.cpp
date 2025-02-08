@@ -27,7 +27,8 @@ void VLX::updateDistance() {
 float VLX::getDistance(){
     updateDistance();
     if (measure.RangeStatus != 4) {
-    distance=measure.RangeMilliMeter/10;
+    distance=measure.RangeMilliMeter;
+    distance=distance/10;
     return distance;
     }else{
         return 180;
