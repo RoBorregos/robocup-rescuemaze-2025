@@ -1,7 +1,7 @@
 #include "maze.h"
 #include "Arduino.h"
-coord inicio = {0,0,0};
-coord robotCoord = {0,0,0};
+coord inicio = {128,128,0};
+coord robotCoord = {128,128,0};
 TileDirection directions[4] = {TileDirection::kLeft,TileDirection::kDown,TileDirection::kRight,TileDirection::kUp};
 int robotOrientation = 0;
 maze::maze(){

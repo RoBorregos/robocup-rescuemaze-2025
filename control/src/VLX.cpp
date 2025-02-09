@@ -34,6 +34,7 @@ float VLX::getDistance(){
         return 180;
     }
 }
+
 void VLX::printDistance(){
     updateDistance();
     if (measure.RangeStatus != 4) {

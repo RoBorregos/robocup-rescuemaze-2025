@@ -9,21 +9,19 @@ void setup() {
   robot.setupMotors();
 }
 void loop() {
-
     // Serial.println(robot.motor[0].tics);
     // robot.vlx[vlxID::left].printDistance();
     // robot.vlx[vlxID::right].printDistance();
     // robot.rotate(90);
-    robot.vlx[vlxID::right].getDistance();
-    robot.wifiPrint("angulo",robot.vlx[vlxID::right].distance);
-    // m.run_algs();
-    
+    // robot.vlx[vlxID::right].getDistance();
+    // robot.wifiPrint("angulo",robot.vlx[vlxID::right].distance);
+    m.run_algs();
+    // robot.wifiPrint("dis: ",robot.vlx[vlxID::frontLeft].getDistance());
     // if(robot.vlx[vlxID::frontLeft].isWall()){
     //   robot.right();
     // }else{
     //   robot.ahead();
     // }
-    
     // robot.vlx[vlxID::back].printDistance();
 
 }

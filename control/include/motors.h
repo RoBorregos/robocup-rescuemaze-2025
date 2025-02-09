@@ -6,20 +6,23 @@
 #include "VLX.h"
 #include "BNO.H"
 #include <SPI.h>
+#include <unordered_map>
+
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
-
+constexpr uint8_t edgeTileDistance=5;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
+constexpr uint8_t targetDistances[]={edgeTileDistance,30+edgeTileDistance,60+edgeTileDistance,90+edgeTileDistance};
 class motors{
 private:
     static constexpr uint8_t kTileLength=30;
-    static constexpr uint8_t edgeTileDistance=8;
+    // static constexpr uint8_t edgeTileDistance=8;
     float targetAngle=0;
     static constexpr unsigned long delayTime=350;
     // PID myPID[4];
     //vlx
     static constexpr uint8_t kNumVlx=5;
-    static constexpr uint8_t maxVlxDistance=120;
+    static constexpr uint8_t maxVlxDistance=98;
     
     //wheels
     static constexpr float wheelDiameter=8;
@@ -29,7 +32,7 @@ private:
     //Pwm constants
     uint16_t kMinPwmRotate=70;
     uint16_t kMaxPwmRotate=160;
-    uint16_t kMinPwmFormard=70;
+    uint16_t kMinPwmFormard=40;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
     static constexpr uint16_t kMinSpeedRotate=15;////////////////
@@ -38,7 +41,7 @@ private:
     static constexpr uint16_t kMaxSpeedFormard=65;//70
     //ramp
     static constexpr float kMinRampOrientation=10.0;
-    static constexpr float minDisToLateralWall=2;
+    static constexpr float minDisToLateralWall=3;
     static constexpr float impactDisToLateralWall=2;
     static constexpr uint8_t maxChangeAngle=2;
     static constexpr uint8_t kMinAngleRamp=10;
@@ -61,7 +64,7 @@ public:
     void ahead_ultra();//borrar
     float nearWall();//ver
     double passObstacle();
-    uint8_t findNearest(float,uint8_t[],uint8_t,bool);
+    uint8_t findNearest(float,const uint8_t[],uint8_t,bool);
     void back();
     void left();
     void right();
@@ -77,6 +80,7 @@ public:
     void setupVlx(const uint8_t);
     void printTicsSpeed();
     bool isWall(uint8_t);
+    float getRealDistance();
     bool rampInFront();
     bool isRamp();
     void ramp();

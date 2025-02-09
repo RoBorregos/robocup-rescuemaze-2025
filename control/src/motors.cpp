@@ -83,21 +83,21 @@ void motors::PID_speed(float setpoint,float angle, uint16_t reference_speed){
 // }
 void motors::ahead(){
     // double obstacleDistance=passObstacle();
-    if(vlx[vlxID::frontLeft].isWall()){
-        return;
-    }
     resetTics();
-    float distance=vlx[vlxID::frontLeft].getDistance();
-    client.print("distancia ahead:");
-    client.println(distance);
+    float distance=getRealDistance();
+    // float distance=vlx[vlxID::frontLeft].getDistance();
+    // client.print("distancia ahead:");
+    // client.println(distance);
     setahead();
     if(distance<maxVlxDistance){
-        uint8_t targetDistances[]={edgeTileDistance,30+edgeTileDistance,60+edgeTileDistance,90+edgeTileDistance};
         uint8_t targetDistance=findNearest(distance,targetDistances,4,true);//agregar variable de adelante atras
+        client.println("Avanzando con vlx");
         while(distance>targetDistance){//poner rango
-            client.println("Avanzando con vlx");
+            wifiPrint("distancia: ", distance);
             float changeAngle=nearWall();
+            wifiPrint("chnageangule",changeAngle);
             distance=vlx[vlxID::frontLeft].getDistance();
+            Serial.println("distance ahead");
             Serial.println(distance);
             bno.getOrientationX();
             float speed=changeSpeedMove(false,false,targetDistance,true);
@@ -118,15 +118,22 @@ float motors::nearWall(){
     float changeAngle=0;
     vlx[vlxID::left].getDistance();
     vlx[vlxID::right].getDistance();
-    if(vlx[vlxID::left].distance<(minDisToLateralWall+impactDisToLateralWall)){
-        // changeAngle=(maxChangeAngle-(maxChangeAngle/minDisToLateralWall*vlx[vlxID::left].distance));//ecuacion de la recta
-        changeAngle = -(4*maxChangeAngle/pow(minDisToLateralWall,2)) * pow((vlx[vlxID::left].distance+impactDisToLateralWall),2) + (4*maxChangeAngle/minDisToLateralWall) * (vlx[vlxID::left].distance+impactDisToLateralWall);//ecuacion de parabola en funcion de constantes
+    // if(vlx[vlxID::left].distance<(minDisToLateralWall+impactDisToLateralWall)){
+    //     // changeAngle=(maxChangeAngle-(maxChangeAngle/minDisToLateralWall*vlx[vlxID::left].distance));//ecuacion de la recta
+    //     changeAngle = -(4*maxChangeAngle/pow(minDisToLateralWall,2)) * pow((vlx[vlxID::left].distance+impactDisToLateralWall),2) + (4*maxChangeAngle/minDisToLateralWall) * (vlx[vlxID::left].distance+impactDisToLateralWall);//ecuacion de parabola en funcion de constantes
+    // }
+    // else if(vlx[vlxID::right].distance<(minDisToLateralWall+impactDisToLateralWall)){
+    //     // changeAngle=-(maxChangeAngle-(maxChangeAngle/minDisToLateralWall*vlx[vlxID::right].distance));//ecuacion de la recta
+    //     changeAngle = -(-(4*maxChangeAngle/pow(minDisToLateralWall,2)) * pow((vlx[vlxID::left].distance+impactDisToLateralWall),2) + (4*maxChangeAngle/minDisToLateralWall) * (vlx[vlxID::left].distance+impactDisToLateralWall));//ecuacion de parabola en funcion de constantes
+    // }
+    wifiPrint("lateral left:",vlx[vlxID::left].distance);
+    wifiPrint("lateral left:",vlx[vlxID::right].distance);
+    if(vlx[vlxID::left].distance<minDisToLateralWall ){
+        changeAngle=maxChangeAngle;
+    }else if(vlx[vlxID::right].distance<minDisToLateralWall){
+        changeAngle=-maxChangeAngle;
     }
-    else if(vlx[vlxID::right].distance<(minDisToLateralWall+impactDisToLateralWall)){
-        // changeAngle=-(maxChangeAngle-(maxChangeAngle/minDisToLateralWall*vlx[vlxID::right].distance));//ecuacion de la recta
-        changeAngle = -(-(4*maxChangeAngle/pow(minDisToLateralWall,2)) * pow((vlx[vlxID::left].distance+impactDisToLateralWall),2) + (4*maxChangeAngle/minDisToLateralWall) * (vlx[vlxID::left].distance+impactDisToLateralWall));//ecuacion de parabola en funcion de constantes
-    }
-    changeAngle=constrain(changeAngle,-maxChangeAngle,maxChangeAngle);
+    // changeAngle=constrain(changeAngle,-maxChangeAngle,maxChangeAngle);
     return changeAngle;
 }
 double motors::passObstacle(){
@@ -160,7 +167,8 @@ double motors::passObstacle(){
     double linearDistanceTics=distanceTics*cos((45*PI/180));
     return linearDistanceTics;
 }
-uint8_t motors::findNearest(float number,uint8_t numbers[],uint8_t size,bool frontVlx){
+uint8_t motors::findNearest(float number,const uint8_t numbers[],uint8_t size,bool frontVlx){
+    wifiPrint("near",number);
     uint8_t nearest=numbers[0];
     float minDifference=abs(number-numbers[0]);
     for(uint8_t i=1;i<size;i++){
@@ -399,6 +407,37 @@ bool motors::isWall(uint8_t direction){
         default: 
           return false;
     }
+}
+float motors::getRealDistance(){
+    float distance;
+    uint8_t size=5;
+    float distances[size];
+    for(uint8_t i=0;i<size;i++){
+        distances[i]=findNearest(vlx[vlxID::frontLeft].getDistance(),targetDistances,4,true)+kTileLength;
+        wait(30);
+        Serial.print("dis ahead: ");
+        Serial.print(distances[i]);
+        wifiPrint("dis ahead: ",distances[i]);
+    }
+    std::unordered_map<int, int> freq;  // Mapa para contar frecuencia de cada número
+
+    // 1. Contar la frecuencia de cada número en el array
+    for (int i = 0; i < size; i++) {
+        freq[distances[i]]++;  // Incrementa la cuenta del número en el mapa
+    }
+
+    int mostFrequent = distances[0];  // Número más frecuente (inicializado con el primer elemento)
+    int maxCount = 0;           // Mayor frecuencia encontrada
+
+    // 2. Buscar el número con mayor frecuencia
+    for (const auto& pair : freq) {
+        if (pair.second > maxCount) { // Si encontramos una frecuencia mayor
+            maxCount = pair.second;   // Actualizamos la frecuencia máxima
+            mostFrequent = pair.first;// Actualizamos el número más frecuente
+        }
+    }
+
+    return mostFrequent;
 }
 bool motors::rampInFront(){
     if((vlx[vlxID::frontLeft].getDistance()-vlx[vlxID::frontLeft/*down*/].getDistance())>=2){
