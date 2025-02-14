@@ -24,7 +24,7 @@ void TCS::init() {
             customPrintln("No TCS34725 found ... check your connections");
             #endif
         }
-        
+        Serial.println("TCS inicializado");
     }
     photoresistor.begin();
 }

@@ -36,7 +36,7 @@ void motors::setupMotors(){
     setupVlx(vlxID::right);
     setupVlx(vlxID::left);
     bno.setupBNO();
-    // setupTCS();
+    setupTCS();
     delay(500);
     targetAngle=0;
 }
@@ -92,7 +92,7 @@ void motors::ahead_ultra(){
         encoder=false;
         frontVlx=true;
         wifiPrint("vlx adelante",1);
-    }else if(backDistance<maxVlxDistance){
+    }else if(backDistance<maxVlxDistance-kTileLength){
         distance=backDistance;
         encoder=false;
         frontVlx=false;
@@ -172,22 +172,22 @@ void motors::ahead(){
         distance=frontDistance;
         encoder=false;
         frontVlx=true;
-        // wifiPrint("vlx adelante",1);
-    }else if(backDistance<maxVlxDistance){
+        wifiPrint("vlx adelante",1);
+    }else if(backDistance<maxVlxDistance-kTileLength){////////////////////////////////
         distance=backDistance;
         encoder=false;
         frontVlx=false;
-        // wifiPrint("vlx atras",1);
+        wifiPrint("vlx atras",1);
     }else{
         encoder=true;
-        // wifiPrint("encoders ",1);
+        wifiPrint("encoders ",1);
     }
     setahead();
     if(!encoder){
         float targetDistance=findNearest(distance,targetDistances,4,frontVlx);//agregar variable de adelante atras
         while(frontVlx ? (distance>targetDistance):(distance<targetDistance)){//poner rango
             float changeAngle=nearWall();
-            // wifiPrint("distance",distance);
+            wifiPrint("changeAngle",changeAngle);
             // wifiPrint("targetdistance",targetDistance);
             distance=(frontVlx ? vlx[vlxID::frontLeft].getDistance():vlx[vlxID::back].getDistance());
             Serial.println(distance);
@@ -468,6 +468,7 @@ bool motors::isWall(uint8_t direction){
           break;
     }
     uint8_t realPos=rulet[relativeDir][direction];
+    bool wall=false;
     switch(realPos) {
         case 0:
             return vlx[vlxID::frontLeft].isWall() /*&& vlx[vlxID::frontRight].isWall()*/;
@@ -476,9 +477,9 @@ bool motors::isWall(uint8_t direction){
         case 2:
             return vlx[vlxID::back].isWall();
         case 3:
-            client.print("distancia left");
-            client.println(vlx[vlxID::left].getDistance());
-            return vlx[vlxID::left].isWall();
+            wall=vlx[vlxID::left].isWall();
+            wifiPrint("WALL",wall);
+            return wall;
         default: 
           return false;
     }

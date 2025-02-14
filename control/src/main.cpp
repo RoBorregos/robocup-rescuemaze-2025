@@ -16,7 +16,8 @@ void loop() {
     // robot.vlx[vlxID::right].getDistance();
     // robot.wifiPrint("angulo",robot.vlx[vlxID::right].distance);
     // m.run_algs();
-
+    // robot.wifiPrint("leftdistance",robot.vlx[vlxID::left].getDistance());
+    // delay(200);
     // robot.ahead_ultra();
     m.run_algs();
     // delay(200);

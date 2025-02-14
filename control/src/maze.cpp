@@ -23,7 +23,7 @@ void maze::followPath(Stack& path){
         } else if (next.y < robotCoord.y) {
             robot.rotate(180);
         }
-        robot.ahead();
+        robot.ahead_ultra();
     }
 }
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
