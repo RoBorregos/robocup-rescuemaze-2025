@@ -7,7 +7,7 @@
 #include "BNO.H"
 #include <SPI.h>
 #include <unordered_map>
-
+#include "TCS.h"
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
 constexpr uint8_t edgeTileDistance=5;
@@ -19,10 +19,10 @@ private:
     // static constexpr uint8_t edgeTileDistance=8;
     float targetAngle=0;
     static constexpr unsigned long delayTime=350;
-    // PID myPID[4];
+    PID myPID[4];
     //vlx
     static constexpr uint8_t kNumVlx=5;
-    static constexpr uint8_t maxVlxDistance=98;
+    static constexpr uint8_t maxVlxDistance=68;
     
     //wheels
     static constexpr float wheelDiameter=8;
@@ -32,7 +32,7 @@ private:
     //Pwm constants
     uint16_t kMinPwmRotate=70;
     uint16_t kMaxPwmRotate=160;
-    uint16_t kMinPwmFormard=40;
+    uint16_t kMinPwmFormard=70;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
     static constexpr uint16_t kMinSpeedRotate=15;////////////////
@@ -45,6 +45,31 @@ private:
     static constexpr float impactDisToLateralWall=2;
     static constexpr uint8_t maxChangeAngle=2;
     static constexpr uint8_t kMinAngleRamp=10;
+    //TCS
+    TCS tcs_;
+    static constexpr int kPrecision = 100;
+    static constexpr uint8_t kColorAmount = 3;
+    static constexpr uint8_t kColorThresholdsAmount = 6;
+    const char kColorList[kColorAmount + 1] = {"RNB"};
+    static constexpr char kBlueColor = 'B';
+    static constexpr char kBlackColor = 'N';
+    static constexpr char kRedColor = 'R';
+    static constexpr char kCheckpointColor = 'C';
+    static constexpr double kHorizontalAngleError = 10;
+    const int16_t kColors[kColorAmount][kColorAmount] = {
+        // RED
+        {257, 75, 71},
+        // BLACK
+        {80, 44, 34},
+        // BLUE
+        {97,99,141}
+    };
+    
+    const int16_t kColorThresholds[kColorAmount][kColorThresholdsAmount] {
+        {220, 270, 60, 80, 50, 75},
+        {20, 120, 30, 90, 20, 79},
+        {85, 150, 80, 200, 120, 220}
+    };
 public:
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();
     BNO bno;
@@ -53,7 +78,7 @@ public:
     motors();
     void setupMotors();
     void PID_speed(float, float, uint16_t);
-    void PID_encoders(double);
+    void PID_Wheel(int,int);
     void setSpeed(uint16_t);
     void setahead();
     void setback();
@@ -61,6 +86,7 @@ public:
     void setright();
     void stop();
     void ahead();
+    void pidEncoders(int);
     void ahead_ultra();//borrar
     float nearWall();//ver
     double passObstacle();
@@ -84,6 +110,7 @@ public:
     bool rampInFront();
     bool isRamp();
     void ramp();
+    void setupTCS();
     void wait(unsigned long);
     void wifiPrint(String,float);
 };

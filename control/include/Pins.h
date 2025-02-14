@@ -36,5 +36,8 @@ namespace Pins{
         2,  // RIGHT       fine 4  5
         5 // FRONT_RIGHT   fine 3  
     };
+    constexpr uint8_t tcsPins[1] = {
+        1 // 5
+    };
 }
 #endif

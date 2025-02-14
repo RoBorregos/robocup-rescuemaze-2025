@@ -29,7 +29,7 @@ void maze::followPath(Stack& path){
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
     Stack path;
     arrCustom<bool> explored(kMaxSize, false);
-    arrCustom<int> distance(kMaxSize, kMaxInt);
+    arrCustom<uint8_t> distance(kMaxSize, kMaxInt);
     arrCustom<coord> previousPositions(kMaxSize, kInvalidPosition);
     Serial.println(6);
     distance.set(tilesMap.getIndex(start), 0);

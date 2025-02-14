@@ -44,7 +44,7 @@ void motor_::initEncoder(uint8_t motorId_) {
 void motor_::updateTics(){
     tics+=1;
     deltaTics+=1;
-    unsigned long calculate_time=100;
+    unsigned long calculate_time=40;
     unsigned long current_time=millis()-last_time;
     if(current_time>=calculate_time){
         ticsSpeed=deltaTics;

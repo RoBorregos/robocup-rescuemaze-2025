@@ -74,37 +74,4 @@
 // }
 
 
-// #include <WiFi.h>
-// WiFiServer server(1234);
-// WiFiClient client;
-// const char* ssid = "Tec";
-// const char* identity = "A00841856";  // Usuario
-// const char* password = "";        // Contraseña
 
-// void setup() {
-//     Serial.begin(115200);
-    
-//     WiFi.disconnect(true);
-//     delay(1000);
-
-//     WiFi.begin(ssid, WPA2_AUTH_PEAP, identity, password);
-
-//     Serial.print("Conectando a WiFi");
-//     while (WiFi.status() != WL_CONNECTED) {
-//         Serial.print(".");
-//         delay(1000);
-//     }
-
-//     Serial.println("\nConectado a WiFi!");
-//     Serial.print("IP: ");
-//     Serial.println(WiFi.localIP());
-//     server.begin();
-//     while(!client) {
-//         client = server.available();
-//         delay(100);
-//     }
-// }
-
-// void loop() {
-//     client.print("hola desde red del tec");
-// }

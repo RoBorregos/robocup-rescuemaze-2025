@@ -20,7 +20,7 @@ constexpr uint8_t kRampWeight = 5;
 
 constexpr coord kInvalidPosition = coord{255,255,255};
 constexpr uint8_t kMaxInt = 255;
-constexpr uint8_t kMaxSize = 50;
+constexpr uint8_t kMaxSize = 100;
 
 class Tile{
     public:
