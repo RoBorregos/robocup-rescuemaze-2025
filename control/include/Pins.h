@@ -37,7 +37,11 @@ namespace Pins{
         5 // FRONT_RIGHT   fine 3  
     };
     constexpr uint8_t tcsPins[1] = {
-        1 // 5
+        6 // 5
+    };
+    constexpr uint8_t limitSwitchPins[2] = {
+        13, // LEFT
+        23  // RIGHT
     };
 }
 #endif

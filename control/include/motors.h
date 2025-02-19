@@ -8,6 +8,7 @@
 #include <SPI.h>
 #include <unordered_map>
 #include "TCS.h"
+#include "LimitSwitch.h"
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
 constexpr uint8_t edgeTileDistance=5;
@@ -35,10 +36,12 @@ private:
     uint16_t kMinPwmFormard=70;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
-    static constexpr uint16_t kMinSpeedRotate=15;////////////////
-    static constexpr uint16_t kMaxSpeedRotate=60;
-    static constexpr uint16_t kMinSpeedFormard=20;//36
-    static constexpr uint16_t kMaxSpeedFormard=65;//70
+    static constexpr uint16_t kMinSpeedRotate=10;////////////////
+    static constexpr uint16_t kMaxSpeedRotate=30;
+    static constexpr uint16_t kMinSpeedFormard=10;//36
+    static constexpr uint16_t kMaxSpeedFormard=30;//70
+    static constexpr uint16_t kSpeedRamp=20;//70
+
     //ramp
     static constexpr float kMinRampOrientation=10.0;
     static constexpr float minDisToLateralWall=3;
@@ -46,7 +49,7 @@ private:
     static constexpr uint8_t maxChangeAngle=2;
     static constexpr uint8_t kMinAngleRamp=10;
     //TCS
-    TCS tcs_;
+    char tileColor;
     static constexpr int kPrecision = 100;
     static constexpr uint8_t kColorAmount = 3;
     static constexpr uint8_t kColorThresholdsAmount = 6;
@@ -73,23 +76,28 @@ private:
 public:
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();
     BNO bno;
+    TCS tcs_;
+    LimitSwitch limitSwitch_[2];
     VLX vlx[kNumVlx];
     motor_ motor[4];//0-BACK_RIGHT//1-BACK_LEFT//2-FRONT_RIGHT//3-FRONT_LEFT
     motors();
     void setupMotors();
     void PID_speed(float, float, uint16_t);
     void PID_Wheel(int,int);
+    void PID_AllWheels(int);
     void setSpeed(uint16_t);
     void setahead();
     void setback();
     void setleft();
     void setright();
+    bool blackTile();
     void stop();
     void ahead();
-    void pidEncoders(int);
+    float limitCrash();
+    void pidEncoders(int,bool);
     void ahead_ultra();//borrar
     float nearWall();//ver
-    double passObstacle();
+    float passObstacle();
     uint8_t findNearest(float,const uint8_t[],uint8_t,bool);
     void back();
     void left();

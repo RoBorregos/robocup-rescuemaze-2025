@@ -19,7 +19,14 @@ void loop() {
     // robot.wifiPrint("leftdistance",robot.vlx[vlxID::left].getDistance());
     // delay(200);
     // robot.ahead_ultra();
-    m.run_algs();
+    robot.ahead();
+    // delay(3000);
+    // robot.left();
+    // delay(3000);
+    // Serial.println(robot.limitSwitch_[LimitSwitchID::kLeft].getState());
+    // Serial.println(robot.limitSwitch_[LimitSwitchID::kRight].getState());
+    // Serial.println(robot.tcs_.getColor());
+    // m.run_algs();
     // delay(200);
     // robot.PID_encoders(12,1);
     // robot.wifiPrint("dis: ",robot.vlx[vlxID::frontLeft].getDistance());
