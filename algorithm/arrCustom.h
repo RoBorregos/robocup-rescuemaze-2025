@@ -32,6 +32,7 @@ public:
                 return i;
             }
         }
+        return -1;
     }
     T& getValue(size_t index) const {
         if (index < size && index >= 0) {
