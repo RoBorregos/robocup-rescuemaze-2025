@@ -26,55 +26,68 @@ void maze::followPath(Stack& path){
         robot.ahead_ultra();
     }
 }
-void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles){
+void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles) {
     Stack path;
-    arrCustom<bool> explored(kMaxSize, false);
-    arrCustom<uint8_t> distance(kMaxSize, kMaxInt);
-    arrCustom<coord> previousPositions(kMaxSize, kInvalidPosition);
-    Serial.println(6);
+
+    // Initialization
+    arrCustom<bool> explored(tilesMap.getSize(), false);
+    arrCustom<int> distance(tilesMap.getSize(), INT_MAX);
+    arrCustom<coord> previousPositions(tilesMap.getSize(), kInvalidPosition);
+
+    // Set starting node
     distance.set(tilesMap.getIndex(start), 0);
     explored.set(tilesMap.getIndex(start), true);
-    
-    coord current = start;
-    while(!explored.getValue(tilesMap.getIndex(end))){
-        int minDist = kMaxInt;
-        for(const TileDirection& direction : directions){
-            Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
-            coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
-            // find the distance to the adjacent tile
-            if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction)){
-                int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
-                if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
-                    distance.set(tilesMap.getIndex(adjacent),weight);
-                    previousPositions.set(tilesMap.getIndex(adjacent), current);
+
+    heap<Node, 300> pq; 
+    pq.insertNode({start, 0});
+
+    while (!pq.isEmpty()) {
+        Node currentNode = pq.extractMin();
+        coord current = currentNode.position;
+
+        if (current == end) {
+            break;
+        }
+        int currentIndex = tilesMap.getIndex(current);
+        if (currentIndex == -1) {
+            return;
+        }    
+        const Tile* currentTile = &tiles.getValue(currentIndex);
+        for (const TileDirection direction : directions) {
+            if (currentTile->adjacentTiles_[static_cast<int>(direction)] != nullptr &&
+                !currentTile->hasWall(direction)) {
+
+                const coord& adjacent = currentTile->adjacentTiles_[static_cast<int>(direction)]->position_;
+                int weight = currentTile->weights_[static_cast<int>(direction)];
+                int newDist = distance.getValue(currentIndex) + weight;
+
+                int adjIndex = tilesMap.getIndex(adjacent);
+                if (explored.getValue(adjIndex)) {
+                    continue;
+                if (adjIndex == -1) {
+                    continue;
+                }
+
+                if (!explored.getValue(adjIndex) && newDist < distance.getValue(adjIndex)) {
+                    distance.set(adjIndex, newDist);
+                    previousPositions.set(adjIndex, current);
+                    pq.insertNode({adjacent, newDist});
                 }
             }
         }
-        //find the minimum distance to the path line
-        for(int i = tilesMap.getSize() -1; i >= 0; --i){
-            coord& currentCoord = tilesMap.getValue(i);
-            int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));
-            if(currentDistance < minDist && !explored.getValue(tilesMap.getIndex(currentCoord))){
-                minDist = currentDistance;
-                current = currentCoord;
-            }
-        }
-        explored.getValue(tilesMap.getIndex(current)) = true;
+        explored.set(currentIndex, true);
     }
     current = end;
     while(current != start){
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
-    //first cell, avoid first ahead
-    //if(start != end) path.push(start);
     followPath(path);
 }
 void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
     Stack unvisited;
     arrCustom<bool> visited(kMaxSize, false);
     unvisited.push(robotCoord);
-    Serial.println(1);
     coord next;
     Tile* currentTile;
     TileDirection oppositeDirection;
@@ -103,7 +116,6 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         //ahead(current);
         robotCoord = current;
         for(const TileDirection direction: directions){
-            Serial.println(4);
             wall = false; 
             if(robot.isWall(static_cast<int>(direction))){//robot.isWall(static_cast<int>(direction))
                 wall = true;
@@ -132,12 +144,16 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
             //check for adjacentTiles and connecting them
             if(currentTile -> adjacentTiles_[static_cast<int>(direction)] == nullptr){
-                // if the tile is not in the map
-                tilesMap.push_back(next);
-                tiles.getValue(tilesMap.getIndex(next)) = Tile(next);
-                Tile* nextTile = &tiles.getValue(tilesMap.getIndex(next));
-                
-                if(nextTile->position_ == kInvalidPosition){
+                Tile* nextTile;
+                if (index == -1) {  // Tile doesn't exist, create and add it
+                    tilesMap.push_back(next);
+                    tiles.set(tilesMap.getIndex(next), Tile(next));
+                    nextTile = &tiles.getValue(tilesMap.getIndex(next));
+                } else {  // Tile exists, retrieve it
+                    nextTile = &tiles.getValue(index);
+                }
+            
+                if (nextTile->position_ == kInvalidPosition) {
                     nextTile->setPosition(next);
                 }
                 // join the tiles and if there is no wall between them
@@ -152,14 +168,13 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                         }
                     }
                     if(!visitedFlag){ 
-                        Serial.println(5);
                         unvisited.push(next);
                     }
                 }
             }
         }
     }
-    dijkstra(robotCoord, inicio, visitedMap, tiles);
+    dijkstra(robotCoord, inicio, tilesMap, tiles);
 }
 void maze::run_algs(){
     arrCustom<coord> visitedMap(kMaxSize, kInvalidPosition);

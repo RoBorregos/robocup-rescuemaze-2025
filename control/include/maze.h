@@ -2,6 +2,7 @@
 #include "algs/Tile.h"
 #include "algs/arrCustom.h"
 #include "algs/Stack.h"
+#include "algs/heap.h"
 #include "algs/coord.h"
 #include "Encoder.h"
 
