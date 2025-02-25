@@ -13,6 +13,7 @@ constexpr int kCheckpointBit = 7;
 
 constexpr int kNumberOfDirections = 4;
 
+constexpr int kWallTileWeight = 100;
 constexpr int kWhiteTileWeight = 1;// min weight
 constexpr int kBlueTileWeight = 3; // 5 seconds
 constexpr int kRampWeight = 5;

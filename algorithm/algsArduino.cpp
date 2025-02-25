@@ -9,38 +9,18 @@ char RealMaze[17][11] = {
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 3.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', ' ', '#'}, // 5.
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 5.
+        {'#', ' ', '.', ' ', '.', '#', '.', '#', '.', ' ', '#'},
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 7.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'}, // 7.
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 9.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'}, // 9.
-        {'#', ' ', '.', ' ', '.', '#', '.', ' ', '.', ' ', '#'},
         {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 1.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 3.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
-};
-
-char UndescoverdMazeSecondLevel[17][11] = {
-    {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
-    {'#', ' ', '.', ' ', '#', ' ', '#', '#', '#', '#', '#'},
-    {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
-    {'#', ' ', '.', '#', '#', ' ', '#', ' ', '#', '#', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'}, // 5.
-    {'#', ' ', '.', '#', '#', ' ', '#', '#', ' ', ' ', '#'},
-    {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 7.
-    {'#', ' ', '.', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#'},
-    {'#', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#'}, // 9.
-    {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
-    {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
-    {'#', ' ', '#', ' ', '#', '#', '#', ' ', ' ', ' ', '#'},
-    {'#', ' ', ' ', 'r', ' ', ' ', ' ', 'l', ' ', ' ', '#'}, // 3.
-    {'#', ' ', ' ', ' ', '#', '#', '#', ' ', ' ', ' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
-    {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
 /*Izq:'<'
 Der: '>'
@@ -71,9 +51,9 @@ int steps = 0;
 coord inicio = {3,5,1};
 coord robotCoord = {3,5,1};
 char robotChar = 'v';
-TileDirection directions[4] = {TileDirection::kDown,TileDirection::kRight,TileDirection::kLeft,TileDirection::kUp};
+TileDirection directions[4] = {TileDirection::kLeft,TileDirection::kDown,TileDirection::kRight,TileDirection::kUp};
 int robotOrientation = 0;
-const int kMaxSize = 256; 
+const int kMaxSize = 30; 
 
 void printMaze(char maze[17][11]){
     for(int i = 0; i < 17; ++i){
@@ -179,6 +159,7 @@ void followPath(Stack& path){
             turnRobot(180);
         }
         ahead(next);
+        robotCoord = next;
         //printMaze(discoverMaze);
     }
 }
@@ -188,54 +169,69 @@ void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Ti
     arrCustom<bool> explored(tilesMap.getSize(), false);
     arrCustom<int> distance(tilesMap.getSize(), INT_MAX);
     arrCustom<coord> previousPositions(tilesMap.getSize(), kInvalidPosition);
-    /*
-    for(int i = tilesMap.positions.size()-1; i>=0; --i){
-        distance.push_back(INT_MAX);
-        explored.push_back(false);
-    }*/
 
     distance.set(tilesMap.getIndex(start), 0);
     explored.set(tilesMap.getIndex(start), true);
-    
+    int minDist;
     coord current = start;
     while(!explored.getValue(tilesMap.getIndex(end))){
-        int minDist = INT_MAX;
+        
+        
         for(const TileDirection& direction : directions){
-            Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
-            coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
+            const Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
+            const coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
             // find the distance to the adjacent tile
-            if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction)){
-                int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
+            //printf("llegue");
+            if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction) ){//&& currentTile.weights_[static_cast<int>(direction)] != NULL){
+                const int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
                 //int adjacentIndex = tilesMap.getIndex(adjacent);
                 //if(adjacentIndex != -1){
                 //if(adjacent != kInvalidPosition){
+                    int index = distance.getValue(tilesMap.getIndex(adjacent));
                     if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
                         distance.set(tilesMap.getIndex(adjacent),weight);
                         previousPositions.set(tilesMap.getIndex(adjacent), current);
+                        printf("llegue4");
                     }
                 //}
                 //}
             }
         }
+        minDist = INT_MAX;
         //find the minimum distance to the path line
-        for(int i = tilesMap.getSize() -1; i >= 0; --i){
-            coord& currentCoord = tilesMap.getValue(i);
-            int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));
+        for(int i = tilesMap.getSize() -1; i >= 0; i--){
+            const coord& currentCoord = tilesMap.getValue(i);
+            const int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));
+            /*
+            if(currentCoord == current){
+                continue;
+            }
+            */
             if(currentDistance < minDist && !explored.getValue(tilesMap.getIndex(currentCoord))){
                 minDist = currentDistance;
                 current = currentCoord;
+            } else {
+                //printf("llegue3");
+
             }
         }
-        explored.getValue(tilesMap.getIndex(current)) = true;
+        explored.set(tilesMap.getIndex(current),true);
     }
     current = end;
     while(current != start){
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
-    path.push(start);
+    for (int i = 0; i < 10; ++i) {
+        coord pos = tilesMap.getValue(i);
+        coord prev = previousPositions.getValue(i);
+        printf("Tile at (%d, %d) comes from (%d, %d)\n", pos.x, pos.y, prev.x, prev.y);
+    }
+    
+    //path.push(start);
     followPath(path);
 }
+
 void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
     Stack unvisited;
     arrCustom<bool> visited(visitedMap.getSize(), false);
@@ -307,15 +303,22 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
             if(currentTile -> adjacentTiles_[static_cast<int>(direction)] == nullptr){
                 // if the tile is not in the map
                 tilesMap.push_back(next);
-                tiles.getValue(tilesMap.getIndex(next)) = Tile(next);
+                tiles.set(tilesMap.getIndex(next), Tile(next));
                 Tile* nextTile = &tiles.getValue(tilesMap.getIndex(next));
                 
                 if(nextTile->position_ == kInvalidPosition){
                     nextTile->setPosition(next);
                 }
+                
+                int weight = 1; // Default weight for normal movement
+                if (wall) {
+                    weight = 100; // High weight for walls (impossible to pass)
+                }
                 // join the tiles and if there is no wall between them
                 currentTile -> addAdjacentTile(direction, nextTile, wall);
                 nextTile -> addAdjacentTile(oppositeDirection, currentTile, wall);
+                currentTile->weights_[static_cast<int>(direction)] = weight;
+                nextTile->weights_[static_cast<int>(oppositeDirection)] = weight;
                 if(!wall){
                     visitedFlag = false;
                     for(int i = 0; i < visitedMap.getSize(); ++i){
@@ -334,18 +337,20 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                     }
                 }
             }
-            right();
         }
     }
-    //dijkstra(robotCoord, inicio, visitedMap, tiles);
+    dijkstra(robotCoord, inicio, tilesMap, tiles);
 }
 int main(){
-    arrCustom<coord> visitedMap(256, kInvalidPosition);
-    arrCustom<coord> tilesMap(256, kInvalidPosition);
+
+    arrCustom<coord> visitedMap(kMaxSize, kInvalidPosition);
+    arrCustom<coord> tilesMap(kMaxSize, kInvalidPosition);
     arrCustom<Tile> tiles(kMaxSize, Tile(kInvalidPosition));
     tilesMap.push_back(robotCoord);
-    tiles.getValue(tilesMap.getIndex(robotCoord)) = Tile(robotCoord);
+    tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
+    printf("DFS Iniciado");
     dfs(visitedMap, tiles, tilesMap);
+    printf("DFS Finalizaado");  
     printf("DFS Finalizaado con %d movimienots", steps); 
     return 0;
 }

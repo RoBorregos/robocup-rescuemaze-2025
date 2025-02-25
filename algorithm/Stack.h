@@ -3,21 +3,26 @@
 class Stack{
     private: 
         int mark;
-        coord stack[256];
+        coord stack[20];
     public:
         Stack(){
             mark = 0;
-            for(int i = 0; i < 256; i++){
+            for(int i = 0; i < 20; i++){
                 stack[i] = kInvalidPosition;
             }
         }
         void push(coord value){
-            stack[mark] = value;
-            mark++;
+            if (mark < 20) {
+                stack[mark] = value;
+                mark++;
+            } else {
+                if(mark > 0){
+                    throw std::overflow_error("Stack overflow: cannot push to a full stack");
+                }
+            }
         }
         void pop(){
-            if(mark >= 0){
-                stack[mark] = kInvalidPosition;
+            if(mark > 0){
                 mark--;
             }
         }

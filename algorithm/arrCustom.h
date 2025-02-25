@@ -3,16 +3,17 @@ template <typename T>
 class arrCustom {
 private:
     int i = 0;
-    T* positions;
     size_t size;
     T absValue;
+    T* positions;
 
 public:
     // Constructor
     arrCustom(size_t size, T value) : size(size), absValue(value) {
         if (size <= 0) {
             this->size = 0;
-            positions = nullptr;
+            // positions = nullptr;
+            positions = new T[0];
             return;
         }
         positions = new T[size]; 
