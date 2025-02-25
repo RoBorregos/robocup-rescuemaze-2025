@@ -26,9 +26,22 @@ void maze::followPath(Stack& path){
         robot.ahead_ultra();
     }
 }
+
+struct Node {
+    coord position;
+    int distance;
+
+    bool operator<(const Node& other) const {
+        return distance < other.distance; // For Min-Heap
+    }
+
+    bool operator>(const Node& other) const {
+        return distance > other.distance;
+    }
+};
+
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles) {
     Stack path;
-
     // Initialization
     arrCustom<bool> explored(tilesMap.getSize(), false);
     arrCustom<int> distance(tilesMap.getSize(), INT_MAX);
@@ -64,20 +77,21 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
                 int adjIndex = tilesMap.getIndex(adjacent);
                 if (explored.getValue(adjIndex)) {
                     continue;
-                if (adjIndex == -1) {
-                    continue;
-                }
+                    if (adjIndex == -1) {
+                        continue;
+                    }
 
-                if (!explored.getValue(adjIndex) && newDist < distance.getValue(adjIndex)) {
-                    distance.set(adjIndex, newDist);
-                    previousPositions.set(adjIndex, current);
-                    pq.insertNode({adjacent, newDist});
+                    if (!explored.getValue(adjIndex) && newDist < distance.getValue(adjIndex)) {
+                        distance.set(adjIndex, newDist);
+                        previousPositions.set(adjIndex, current);
+                        pq.insertNode({adjacent, newDist});
+                    }
                 }
             }
+            explored.set(currentIndex, true);
         }
-        explored.set(currentIndex, true);
     }
-    current = end;
+    coord current = end;
     while(current != start){
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
@@ -144,6 +158,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
             //check for adjacentTiles and connecting them
             if(currentTile -> adjacentTiles_[static_cast<int>(direction)] == nullptr){
+                int index = tilesMap.getIndex(next);
                 Tile* nextTile;
                 if (index == -1) {  // Tile doesn't exist, create and add it
                     tilesMap.push_back(next);
