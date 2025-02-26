@@ -1,3 +1,4 @@
+
 #artificial vision model using the google mobilenet that uses imagenet dataset to detect H-S-U letters
 import tensorflow_hub as hub
 import tensorflow as tf
@@ -17,12 +18,12 @@ datagen=ImageDataGenerator(
 )
 #generadores para sets de entrenamiento y pruebas
 #datasets using google images
-data_gen_train=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\dataset_HSU",target_size=(224,224),
+data_gen_train=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU",target_size=(224,224),
                                            batch_size=32,shuffle=True,subset="training")
-data_gen_test=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\dataset_HSU",target_size=(224,224),
+data_gen_test=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU",target_size=(224,224),
                                            batch_size=32,shuffle=True,subset="validation")
 #import mobileNet from its url using kerasLayer
-mobilenet_url="https://www.kaggle.com/models/google/mobilenet-v2/TensorFlow2/tf2-preview-feature-vector/4"
+mobilenet_url = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4"
 mobilenetv2 = hub.KerasLayer(mobilenet_url, input_shape=(224,224,3))
 mobilenetv2.trainable = False
 #model architecture
@@ -45,4 +46,4 @@ history=model.fit(
     validation_data=data_gen_test
 )
 #save the model
-model.save("HSU_detection_mobilenetv4.h5")
+model.save("HSU_detection_mobilenetv5.h5")
