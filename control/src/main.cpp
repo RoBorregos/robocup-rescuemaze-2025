@@ -15,11 +15,11 @@ void loop() {
     // robot.rotate(90);
     // robot.vlx[vlxID::right].getDistance();
     // robot.wifiPrint("angulo",robot.vlx[vlxID::right].distance);
-    // m.run_algs();
+    m.run_algs();
     // robot.wifiPrint("leftdistance",robot.vlx[vlxID::left].getDistance());
     // delay(200);
     // robot.ahead_ultra();
-    robot.ahead();
+    //robot.ahead();
     // delay(3000);
     // robot.left();
     // delay(3000);

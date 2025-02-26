@@ -24,6 +24,8 @@ public:
     void set(size_t index, T value) {
         if (index < size && index >= 0) {
             positions[index] = value;
+        }else{
+            Serial.println("Index out of bounds");
         }
     }
     uint8_t getIndex(T value){
@@ -38,6 +40,11 @@ public:
         if (index < size && index >= 0) {
             return positions[index];
         }
+        /*
+        else{
+            Serial.println("Index out of bounds");
+            return absValue;
+        }*/
     }
     size_t getSize() const {
         return size;
@@ -45,16 +52,13 @@ public:
     //just for som arrays using push_back
     void push_back(T position) {
         if (i >= size) {
-
             // correct this
-            size_t newSize = size == 0 ? 1 : size * 2;
-            T* newPositions = new T[newSize];
-            for (size_t j = 0; j < size; j++) {
-                newPositions[j] = positions[j];
+            T* temp = new T[size + 1];
+            for (uint8_t j = 0; j < size; j++) {
+                temp[j] = positions[j];
             }
-            delete[] positions;
-            positions = newPositions;
-            size = newSize;
+            positions = temp;
+            size++;
         }
         positions[i] = position;
         i++;

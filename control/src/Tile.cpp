@@ -65,8 +65,12 @@ bool Tile::hasCheckpoint() const {
 
 void Tile::addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall) {
     adjacentTiles_[static_cast<int>(direction)] = tile;
-    weights_[static_cast<int>(direction)] = kWhiteTileWeight;
     this->setWall(direction, wall);
+    if(wall){
+        weights_[static_cast<int>(direction)] = kWallTileWeight;
+    } else {
+        weights_[static_cast<int>(direction)] = kWhiteTileWeight;
+    }
 }
 
 void Tile::setPosition(const coord& position) {

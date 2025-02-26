@@ -14,9 +14,9 @@ public:
     }
 
     void heapify(int i) {
-        int smallest = i;
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
+        uint8_t smallest = i;
+        uint8_t left = 2 * i + 1;
+        uint8_t right = 2 * i + 2;
 
         if (left < size && array[left] < array[smallest]) {
             smallest = left;
