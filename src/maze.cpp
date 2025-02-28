@@ -7,7 +7,7 @@ bool blackTile = false;
 bool checkpoint = false;
 bool victim = false;
 maze::maze(){}
-//comienza logica ---------------------------------------------------------
+
 void maze::followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
@@ -27,18 +27,6 @@ void maze::followPath(Stack& path){
         robotCoord = next;
     }
 }
-struct Node {
-    coord position;
-    uint8_t distance;
-
-    bool operator<(const Node& other) const {
-        return distance < other.distance; // For Min-Heap
-    }
-
-    bool operator>(const Node& other) const {
-        return distance > other.distance;
-    }
-};
 
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles){
     Stack path;
@@ -52,26 +40,17 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     int minDist;
     coord current = start;
     while(!explored.getValue(tilesMap.getIndex(end))){
-        
-        
         for(const TileDirection& direction : directions){
             const Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
             const coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
-            // find the distance to the adjacent tile
-            //printf("llegue");
-            if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction) ){//&& currentTile.weights_[static_cast<int>(direction)] != NULL){
+            if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction) ){
                 const int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
-                //int adjacentIndex = tilesMap.getIndex(adjacent);
-                //if(adjacentIndex != -1){
-                //if(adjacent != kInvalidPosition){
-                    int index = distance.getValue(tilesMap.getIndex(adjacent));
-                    if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
-                        distance.set(tilesMap.getIndex(adjacent),weight);
-                        previousPositions.set(tilesMap.getIndex(adjacent), current);
-                        printf("llegue4");
-                    }
-                //}
-                //}
+                int index = distance.getValue(tilesMap.getIndex(adjacent));
+                if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
+                    distance.set(tilesMap.getIndex(adjacent),weight);
+                    previousPositions.set(tilesMap.getIndex(adjacent), current);
+                    printf("llegue4");
+                }
             }
         }
         minDist = INT_MAX;
@@ -83,9 +62,6 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
             if(currentDistance < minDist && !explored.getValue(tilesMap.getIndex(currentCoord))){
                 minDist = currentDistance;
                 current = currentCoord;
-            } else {
-                //printf("llegue3");
-
             }
         }
         explored.set(tilesMap.getIndex(current),true);
@@ -95,13 +71,6 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
-    for (int i = 0; i < 10; ++i) {
-        coord pos = tilesMap.getValue(i);
-        coord prev = previousPositions.getValue(i);
-        printf("Tile at (%d, %d) comes from (%d, %d)\n", pos.x, pos.y, prev.x, prev.y);
-    }
-    
-    //path.push(start);
     followPath(path);
 }
 
@@ -135,27 +104,10 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         visitedMap.push_back(current);
         visited.push_back(true);
 
-        if(blackTile == true){
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            currentTile -> setBlackTile();
-            blackTile = false;
-
-        }
-        if(checkpoint == true){
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            currentTile -> setCheckpoint();
-            checkpoint = false;
-        }
-        if(victim == true){
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            currentTile -> setVictim();
-            victim = false;
-        }
-
         robotCoord = current;
         for(const TileDirection direction: directions){
             wall = false; 
-            if(robot.isWall(static_cast<int>(direction))){//robot.isWall(static_cast<int>(direction))
+            if(robot.isWall(static_cast<int>(direction))){
                 wall = true;
             }
             switch(direction) {
