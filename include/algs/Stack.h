@@ -1,39 +1,64 @@
+
 #include "coord.h"
 #include "Tile.h"
-class Stack{
-    private: 
-        uint8_t mark;
-        coord stack[50];
-    public:
-        Stack(){
-            mark = 0;
-            for(int i = 0; i < 50; i++){
-                stack[i] = kInvalidPosition;
-            }
+// #include <iostream>
+
+struct Node {
+    coord data;
+    Node* next;
+};
+
+class Stack {
+private:
+    Node* topNode;
+    uint8_t mark;
+
+public:
+    Stack() : topNode(nullptr), mark(0) {}
+
+    ~Stack() {
+        while (!empty()) {
+            pop();
         }
-        void push(coord value){
-            stack[mark] = value;
-            mark++;
+    }
+
+    void push(coord value) {
+        Node* newNode = new Node();
+        newNode->data = value;
+        newNode->next = topNode;
+        topNode = newNode;
+        mark++;
+    }
+
+    void pop() {
+        if (empty()) {
+            // std::cout << "Stack underflow\n";
+            return;
         }
-        void pop(){
-            if(mark >= 0){
-                stack[mark] = kInvalidPosition;
-                mark--;
-            }
-        }
-        coord top(){
-            if(mark>=0){
-                return stack[mark - 1];
-            }
+        Node* temp = topNode;
+        topNode = topNode->next;
+        delete temp;
+        mark--;
+    }
+
+    coord top() {
+        if (empty()) {
             return kInvalidPosition;
         }
-        bool empty(){
-            return mark <= 0;
+        return topNode->data;
+    }
+
+    bool empty() {
+        return topNode == nullptr;
+    }
+
+    uint8_t getSize() {
+        return mark;
+    }
+
+    void clear() {
+        while (!empty()) {
+            pop();
         }
-        uint8_t getSize(){
-            return mark;
-        }
-        void clear(){
-            mark = 0;
-        }
+    }
 };
