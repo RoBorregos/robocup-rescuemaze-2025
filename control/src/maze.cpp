@@ -24,6 +24,7 @@ void maze::followPath(Stack& path){
             robot.rotate(180);
         }
         robot.ahead();
+        robotCoord = next;
     }
 }
 struct Node {
