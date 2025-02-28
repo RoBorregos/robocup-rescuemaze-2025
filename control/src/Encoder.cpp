@@ -1,5 +1,5 @@
 #include "Encoder.h"
-#include "Pins.h"
+#include "motors.h"
 motors robot;
 void Encoder::backRightEncoder() {
     robot.motor[MotorID::kBackRight].updateTics();
@@ -13,4 +13,3 @@ void Encoder::frontRightEncoder() {
 void Encoder::frontLeftEncoder() {
     robot.motor[MotorID::kFrontLeft].updateTics();
 }
-

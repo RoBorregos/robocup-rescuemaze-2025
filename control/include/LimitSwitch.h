@@ -1,12 +1,7 @@
-#ifndef LimitSwitchh
+#ifndef LimitSwitch_h
 #define LimitSwitch_h
 
 #include "Arduino.h"
-
-namespace LimitSwitchID {
-    constexpr uint8_t kLeft = 0;
-    constexpr uint8_t kRight = 1;
-};
 
 class LimitSwitch {
     private:

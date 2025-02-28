@@ -23,7 +23,7 @@ void maze::followPath(Stack& path){
         } else if (next.y < robotCoord.y) {
             robot.rotate(180);
         }
-        robot.ahead_ultra();
+        robot.ahead();
     }
 }
 /*

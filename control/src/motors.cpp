@@ -1,6 +1,5 @@
 #include "motors.h"
-#include "Pins.h"
-#include "Encoder.h"
+#include "Pins_ID.h"
 #include <WiFi.h>
 WiFiServer server(1234);
 WiFiClient client;
@@ -92,8 +91,6 @@ void motors::pidEncoders(int speedReference,bool ahead){
 }
 void motors::ahead(){
     // double obstacleDistance=passObstacle();
-    // char color =tcs_.getColor();
-    // wifiPrint("color",color);
     resetTics();
     float distance;
     float frontDistance=vlx[vlxID::frontLeft].getDistance();
@@ -119,8 +116,9 @@ void motors::ahead(){
         while(frontVlx ? (distance>targetDistance):(distance<targetDistance)){//poner rango
             // float changeAngle=nearWall();
             limitCrash();
+            checkTileColor();
             setahead();
-            if(blackTile()) break;
+            if(blackTile) break;
             distance=(frontVlx ? vlx[vlxID::frontLeft].getDistance():vlx[vlxID::back].getDistance());
             Serial.println(distance);
             float missingDistance=abs(distance-targetDistance);
@@ -131,29 +129,34 @@ void motors::ahead(){
     }else if(encoder){
         while(getAvergeTics()<kTicsPerTile/*+obstacleDistance*/){
             limitCrash();
-            if(blackTile()) return;
+            checkTileColor();
+            if(blackTile) return;
             bno.getOrientationX();
             float changeAngle=nearWall();
             float speed=changeSpeedMove(true,false,kTicsPerTile,frontVlx);
             PID_speed((targetAngle+changeAngle),(targetAngle==0 ? z_rotation:angle),speed);
         }
     }
-    stop();resetTics();
+    stop();resetTics();checkTileColor();
 }
-bool motors::blackTile(){
+
+void motors::checkTileColor(){
     tileColor=tcs_.getColor();
     Serial.println(tileColor);
     if(tileColor==kBlackColor){
         resetTics();
         setback();
+        blackTile=true;
         while(getAvergeTics()<kTicsPerTile/2){
             int speed=map(getAvergeTics(),0,kTicsPerTile/2,kMaxSpeedFormard,kMinSpeedFormard);
             pidEncoders(speed,false);
         }
-        return true;
+        stop();resetTics();
+    }else if(tileColor=kBlueColor&&inMotion==false){
+        wait(5100);
     }
-    return false;
 }
+
 void motors::ahead_ultra(){
     // double obstacleDistance=passObstacle();
     resetTics();
@@ -362,13 +365,13 @@ float motors::changeSpeedMove(bool encoders,bool rotate,int targetDistance,bool 
     float missingDistance,missingAngle;
     if(rotate==true){
         missingAngle=abs(targetAngle-(targetAngle==0 ? z_rotation:angle));
-        // speed=map(missingAngle,90,0,kMaxSpeedRotate,kMinSpeedRotate);
-        // speed=constrain(speed,kMinSpeedRotate,kMaxSpeedRotate);
-        // PID_AllWheels(speed);
+        speed=map(missingAngle,90,0,kMaxSpeedRotate,kMinSpeedRotate);
+        speed=constrain(speed,kMinSpeedRotate,kMaxSpeedRotate);
+        PID_AllWheels(speed);
         // Serial.println(speed);
-        speed=map(missingAngle,90,0,kMaxPwmRotate,kMinPwmRotate);
-        speed=constrain(speed,kMinPwmRotate,kMaxPwmRotate);
-        setSpeed(speed);
+        // speed=map(missingAngle,90,0,kMaxPwmRotate,kMinPwmRotate);
+        // speed=constrain(speed,kMinPwmRotate,kMaxPwmRotate);
+        // setSpeed(speed);
         return 0;
     }else{
         if(encoders==true){
@@ -421,28 +424,32 @@ void motors::setSpeed(uint16_t speed){
 void motors::setahead(){
     for(int i=0;i<4;i++){ 
         motor[i].ahead();}
+    inMotion=true;
 }
 void motors::setback(){
     for(int i=0;i<4;i++){ 
         motor[i].back();}
+    inMotion=true;
 }
 void motors::setright(){
     motor[0].ahead();
     motor[1].back();
     motor[2].ahead();
     motor[3].back();
-
+    inMotion=true;
 }
 void motors::setleft(){
     motor[0].back();
     motor[1].ahead();
     motor[2].back();
     motor[3].ahead();
+    inMotion=true;
 }
 void motors::stop(){
     for(uint8_t i=0;i<4;i++){ 
         motor[i].stop();}
-        setSpeed(0);
+    setSpeed(0);
+    inMotion=true;
 }
 void motors::printSpeeds(){
     double speedM1=motor[0].getSpeed();
