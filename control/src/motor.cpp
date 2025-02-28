@@ -1,9 +1,6 @@
-#include "motor.h"
-#include <Arduino.h>
-#include "Pins.h"
-#include "Encoder.h"
+#include "Motor.h"
 
-void motor_::initialize(uint8_t in_1,uint8_t in_2,uint8_t en,uint8_t numMotor){
+void Motor::initialize(uint8_t in_1,uint8_t in_2,uint8_t en,uint8_t numMotor){
     in1=in_1;
     in2=in_2;
     enable=en;
@@ -12,36 +9,12 @@ void motor_::initialize(uint8_t in_1,uint8_t in_2,uint8_t en,uint8_t numMotor){
     pinMode(in2,OUTPUT);
     pinMode(enable,OUTPUT);
     pinMode(Pins::encoder[numMotor],INPUT);
-    initEncoder(numMotor);
 }
 
-motor_::motor_(){
+Motor::Motor(){
     //default constructor
 }
-void motor_::initEncoder(uint8_t motorId_) {
-     switch (motorId_) {
-        case (MotorID::kFrontLeft):{
-            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Encoder::frontLeftEncoder, RISING);
-            break;
-        }
-        case (MotorID::kFrontRight): {
-            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontRight]), Encoder::frontRightEncoder, RISING);
-            break;
-        }
-        case (MotorID::kBackLeft): {
-            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Encoder::backLeftEncoder, RISING);
-            break;
-        }
-        case (MotorID::kBackRight): {
-            attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackRight]), Encoder::backRightEncoder, RISING);
-            break;
-        }
-        default: { 
-            break;
-        }
-    }
-}
-void motor_::updateTics(){
+void Motor::updateTics(){
     tics+=1;
     deltaTics+=1;
     unsigned long calculate_time=40;
@@ -52,34 +25,34 @@ void motor_::updateTics(){
         last_time=millis();
     }
 }
-void motor_::resetTics(){
+void Motor::resetTics(){
     tics=0;
     deltaTics=0;
 }
-int motor_::getTics(){
+int Motor::getTics(){
     return tics;
 }
-void motor_::setSpeed(uint16_t velocity){
+void Motor::setSpeed(uint16_t velocity){
     speed=velocity;
     speed=constrain(speed,0,255);
     analogWrite(enable,speed);
     delay(1);//no quitar(no se porque pero si lo quitas no jala :|..)
 }
-void motor_::ahead(){
+void Motor::ahead(){
     digitalWrite(in1,1);
     digitalWrite(in2,0);
 }
-void motor_::back(){ 
+void Motor::back(){ 
     digitalWrite(in1,0);
     digitalWrite(in2,1);
 }
-void motor_::stop(){
+void Motor::stop(){
     digitalWrite(in1,0);
     digitalWrite(in2,0);
 }
-double motor_::getSpeed(){
+double Motor::getSpeed(){
     return speed;
 }
-int motor_::getTicsSpeed(){
+int Motor::getTicsSpeed(){
     return ticsSpeed;
 }

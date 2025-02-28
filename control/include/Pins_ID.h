@@ -1,5 +1,5 @@
-#ifndef PINS_H
-#define PINS_H
+#ifndef PINS_ID_H
+#define PINS_ID_H
 #include <Arduino.h>
 
 namespace Pins{
@@ -43,5 +43,23 @@ namespace Pins{
         13, // LEFT
         23  // RIGHT
     };
+}
+namespace LimitSwitchID {
+    constexpr uint8_t kLeft = 0;
+    constexpr uint8_t kRight = 1;
+}
+namespace vlxID{
+    constexpr uint8_t right=2;//
+    constexpr uint8_t left=1;//
+    constexpr uint8_t frontRight=5;//
+    constexpr uint8_t frontLeft=3;//
+    //constexpr uint8_t front=4;
+    constexpr uint8_t back=0;//
+}
+namespace MotorID{
+    constexpr uint8_t kBackRight=0;
+    constexpr uint8_t kBackLeft=1;
+    constexpr uint8_t kFrontRight=2;
+    constexpr uint8_t kFrontLeft=3;
 }
 #endif

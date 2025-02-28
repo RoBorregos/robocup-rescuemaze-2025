@@ -1,7 +1,7 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 #include <Arduino.h>
-#include "motor.h"
+#include "Motor.h"
 #include "PID.H"
 #include "VLX.h"
 #include "BNO.H"
@@ -73,13 +73,17 @@ private:
         {20, 120, 30, 90, 20, 79},
         {85, 150, 80, 200, 120, 220}
     };
+    //movement
+    bool inMotion=false;
 public:
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();
     BNO bno;
     TCS tcs_;
     LimitSwitch limitSwitch_[2];
     VLX vlx[kNumVlx];
-    motor_ motor[4];//0-BACK_RIGHT//1-BACK_LEFT//2-FRONT_RIGHT//3-FRONT_LEFT
+    Motor motor[4];//0-BACK_RIGHT//1-BACK_LEFT//2-FRONT_RIGHT//3-FRONT_LEFT
+    bool blackTile=false;
+    bool blueTile=false;
     motors();
     void setupMotors();
     void PID_speed(float, float, uint16_t);
@@ -90,7 +94,7 @@ public:
     void setback();
     void setleft();
     void setright();
-    bool blackTile();
+    void checkTileColor();
     void stop();
     void ahead();
     float limitCrash();
@@ -122,4 +126,5 @@ public:
     void wait(unsigned long);
     void wifiPrint(String,float);
 };
+
 #endif
