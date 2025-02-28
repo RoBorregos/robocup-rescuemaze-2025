@@ -1,7 +1,7 @@
 import socket
 import time
 # Configura la IP del ESP32 y el puerto
-ESP32_IP = "192.168.1.118"
+ESP32_IP = "192.168.1.116"
 PORT = 1234
 
 # Crea el socket en la PC

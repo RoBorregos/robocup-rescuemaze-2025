@@ -3,10 +3,10 @@
 coord inicio = {128, 128, 0};
 coord robotCoord = {128, 128, 0};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
-int robotOrientation = 0;
-maze::maze(){
-
-}
+bool blackTile = false;
+bool checkpoint = false;
+bool victim = false;
+maze::maze(){}
 //comienza logica ---------------------------------------------------------
 void maze::followPath(Stack& path){
     while(!path.empty()){
@@ -26,7 +26,6 @@ void maze::followPath(Stack& path){
         robot.ahead_ultra();
     }
 }
-/*
 struct Node {
     coord position;
     uint8_t distance;
@@ -96,7 +95,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     }
     followPath(path);
 }
-*/
+/*
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles){
     Stack path;
     
@@ -136,11 +135,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         for(int i = 0; i < tilesMap.getSize(); i++){
             const coord& currentCoord = tilesMap.getValue(i);
             const int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));
-            /*
-            if(currentCoord == current){
-                continue;
-            }
-            */
+            
             if(currentDistance < minDist && !explored.getValue(tilesMap.getIndex(currentCoord))){
                 minDist = currentDistance;
                 current = currentCoord;
@@ -165,6 +160,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     //path.push(start);
     followPath(path);
 }
+*/
 void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
     Stack unvisited;
     arrCustom<bool> visited(kMaxSize, false);
@@ -194,7 +190,24 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
         visited.push_back(true);
-        //ahead(current);
+
+        if(blackTile == true){
+            currentTile = &tiles.getValue(tilesMap.getIndex(current));
+            currentTile -> setBlackTile();
+            blackTile = false;
+
+        }
+        if(checkpoint == true){
+            currentTile = &tiles.getValue(tilesMap.getIndex(current));
+            currentTile -> setCheckpoint();
+            checkpoint = false;
+        }
+        if(victim == true){
+            currentTile = &tiles.getValue(tilesMap.getIndex(current));
+            currentTile -> setVictim();
+            victim = false;
+        }
+
         robotCoord = current;
         for(const TileDirection direction: directions){
             wall = false; 

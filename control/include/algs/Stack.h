@@ -1,5 +1,6 @@
 #include "coord.h"
 #include "Tile.h"
+/*
 class Stack{
     private: 
         uint8_t mark;
@@ -47,12 +48,12 @@ class Stack{
             mark = 0;
         }
 };
-
+*/
 // implementing pointers and nodes for dynamic memory allocation and implementing a linked list.
-/*
+
 #include "coord.h"
 #include "Tile.h"
-#include <iostream>
+// #include <iostream>
 
 struct Node {
     coord data;
@@ -83,7 +84,7 @@ public:
 
     void pop() {
         if (empty()) {
-            std::cout << "Stack underflow\n";
+            // std::cout << "Stack underflow\n";
             return;
         }
         Node* temp = topNode;
@@ -113,4 +114,3 @@ public:
         }
     }
 };
-*/
