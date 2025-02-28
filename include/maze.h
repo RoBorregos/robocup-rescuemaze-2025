@@ -8,10 +8,9 @@
 class maze{
     public:
         maze();
+        void run_algs();
+    private:
         void followPath(Stack& path);
         void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile> tiles);
         void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap);
-        
-        
-        void run_algs();
 };
