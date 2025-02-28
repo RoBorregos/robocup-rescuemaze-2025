@@ -40,11 +40,9 @@ public:
         if (index < size && index >= 0) {
             return positions[index];
         }
-        /*
         else{
             Serial.println("Index out of bounds");
-            return absValue;
-        }*/
+        }
     }
     size_t getSize() const {
         return size;
