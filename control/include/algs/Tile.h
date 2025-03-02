@@ -15,14 +15,15 @@ constexpr uint8_t kCheckpointBit = 7;
 constexpr uint8_t kNumberOfDirections = 4;
 
 constexpr uint8_t kWallTileWeight = 100; // max weight
+constexpr uint8_t kBlackTileWeight = 50; // no pass
 constexpr uint8_t kWhiteTileWeight = 1;// min weight
 constexpr uint8_t kBlueTileWeight = 3; // 5 seconds
 constexpr uint8_t kRampWeight = 5;
 
 constexpr coord kInvalidPosition = coord{255,255,255};
 constexpr uint8_t kMaxInt = 255;
-constexpr uint8_t kMaxSize = 100;
-constexpr uint8_t kMaxStackSize = 30;
+constexpr uint8_t kMaxSize = 30;
+constexpr uint8_t kMaxStackSize = 10;
 
 class Tile{
     public:

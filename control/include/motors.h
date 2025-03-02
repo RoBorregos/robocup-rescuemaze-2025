@@ -1,7 +1,7 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 #include <Arduino.h>
-#include "Motor.h"
+#include "motor.h"
 #include "PID.H"
 #include "VLX.h"
 #include "BNO.H"

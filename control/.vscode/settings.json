@@ -3,6 +3,7 @@
     "files.associations": {
         "iterator": "cpp",
         "string": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "iostream": "cpp"
     }
 }
