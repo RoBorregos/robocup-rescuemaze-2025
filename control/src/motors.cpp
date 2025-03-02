@@ -80,8 +80,9 @@ void motors::pidEncoders(int speedReference,bool ahead){
     bno.getOrientationX();
     speedReference;
     PID pidBno(0.5,0.1,0.01,1);
-    float error=pidBno.calculate_PID(targetAngle,(targetAngle==0 ? z_rotation:angle));
-    error=constrain(error,-4,4);
+    float changeAngle=nearWall();
+    float error=pidBno.calculate_PID(targetAngle+changeAngle,(targetAngle==0 ? z_rotation:angle));
+    error=constrain(error,-8,8);//aumentar
     Serial.println(error);
     if(!ahead) error=-error;
     PID_Wheel(speedReference-error,MotorID::kFrontLeft);
@@ -133,8 +134,11 @@ void motors::ahead(){
             if(blackTile) return;
             bno.getOrientationX();
             float changeAngle=nearWall();
-            float speed=changeSpeedMove(true,false,kTicsPerTile,frontVlx);
-            PID_speed((targetAngle+changeAngle),(targetAngle==0 ? z_rotation:angle),speed);
+            float missingDistance=kTileLength-(getAvergeTics()*kTileLength/kTicsPerTile);
+            float speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
+            pidEncoders(speed,true);
+            // float speed=changeSpeedMove(true,false,kTicsPerTile,frontVlx);
+            // PID_speed((targetAngle+changeAngle),(targetAngle==0 ? z_rotation:angle),speed);
         }
     }
     stop();resetTics();checkTileColor();
@@ -506,18 +510,24 @@ bool motors::isWall(uint8_t direction){
           break;
     }
     uint8_t realPos=rulet[relativeDir][direction];
-    bool wall=false;
     switch(realPos) {
+        bool wall1,wall2,wall3,wall4;
         case 0:
-            return vlx[vlxID::frontLeft].isWall() /*&& vlx[vlxID::frontRight].isWall()*/;
+            wall1=vlx[vlxID::frontLeft].isWall() /*&& vlx[vlxID::frontRight].isWall()*/;
+            wifiPrint("wallFRONT",wall1);
+            return wall1;
         case 1:
-            return vlx[vlxID::right].isWall();
+            wall2=vlx[vlxID::right].isWall();
+            wifiPrint("wallRIGHT",vlx[vlxID::right].distance   );
+            return wall2;
         case 2:
-            return vlx[vlxID::back].isWall();
+            wall3=vlx[vlxID::back].isWall();
+            wifiPrint("wallBACK",wall3);
+            return wall3;
         case 3:
-            wall=vlx[vlxID::left].isWall();
-            wifiPrint("WALL",wall);
-            return wall;
+            wall4=vlx[vlxID::left].isWall();
+            wifiPrint("wallLEFT",wall4);
+            return wall4;
         default: 
           return false;
     }
@@ -581,15 +591,21 @@ bool motors::isRamp() {
 }
 void motors::ramp(){
     PID rampPID;
-    rampPID.changeConstants(7,1,1,20);
-    float speedRamp;
-    int currentTargetAngle=targetAngle;
-    while(abs(bno.getOrientationY())>kMinAngleRamp){
-        float changeAngle=rampPID.calculate_PID(5,vlx[vlxID::left].getDistance());
-        targetAngle=currentTargetAngle+changeAngle;
-        pidEncoders(kSpeedRamp,true);
+    setahead();
+    rampPID.changeConstants(1,0.1,0.01,20);
+    while(bno.getOrientationY()>kMinAngleRamp){
+        float error=rampPID.calculate_PID(0,(vlx[vlxID::right].getDistance()-vlx[vlxID::left].getDistance()));
+        wifiPrint("error",error);
+        error=constrain(error,-15,15);
+        PID_Wheel(kSpeedRampUp+error,MotorID::kFrontLeft);
+        PID_Wheel(kSpeedRampUp+error,MotorID::kBackLeft);
+        PID_Wheel(kSpeedRampUp-error,MotorID::kFrontRight);
+        PID_Wheel(kSpeedRampUp-error,MotorID::kBackRight);
     }
-    targetAngle=currentTargetAngle;
+    while(bno.getOrientationY() < -kMinAngleRamp){
+        pidEncoders(kSpeedRampDown,true);
+    }
+    stop();
 }
 void motors::setupTCS() {
     tcs_.setMux(Pins::tcsPins[0]);

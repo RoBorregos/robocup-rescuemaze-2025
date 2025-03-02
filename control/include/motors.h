@@ -40,13 +40,15 @@ private:
     static constexpr uint16_t kMaxSpeedRotate=30;
     static constexpr uint16_t kMinSpeedFormard=10;//36
     static constexpr uint16_t kMaxSpeedFormard=30;//70
-    static constexpr uint16_t kSpeedRamp=20;//70
+    static constexpr uint16_t kSpeedRampUp=20;//70
+    static constexpr uint16_t kSpeedRampDown=15;//70
+
 
     //ramp
     static constexpr float kMinRampOrientation=10.0;
-    static constexpr float minDisToLateralWall=3;
+    static constexpr float minDisToLateralWall=6;
     static constexpr float impactDisToLateralWall=2;
-    static constexpr uint8_t maxChangeAngle=2;
+    static constexpr uint8_t maxChangeAngle=5;
     static constexpr uint8_t kMinAngleRamp=10;
     //TCS
     char tileColor;

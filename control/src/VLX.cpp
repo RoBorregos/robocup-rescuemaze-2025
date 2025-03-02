@@ -47,6 +47,7 @@ void VLX::printDistance(){
     delay(500); 
     }
 bool VLX::isWall(){
+    // if(distance<kDistanceToWall){
     if(getDistance()<kDistanceToWall){
         return true;
     }else{
