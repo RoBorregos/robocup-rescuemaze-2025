@@ -4,12 +4,12 @@ class arrCustom {
 private:
     uint8_t i = 0;
     size_t size;
-    T absValue;
     T* positions;
 
 public:
     // Constructor
-    arrCustom(size_t size, T value) : size(size), absValue(value) {
+    arrCustom(size_t size, T value){
+        this->size = size;
         if (size <= 0) {
             this->size = 0;
             // positions = nullptr;
@@ -40,11 +40,9 @@ public:
         if (index < size && index >= 0) {
             return positions[index];
         }
-        /*
         else{
             Serial.println("Index out of bounds");
-            return absValue;
-        }*/
+        }
     }
     size_t getSize() const {
         return size;

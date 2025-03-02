@@ -5,6 +5,7 @@ coord robotCoord = {128, 128, 0};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
 bool blackTile = false;
 bool checkpoint = false;
+coord checkpointCoord = {128, 128, 0};
 bool victim = false;
 maze::maze(){}
 //comienza logica ---------------------------------------------------------
@@ -82,7 +83,11 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
                     if (!explored.getValue(adjIndex) && newDist < distance.getValue(adjIndex)) {
                         distance.set(adjIndex, newDist);
                         previousPositions.set(adjIndex, current);
-                        pq.insertNode({adjacent, newDist});
+                        // ...existing code...
+                        Node newNode = {adjacent, newDist};
+                        pq.insertNode(newNode);
+                        // ...existing code...
+                        //pq.insertNode({adjacent, newDist});
                     }
                 }
             }
@@ -217,22 +222,22 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
             switch(direction) {
                 case TileDirection::kRight:
-                    next = coord{current.x + 1, current.y, 0};
+                    next = coord{static_cast<uint8_t>(current.x + 1), current.y, 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kLeft;
                     break;
                 case TileDirection::kUp:
-                    next = coord{current.x, current.y + 1, 0};
+                    next = coord{current.x, static_cast<uint8_t>(current.y + 1), 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
-                    next = coord{current.x - 1, current.y, 0};
+                    next = coord{static_cast<uint8_t>(current.x - 1), current.y, 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
-                    next = coord{current.x, current.y - 1, 0};
+                    next = coord{current.x, static_cast<uint8_t>(current.y - 1), 0};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kUp;
                     break;
