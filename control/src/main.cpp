@@ -18,9 +18,9 @@ void setup() {
 void loop() {
   // Serial.println(robot.vlx[vlxID::right].distance);
   // delay(10);
-  // m.run_algs();
+  m.run_algs();
   // robot.ramp();
-  robot.tcs_.printRGB();
+  // robot.tcs_.printColor();
 
 }
 // void loop0(void *parameter){

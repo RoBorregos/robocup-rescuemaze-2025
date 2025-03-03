@@ -97,13 +97,14 @@ void TCS::printRGBC() {
 }
 
 void TCS::printColor() {
-    #if DEBUG_TCS
-    customPrint("Color:\t");
-    #endif
-    const char color = (colors_) ? getColorWithPrecision() : getColor();
-    #if DEBUG_TCS
-    customPrintln(color);
-    #endif
+    Serial.println(getColor());
+    // #if DEBUG_TCS
+    // customPrint("Color:\t");
+    // #endif
+    // const char color = (colors_) ? getColorWithPrecision() : getColor();
+    // #if DEBUG_TCS
+    // customPrintln(color);
+    // #endif
 }
 
 void TCS::setMux(const uint8_t posMux) {

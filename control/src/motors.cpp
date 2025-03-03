@@ -126,6 +126,7 @@ void motors::ahead(){
             float speed;
             speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
             pidEncoders(speed,true);
+            if(isRamp()) break;
         }
     }else if(encoder){
         while(getAvergeTics()<kTicsPerTile/*+obstacleDistance*/){
@@ -137,13 +138,15 @@ void motors::ahead(){
             float missingDistance=kTileLength-(getAvergeTics()*kTileLength/kTicsPerTile);
             float speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
             pidEncoders(speed,true);
+            if(isRamp()) break;
             // float speed=changeSpeedMove(true,false,kTicsPerTile,frontVlx);
             // PID_speed((targetAngle+changeAngle),(targetAngle==0 ? z_rotation:angle),speed);
         }
     }
+    resetTics();
+
     stop();resetTics();checkTileColor();
 }
-
 void motors::checkTileColor(){
     tileColor=tcs_.getColor();
     Serial.println(tileColor);
@@ -283,7 +286,6 @@ float motors::limitCrash(){
 }
 
 uint8_t motors::findNearest(float number,const uint8_t numbers[],uint8_t size,bool frontVlx){
-    wifiPrint("near",number);
     uint8_t nearest=numbers[0];
     float minDifference=abs(number-numbers[0]);
     for(uint8_t i=1;i<size;i++){
@@ -571,22 +573,18 @@ bool motors::rampInFront(){
     }
 }
 bool motors::isRamp() {
-    const double currentOrientationY = bno.getOrientationY();
+    float currentOrientationY = bno.getOrientationY();
     if (currentOrientationY >= kMinRampOrientation || currentOrientationY <= -kMinRampOrientation) {
         // screenPrint("Ramp detected");
-        // if (currentOrientationY <= -kMinRampOrientation) {
-        //     downRamp_ = true;
-        //     pidWallAlignment_.setBaseSpeed(kBaseSpeedDownRamp_);
-        //     pidWallAlignment_.setKp(kPDownRamp);
-        // }
-        // #if DEBUG_MOVEMENT
-        // customPrintln("TRUE");
-        // #endif
-        return true;
+        ramp();
+        if (currentOrientationY <= -kMinRampOrientation) {
+            rampState = 2;
+            return true;
+        }else if (currentOrientationY > kMinRampOrientation) {
+            rampState = 1;
+            return true;
+        }
     }
-    // #ifndef DEBUG_MOVEMENT
-    // customPrintln("FALSE");
-    // #endif
     return false;
 }
 void motors::ramp(){
@@ -605,7 +603,19 @@ void motors::ramp(){
     while(bno.getOrientationY() < -kMinAngleRamp){
         pidEncoders(kSpeedRampDown,true);
     }
+    moveDistance(kTileLength/3);
     stop();
+}
+void motors::moveDistance(uint8_t targetDistance){
+    setahead();
+    resetTics();
+    while(getCurrentDistanceCm()<targetDistance){
+        pidEncoders((kMinSpeedFormard+kMaxSpeedFormard)/2,true);
+    }
+    stop();
+}
+float motors::getCurrentDistanceCm(){
+    return getAvergeTics()*kTileLength/kTicsPerTile;
 }
 void motors::setupTCS() {
     tcs_.setMux(Pins::tcsPins[0]);

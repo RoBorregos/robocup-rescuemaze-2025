@@ -28,6 +28,7 @@ void maze::followPath(Stack& path){
         robotCoord = next;
     }
 }
+/*
 struct Node {
     coord position;
     uint8_t distance;
@@ -98,10 +99,10 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     while(current != start){
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
-    }
+  }
     followPath(path);
 }
-/*
+*/
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles){
     Stack path;
     
@@ -166,7 +167,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     //path.push(start);
     followPath(path);
 }
-*/
+
 void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
     Stack unvisited;
     arrCustom<bool> visited(kMaxSize, false);

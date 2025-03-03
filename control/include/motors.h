@@ -86,6 +86,7 @@ public:
     Motor motor[4];//0-BACK_RIGHT//1-BACK_LEFT//2-FRONT_RIGHT//3-FRONT_LEFT
     bool blackTile=false;
     bool blueTile=false;
+    uint8_t rampState;
     motors();
     void setupMotors();
     void PID_speed(float, float, uint16_t);
@@ -93,6 +94,8 @@ public:
     void PID_AllWheels(int);
     void setSpeed(uint16_t);
     void setahead();
+    void moveDistance(uint8_t targetDistance);
+    float getCurrentDistanceCm();
     void setback();
     void setleft();
     void setright();
