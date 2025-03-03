@@ -22,7 +22,7 @@ constexpr uint8_t kRampWeight = 5;
 
 constexpr coord kInvalidPosition = coord{255,255,255};
 constexpr uint8_t kMaxInt = 255;
-constexpr uint8_t kMaxSize = 30;
+constexpr uint8_t kMaxSize = 70;
 constexpr uint8_t kMaxStackSize = 10;
 
 class Tile{

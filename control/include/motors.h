@@ -88,6 +88,7 @@ public:
     bool blueTile=false;
     bool checkpoint=false;
     bool victim=false;
+    bool buttonPressed=false;
     uint8_t rampState;
     motors();
     void setupMotors();

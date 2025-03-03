@@ -4,10 +4,12 @@ coord inicio = {128, 128, 0};
 coord robotCoord = {128, 128, 0};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
 coord checkpointCoord = {128, 128, 0};
+uint8_t robotOrientation = 0;
+uint8_t level = 0;
 maze::maze(){}
-//1 pa arriba - 2 para abajo - 0 normal
+
 uint8_t maze::getLevel(){return level;}
-void maze::setLevel(uint8_t level){this->level = level;}
+void maze::setLevel(uint8_t level_){level = level_;}
 //comienza logica ---------------------------------------------------------
 void maze::followPath(Stack& path){
     while(!path.empty()){
@@ -26,9 +28,11 @@ void maze::followPath(Stack& path){
         }
         robot.ahead();
         robotCoord = next;
+        if(robot.buttonPressed == true){
+            break;
+        }
     }
 }
-
 /*
 struct Node {
     coord position;
@@ -123,18 +127,13 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
             //printf("llegue");
             if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction) ){//&& currentTile.weights_[static_cast<int>(direction)] != NULL){
                 const int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
-                //int adjacentIndex = tilesMap.getIndex(adjacent);
-                //if(adjacentIndex != -1){
-                //if(adjacent != kInvalidPosition){
-                    int index = distance.getValue(tilesMap.getIndex(adjacent));
-                    if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
-                        distance.set(tilesMap.getIndex(adjacent),weight);
-                        previousPositions.set(tilesMap.getIndex(adjacent), current);
-                        printf("llegue4");
-                    }
-                //}
-                //}
-            }
+                int index = distance.getValue(tilesMap.getIndex(adjacent));
+                if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
+                    distance.set(tilesMap.getIndex(adjacent),weight);
+                    previousPositions.set(tilesMap.getIndex(adjacent), current);
+                    printf("llegue4");
+                }
+        }
         }
         minDist = INT_MAX;
         //find the minimum distance to the path line
@@ -157,13 +156,6 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
-    for (int i = 0; i < 10; ++i) {
-        coord pos = tilesMap.getValue(i);
-        coord prev = previousPositions.getValue(i);
-        printf("Tile at (%d, %d) comes from (%d, %d)\n", pos.x, pos.y, prev.x, prev.y);
-    }
-    
-    //path.push(start);
     followPath(path);
 }
 
@@ -183,6 +175,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         unvisited.pop();
         robot.wifiPrint("coord x",current.x);
         robot.wifiPrint("coord y",current.y);
+        robot.wifiPrint("coord z",current.z);
         visitedFlag = false;
         for(int i = 0; i < visitedMap.getSize(); ++i){
             if(visitedMap.getValue(i) == current){
@@ -208,51 +201,74 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             currentTile -> setObstacle();
             robot.blueTile = false;
         }
-        /*
-        if(checkpoint == true){
+        
+        if(robot.checkpoint == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setCheckpoint();
-            checkpoint = false;
+            checkpointCoord = current;
+            robot.checkpoint = false;
         }
-        if(victim == true){
+        if(robot.victim == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setVictim();
-            victim = false;
+            robot.victim = false;
         }
-            */
-        
-
-        //ramp logic
+        //button checkpoint logic
+        if(robot.buttonPressed){
+            robot.buttonPressed = false;
+            while(robot.buttonPressed == false){
+                //get button state, not continuing until it is true again
+            }
+            float orientation = robot.getAngleOrientation();
+            current = checkpointCoord;
+            if(orientation == 0){
+                orientation = 0;
+            }else if(orientation == 90){
+                orientation = 1;
+            }else if(orientation == 180){
+                orientation = 2;
+            }else if(orientation == 270){
+                orientation = 3;
+            }
+            //clear unvisited stack 
+            unvisited.~Stack();
+            //set the new priority to the front of the robot
+            TileDirection temp = directions[3];
+            for(int i = 3; i > 0; i--){
+                directions[i] = directions[i-1];
+            }
+            directions[0] = temp;
+        }
+        //ramp logic -> 1 pa arriba - 2 para abajo - 0 normal
         if(robot.rampState != 0){
             if(robot.rampState == 1){level++;}
             if(robot.rampState == 2){level--;}
             robot.rampState = 0;
+            coord tempCurr = current;
+            tempCurr.z = level;
             //change level in the link of tiles
             currentTile = &tiles.getValue(tilesMap.getIndex(robotCoord));
             for(int i = 0; i < 4; i++){
                 if(currentTile -> adjacentTiles_[i]->position_ == current){
-                    currentTile -> adjacentTiles_[i]->setPosition({current.x, current.y, level});
+                    current = {current.x, current.y, level};
+                    currentTile -> adjacentTiles_[i]->setPosition(current);
                 }
             }
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             for(int i = 0; i < 4; i++){
                 if(currentTile -> adjacentTiles_[i]->position_ == robotCoord){
-                    currentTile -> adjacentTiles_[i]->setPosition({robotCoord.x, robotCoord.y, level});
+                    current = {robotCoord.x, robotCoord.y, level};
+                    currentTile -> adjacentTiles_[i]->setPosition(robotCoord);
                 }
             }
             //remember the coord
-            //set the actual coord
-            robotCoord = current;
-            robot.wifiPrint("coord x",current.x);
-            robot.wifiPrint("coord y",current.y);
-            robot.wifiPrint("coord y",current.z);
-        }else{
-            robotCoord = current;
+            current = tempCurr;
         }
+        robotCoord = current;
         
         for(const TileDirection direction: directions){
             wall = false; 
-            if(robot.isWall(static_cast<int>(direction))){//robot.isWall(static_cast<int>(direction))
+            if(robot.isWall(static_cast<int>(direction))){
                 wall = true;
             }
             switch(direction) {
