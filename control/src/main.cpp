@@ -7,7 +7,7 @@ void loop0(void *parameter);
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  robot.setupMotors();
+  // robot.setupMotors();
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Encoder::frontLeftEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontRight]), Encoder::frontRightEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Encoder::backLeftEncoder, RISING);
@@ -18,10 +18,22 @@ void setup() {
 void loop() {
   // Serial.println(robot.vlx[vlxID::right].distance);
   // delay(10);
-  m.run_algs();
+  // m.run_algs();
+  Serial.println("P");
+  if(Serial.available()){
+    String message=Serial.readString();
+    Serial.println(message);
+  }
+  delay(2000);
+  // Serial.println(robot.getAngleOrientation());
   // robot.ramp();
   // robot.tcs_.printColor();
 
+}
+void limpiarBuffer() {
+  while (Serial.available() > 0) {
+      Serial.read();  // Leer y descartar el byte disponible
+  }
 }
 // void loop0(void *parameter){
 //   Serial.println("hola");

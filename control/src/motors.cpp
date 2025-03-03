@@ -617,6 +617,13 @@ void motors::moveDistance(uint8_t targetDistance){
 float motors::getCurrentDistanceCm(){
     return getAvergeTics()*kTileLength/kTicsPerTile;
 }
+uint16_t motors::getAngleOrientation(){
+    float currentAngle=bno.getOrientationX();
+    if((currentAngle>315&&currentAngle<=360) || (currentAngle>=0&&currentAngle<=45)) return 0;
+    else if(currentAngle>45&&currentAngle<=135) return 90;
+    else if(currentAngle>135&&currentAngle<=225) return 180;
+    else if(currentAngle>225&&currentAngle<=315) return 270;
+}
 void motors::setupTCS() {
     tcs_.setMux(Pins::tcsPins[0]);
     tcs_.setPrecision(kPrecision);

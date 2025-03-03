@@ -105,6 +105,7 @@ public:
     void stop();
     void ahead();
     float limitCrash();
+    uint16_t getAngleOrientation();
     void pidEncoders(int,bool);
     void ahead_ultra();//borrar
     float nearWall();//ver

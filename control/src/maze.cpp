@@ -29,7 +29,7 @@ void maze::followPath(Stack& path){
     }
 }
 
-
+/*
 struct Node {
     coord position;
     uint8_t distance;
@@ -101,7 +101,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     }
     followPath(path);
 }
-/*
+*/
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles){
     Stack path;
     
@@ -166,7 +166,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     //path.push(start);
     followPath(path);
 }
-*/
+
 void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
     Stack unvisited;
     arrCustom<bool> visited(kMaxSize, false);
@@ -227,27 +227,25 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             if(robot.rampState == 1){level++;}
             if(robot.rampState == 2){level--;}
             robot.rampState = 0;
-            coord tempCurr = current;
-            tempCurr.z = level;
             //change level in the link of tiles
             currentTile = &tiles.getValue(tilesMap.getIndex(robotCoord));
             for(int i = 0; i < 4; i++){
                 if(currentTile -> adjacentTiles_[i]->position_ == current){
-                    current = {current.x, current.y, level};
-                    currentTile -> adjacentTiles_[i]->setPosition(current);
+                    currentTile -> adjacentTiles_[i]->setPosition({current.x, current.y, level});
                 }
             }
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             for(int i = 0; i < 4; i++){
                 if(currentTile -> adjacentTiles_[i]->position_ == robotCoord){
-                    current = {robotCoord.x, robotCoord.y, level};
-                    currentTile -> adjacentTiles_[i]->setPosition(robotCoord);
+                    currentTile -> adjacentTiles_[i]->setPosition({robotCoord.x, robotCoord.y, level});
                 }
             }
             //remember the coord
-            current = tempCurr;
             //set the actual coord
             robotCoord = current;
+            robot.wifiPrint("coord x",current.x);
+            robot.wifiPrint("coord y",current.y);
+            robot.wifiPrint("coord y",current.z);
         }else{
             robotCoord = current;
         }
