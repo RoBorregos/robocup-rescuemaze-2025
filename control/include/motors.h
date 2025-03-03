@@ -86,6 +86,8 @@ public:
     Motor motor[4];//0-BACK_RIGHT//1-BACK_LEFT//2-FRONT_RIGHT//3-FRONT_LEFT
     bool blackTile=false;
     bool blueTile=false;
+    bool checkpoint=false;
+    bool victim=false;
     uint8_t rampState;
     motors();
     void setupMotors();
