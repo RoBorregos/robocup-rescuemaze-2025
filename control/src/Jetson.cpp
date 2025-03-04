@@ -69,22 +69,32 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 writeSerial(true, (uint8_t*)baud, sizeof(baud));
             }
             break;
-        case 0x01: // Send localization
-            if (packet_size == 3) { // Check packet size
-                uint8_t tile;
-                uint8_t color;
-                writeSerial(true, (uint8_t*)tile, sizeof(tile));
-                writeSerial(true, (uint8_t*)color, sizeof(tile) + sizeof(color));
-            }
-            break;
-        case 0x08: // rotate
+        case 0x01: // harmed victim
             if (packet_size == 1) { // Check packet size
+                robot.victim=true;
+                // robot.harmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(true, (uint8_t*)t, sizeof(t));
             }
             break;
-        default:
+        case 0x02: // stable victim
+            if (packet_size == 1) { // Check packet size
+                robot.victim=true;
+                // robot.stableVictim();
+                uint32_t t[] = {200};
+                // memcpy(&t, buffer, sizeof(t));
+                writeSerial(true, (uint8_t*)t, sizeof(t));
+            }
+        break;
+        case 0x03: // unharmed victim
+            if (packet_size == 1) { // Check packet size
+                robot.victim=true;
+                // robot.unharmedVictim();
+                uint32_t t[] = {200};
+                // memcpy(&t, buffer, sizeof(t));
+                writeSerial(true, (uint8_t*)t, sizeof(t));
+            }
         break;
     }
 }
