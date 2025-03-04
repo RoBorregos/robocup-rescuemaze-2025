@@ -39,7 +39,7 @@ def getColor(imageHSV):
     return color
 #carga de modelo
 with custom_object_scope({'KerasLayer': hub.KerasLayer}):
-    model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\vision_artificial\\mobilenetModel\\HSU_detection_mobilenetv5.h5")
+    model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetv5.h5")
 #imiciar camara
 cam=cv2.VideoCapture(1)
 # #verificar camara
