@@ -226,16 +226,62 @@ class Esp32():
         
         self.mutex.release()
         return 1
+                         
+    def get_baud(self):
+        ''' Get the current baud rate on the serial port.
+        '''
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x00) + struct.pack("i", 0x01)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            val, = struct.unpack('I', self.payload_args)
+            return  self.SUCCESS, val 
+        else:
+            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+            return self.FAIL, 0
+    def sent_harmed_victim(self):
+        ''' sent harmed victim detection to leave the kits
+        '''
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x01)  + struct.pack("B", 0x02)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            return  self.SUCCESS
+        else:
+            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+            return self.FAIL, 0    
+    def sent_stable_victim(self):
+        ''' sent stable victim detection to leave the kits
+        '''
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x02)  + struct.pack("B", 0x03)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            return  self.SUCCESS
+        else:
+            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+            return self.FAIL, 0 
+    def sent_unharmed_victim(self):
+        ''' sent unharmed victim detection
+        '''
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x03)  + struct.pack("B", 0x04)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            return  self.SUCCESS
+        else:
+            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+            return self.FAIL, 0 
+            
 
+
+
+
+
+
+
+    """""
     def sent_ahead(self):
-            ''' Get the current baud rate on the serial port.
-            '''
-            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x02)  + struct.pack("B", 0x03)
-            if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-                return  self.SUCCESS
-            else:
-                # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-                return self.FAIL, 0    
+        ''' Get the current baud rate on the serial port.
+        '''
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x02)  + struct.pack("B", 0x03)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            return  self.SUCCESS
+        else:
+            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+            return self.FAIL, 0    
     def sent_stop(self):
             ''' Get the current baud rate on the serial port.
             '''
@@ -244,18 +290,8 @@ class Esp32():
                 return  self.SUCCESS
             else:
                 # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-                return self.FAIL, 0                          
-    def get_baud(self):
-            ''' Get the current baud rate on the serial port.
-            '''
-            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x00) + struct.pack("i", 0x01)
-            if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-                val, = struct.unpack('I', self.payload_args)
-                return  self.SUCCESS, val 
-            else:
-                # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-                return self.FAIL, 0
-
+                return self.FAIL, 0 
+            
     def sendLocation(self, tile, angle):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x01) + struct.pack("ii", tile, angle) + struct.pack("B", 0x02)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
@@ -332,4 +368,4 @@ class Esp32():
             return  self.SUCCESS
         else:
             return self.FAIL, 0
-    
+    """

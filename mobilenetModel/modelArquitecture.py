@@ -1,8 +1,10 @@
 
 #artificial vision model using the google mobilenet that uses imagenet dataset to detect H-S-U letters
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Desactiva todas las GPUs
 import tensorflow_hub as hub
 import tensorflow as tf
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 print(tf.version)
 #Aumento de datos con ImageData Generator que es una clase de keras que aplica ediciones a las imagenes 
@@ -19,9 +21,9 @@ datagen=ImageDataGenerator(
 #generadores para sets de entrenamiento y pruebas
 #datasets using google images
 data_gen_train=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU",target_size=(224,224),
-                                           batch_size=32,shuffle=True,subset="training")
+                                           batch_size=4,shuffle=True,subset="training")
 data_gen_test=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU",target_size=(224,224),
-                                           batch_size=32,shuffle=True,subset="validation")
+                                           batch_size=4,shuffle=True,subset="validation")
 #import mobileNet from its url using kerasLayer
 mobilenet_url = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4"
 mobilenetv2 = hub.KerasLayer(mobilenet_url, input_shape=(224,224,3))
@@ -40,10 +42,10 @@ model.compile(
     metrics=["accuracy"]
 )
 #train the model
-Epochs=50
+Epochs=25
 history=model.fit(
-    data_gen_train,epochs=Epochs,batch_size=32,
+    data_gen_train,epochs=Epochs,
     validation_data=data_gen_test
 )
 #save the model
-model.save("HSU_detection_mobilenetv5.h5")
+model.save("HSU_detection_mobilenetJetson1.h5")

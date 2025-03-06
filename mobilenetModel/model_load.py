@@ -1,15 +1,17 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Desactiva todas las GPUs
 import tensorflow as tf
 import numpy 
 import cv2
 import matplotlib.pyplot as plt
 import tensorflow_datasets as tfd
-from keras.utils import custom_object_scope
+from tensorflow.keras.utils import custom_object_scope
 import tensorflow_hub as hub
 #carga de modelo
 with custom_object_scope({'KerasLayer': hub.KerasLayer}):
-    model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\vision_artificial\\mobilenetModel\\HSU_detection_mobilenetv3.h5")
+    model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetJetson.h5")
 #carga de imagen
-image=cv2.imread("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU\\S\\image6.jpeg")
+image=cv2.imread("C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU\\S\\image7.jpeg")
 if image is None:
     print("error al cargar la imagen")
 #normalizar imagen
