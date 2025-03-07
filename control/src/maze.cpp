@@ -4,13 +4,13 @@ coord inicio = {128, 128, 0};
 coord robotCoord = {128, 128, 0};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
 coord checkpointCoord = {128, 128, 0};
+arrCustom<coord> visitedMapRecover(kMaxSize, kInvalidPosition);
 uint8_t robotOrientation = 0;
 uint8_t level = 0;
 maze::maze(){}
-
 uint8_t maze::getLevel(){return level;}
 void maze::setLevel(uint8_t level_){level = level_;}
-//comienza logica ---------------------------------------------------------
+// logic ---------------------------------------------------------
 void maze::followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
@@ -123,8 +123,6 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         for(const TileDirection& direction : directions){
             const Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
             const coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
-            // find the distance to the adjacent tile
-            //printf("llegue");
             if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction) ){//&& currentTile.weights_[static_cast<int>(direction)] != NULL){
                 const int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
                 int index = distance.getValue(tilesMap.getIndex(adjacent));
@@ -139,14 +137,10 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         //find the minimum distance to the path line
         for(int i = 0; i < tilesMap.getSize(); i++){
             const coord& currentCoord = tilesMap.getValue(i);
-            const int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));
-            
+            const int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));           
             if(currentDistance < minDist && !explored.getValue(tilesMap.getIndex(currentCoord))){
                 minDist = currentDistance;
                 current = currentCoord;
-            } else {
-                //printf("llegue3");
-
             }
         }
         explored.set(tilesMap.getIndex(current),true);
@@ -161,7 +155,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
 
 void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
     Stack unvisited;
-    arrCustom<bool> visited(kMaxSize, false);
+    //arrCustom<bool> visited(kMaxSize, false);
     unvisited.push(robotCoord);
     coord next;
     Tile* currentTile;
@@ -188,13 +182,12 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         }
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
-        visited.push_back(true);
+        //visited.push_back(true);
 
         if(robot.blackTile == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setBlackTile();
             robot.blackTile = false;
-
         }
         if(robot.blueTile == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
@@ -207,6 +200,10 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             currentTile -> setCheckpoint();
             checkpointCoord = current;
             robot.checkpoint = false;
+            // set the recovery map in the checkpoint position
+            for(uint8_t i = 0; i < kMaxSize; i++){
+                visitedMapRecover.set(i, visitedMap.getValue(i));
+            }
         }
         if(robot.victim == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
@@ -216,6 +213,9 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         //button checkpoint logic
         if(robot.buttonPressed){
             robot.buttonPressed = false;
+            for(uint8_t i = 0; i < kMaxSize; i++){
+                visitedMap.set(i, visitedMapRecover.getValue(i));
+            }
             while(robot.buttonPressed == false){
                 //get button state, not continuing until it is true again
             }
@@ -249,16 +249,20 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             //change level in the link of tiles
             currentTile = &tiles.getValue(tilesMap.getIndex(robotCoord));
             for(int i = 0; i < 4; i++){
-                if(currentTile -> adjacentTiles_[i]->position_ == current){
-                    current = {current.x, current.y, level};
-                    currentTile -> adjacentTiles_[i]->setPosition(current);
+                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr)
+                    if(currentTile -> adjacentTiles_[i]->position_ == current){
+                        current = {current.x, current.y, level};
+                        currentTile -> adjacentTiles_[i]->setPosition(current);
+                    }
                 }
             }
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             for(int i = 0; i < 4; i++){
-                if(currentTile -> adjacentTiles_[i]->position_ == robotCoord){
-                    current = {robotCoord.x, robotCoord.y, level};
-                    currentTile -> adjacentTiles_[i]->setPosition(robotCoord);
+                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr)
+                    if(currentTile -> adjacentTiles_[i]->position_ == robotCoord){
+                        current = {robotCoord.x, robotCoord.y, level};
+                        currentTile -> adjacentTiles_[i]->setPosition(robotCoord);
+                    }
                 }
             }
             //remember the coord
@@ -313,7 +317,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                 nextTile -> addAdjacentTile(oppositeDirection, currentTile, wall);
                 if(!wall){
                     visitedFlag = false;
-                    for(int i = 0; i < visitedMap.getSize(); ++i){
+                    for(uint8_t i = 0; i < visitedMap.getSize(); ++i){
                         if(visitedMap.getValue(i) == next){
                             visitedFlag = true;
                             break;
