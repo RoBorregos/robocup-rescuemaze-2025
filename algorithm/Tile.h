@@ -29,7 +29,7 @@ class Tile{
         char data_;
         Tile();
         Tile(const coord& position);
-        void addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall);
+        void addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall, const bool blue);
         void setPosition(const coord& position);
         void setWall(const TileDirection direction, const bool wall);
         bool hasWall(const TileDirection direction) const;

@@ -27,7 +27,7 @@
         {
             "type": "cppbuild",
             "label": "build proyecto",
-            "command": "g++ -std=c++17 mytest.cpp Tile.cpp -g -o maze.out",
+            "command": "g++ -std=c++17 otest.cpp Tile.cpp -g -o maze.out",
             "args": [],
             "options": {
                 "cwd": "${workspaceFolder}/algorithm"

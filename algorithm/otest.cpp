@@ -3,30 +3,47 @@
 #include "arrCustom.h"
 #include "Stack.h"
 #include "heap.h"
+
+// center of tile, what is at the bottom of the tile
+// sides, what is at the walls of the tile.
 char RealMaze[17][11] = {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
-        {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 3.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 5.
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
         {'#', ' ', '.', ' ', '.', '#', '.', '#', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 7.
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 5.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 9.
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', 'B', '#', ' ', '#'}, // 7.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 1.
+        {'#', ' ', '#', ' ', '#', ' ', ' ', 'b', '#', ' ', '#'}, // 9.
+        {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
+        {'#', ' ', '#', 'h', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 1.
+        {'#', ' ', '.', '#', '.', ' ', '.', ' ', '.', ' ', '#'},
+        {'#', ' ', '#', 'B', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
-        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 3.
-        {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
-/*Izq:'<'
-Der: '>'
-Arriba: '^'
-Abajo: 'v'
-*/
+char RealMaze2[17][11] = {
+    {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
+    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
+    {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
+    {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
+    {'#', ' ', '.', ' ', '.', '#', '.', '#', '.', ' ', '#'},
+    {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 5.
+    {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
+    {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 7.
+    {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
+    {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'}, // 9.
+    {'#', ' ', '.', ' ', '.', '#', '.', ' ', '.', ' ', '#'},
+    {'#', ' ', '#', ' ', ' ', ' ', ' ', 'l', '#', ' ', '#'}, // 1.
+    {'#', ' ', '.', '#', '.', '#', '.', ' ', '.', ' ', '#'},
+    {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
+    {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
+    {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
+};
 char discoverMaze[17][11] ={
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'}, // 1.
@@ -53,25 +70,23 @@ coord robotCoord = {3,5,1};
 char robotChar = 'v';
 TileDirection directions[4] = {TileDirection::kLeft,TileDirection::kDown,TileDirection::kRight,TileDirection::kUp};
 int robotOrientation = 0;
-const int kMaxSize = 30; 
+const int kMaxSize = 100; 
+bool blackTile = false;
+bool blueTile = false;
+int rampState = 0;
+//uint8_t, comienza en 128
+int level = 0;
 
 void printMaze(char maze[17][11]){
     for(int i = 0; i < 17; ++i){
         for(int j = 0; j < 11; j++){
             printf("%c ", maze[i][j]);
-            //cout << maze[i][j] << " ";
         }
         printf("\n");
     }
 }
 
-void ahead(coord next){
-    discoverMaze[robotCoord.y][robotCoord.x] = '*';
-    robotCoord = next;
-    discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
-    printMaze(discoverMaze);
-    steps++;
-}
+
 void back(coord past){
     discoverMaze[robotCoord.y][robotCoord.x] = '*';
     robotCoord = past;
@@ -111,6 +126,7 @@ void left(){
     }
     discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
 }
+// logic for algorithm
 bool checkForWall(const char maze[17][11], const TileDirection& direction, const coord& robotCoord) {
     switch(direction) {
         case TileDirection::kRight:
@@ -124,7 +140,70 @@ bool checkForWall(const char maze[17][11], const TileDirection& direction, const
         default: 
             break;
     }
-
+}
+int checkRamp(const char maze[17][11], const coord& robotCoord){
+    //high, low ramps- if h, the robot went up, it l, the robot when down in that movement
+    if(RealMaze[robotCoord.y][robotCoord.x] == 'h'){
+        return 1;
+    }
+    else if(RealMaze[robotCoord.y][robotCoord.x]== 'l'){
+        return 2; 
+    }
+    return 0;
+}
+int checkBlackBlue( const char maze[17][11], const coord& robotCoord){
+    // Black (B), blue(b)
+    if(maze[robotCoord.y][robotCoord.x] == 'B'){
+        return 1;
+    }else if(maze[robotCoord.y][robotCoord.x] == 'b'){
+        return 2;
+    }
+    return 0;
+}
+bool checkVictim( const char maze[17][11], const TileDirection& direction, const coord& robotCoord){
+    // if victim therefore wall
+    switch(direction){
+        case TileDirection::kRight:
+            return maze[robotCoord.y][robotCoord.x + 1] == 'v';
+        case TileDirection::kUp:
+            return maze[robotCoord.y + 1][robotCoord.x] == 'v';
+        case TileDirection::kLeft:
+            return maze[robotCoord.y][robotCoord.x - 1] == 'v';
+        case TileDirection::kDown:
+            return maze[robotCoord.y - 1][robotCoord.x] == 'v';
+        default:
+            break;
+    }
+}
+void ahead(coord next){
+    if(checkBlackBlue(RealMaze, next) == 1){
+        blackTile = true;
+    }else{
+        if(checkBlackBlue(RealMaze, next) == 2){
+            blueTile = true;
+            printf("Blue Tile, waiting for 5 seconds \n");
+        }
+        if(checkRamp(RealMaze, next) == 1){
+            rampState = 1;
+        }else if(checkRamp(RealMaze, next) == 2){
+            rampState = 2;
+        }
+        discoverMaze[robotCoord.y][robotCoord.x] = '*';
+        robotCoord = next;
+        discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
+        
+        printMaze(discoverMaze);
+        steps++;
+    }
+    
+}
+void changeLevel(){
+    if(rampState == 1){
+        level++;
+    }else if(rampState == 2){
+        level--;
+    }
+    rampState = 0;
 }
 void turnRobot(const int targetOrientation) {
     int difference = targetOrientation - robotOrientation;
@@ -159,92 +238,52 @@ void followPath(Stack& path){
             turnRobot(180);
         }
         ahead(next);
+        if(blackTile){
+            continue;
+        }
         robotCoord = next;
         //printMaze(discoverMaze);
     }
+
 }
-
-struct Node {
-    coord position;
-    int distance;
-
-    bool operator<(const Node& other) const {
-        return distance < other.distance; // For Min-Heap
-    }
-
-    bool operator>(const Node& other) const {
-        return distance > other.distance;
-    }
-};
-
-void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles) {
+void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles){
     Stack path;
-
-    // Initialization
+    
     arrCustom<bool> explored(tilesMap.getSize(), false);
     arrCustom<int> distance(tilesMap.getSize(), INT_MAX);
     arrCustom<coord> previousPositions(tilesMap.getSize(), kInvalidPosition);
 
-    // Set starting node
     distance.set(tilesMap.getIndex(start), 0);
     explored.set(tilesMap.getIndex(start), true);
-
-    // Priority queue using the heap class
-    heap<Node, 300> pq;  // Using your heap class
-    pq.insertNode({start, 0});
-
-    while (!pq.isEmpty()) {
-        // ✅ Extract the node with the minimum distance
-        Node currentNode = pq.extractMin();
-        coord current = currentNode.position;
-
-        if (current == end) {
-            break; // Stop if the end is reached
-        }
-    
-        if (pq.isEmpty()) {
-            printf("Priority queue is empty - no path found.\n");
-        }
-
-        int currentIndex = tilesMap.getIndex(current);
-        if (currentIndex == -1) {
-            printf("Error: current not found in tilesMap\n");
-            return;
-        }    
-        // Explore neighbors
-        const Tile* currentTile = &tiles.getValue(currentIndex);
-        printf("Processing tile: (%d, %d)\n", current.x, current.y);
-        for (const TileDirection direction : directions) {
-            if (currentTile->adjacentTiles_[static_cast<int>(direction)] != nullptr &&
-                !currentTile->hasWall(direction)) {
-
-                const coord& adjacent = currentTile->adjacentTiles_[static_cast<int>(direction)]->position_;
-                int weight = currentTile->weights_[static_cast<int>(direction)];
-                int newDist = distance.getValue(currentIndex) + weight;
-
-                int adjIndex = tilesMap.getIndex(adjacent);
-                if (explored.getValue(adjIndex)) {
-                    continue; // Skip already explored nodes
-                }
-                if (adjIndex == -1) {
-                    printf("Error: Adjacent tile not found in tilesMap\n");
-                    continue;
-                }
-
-                if (!explored.getValue(adjIndex) && newDist < distance.getValue(adjIndex)) {
-                    distance.set(adjIndex, newDist);
-                    previousPositions.set(adjIndex, current);
-                    pq.insertNode({adjacent, newDist});
-                    printf("Adding tile to PQ: (%d, %d) with distance: %d\n", adjacent.x, adjacent.y, newDist);
+    int minDist;
+    coord current = start;
+    while(!explored.getValue(tilesMap.getIndex(end))){
+        for(const TileDirection& direction : directions){
+            const Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
+            const coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
+            if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction) && !currentTile.hasBlackTile() ){//&& currentTile.weights_[static_cast<int>(direction)] != NULL){
+                const int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
+                int index = distance.getValue(tilesMap.getIndex(adjacent));
+                if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
+                    distance.set(tilesMap.getIndex(adjacent),weight);
+                    previousPositions.set(tilesMap.getIndex(adjacent), current);
                 }
             }
         }
-        printf("Tile marked as explored: (%d, %d)\n", current.x, current.y);
-        explored.set(currentIndex, true);
+        minDist = INT_MAX;
+        //find the minimum distance to the path line
+        for(int i = 0; i < tilesMap.getSize(); i++){
+            const coord& currentCoord = tilesMap.getValue(i);
+            const int currentDistance = distance.getValue(tilesMap.getIndex(currentCoord));           
+            if(currentDistance < minDist && !explored.getValue(tilesMap.getIndex(currentCoord))){
+                minDist = currentDistance;
+                current = currentCoord;
+            }
+        }
+        explored.set(tilesMap.getIndex(current),true);
     }
-
-    coord current = end;
-    while (current != start) {
+    current = end;
+    while(current != start){
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
@@ -280,8 +319,16 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
         visited.push_back(true);
-        //ahead(current);
+        if(blackTile){
+            currentTile = &tiles.getValue(tilesMap.getIndex(current));
+            currentTile->setBlackTile();
+            blackTile = false;
+            continue;
+        }
+        //change level if ramp
+        changeLevel();
         robotCoord = current;
+        printf("Current Position: %d %d %d \n", current.x, current.y, current.z);
         for(const TileDirection direction: directions){
             wall = false; 
             coord wallCoord = {0,0,0};
@@ -292,25 +339,25 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                 case TileDirection::kRight:
                     next = coord{current.x + 2, current.y, 1};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x + 1, current.y, 1};
+                    wallCoord = {current.x + 1, current.y, level};
                     oppositeDirection = TileDirection::kLeft;
                     break;
                 case TileDirection::kUp:
-                    next = coord{current.x, current.y + 2, 1};
+                    next = coord{current.x, current.y + 2, level};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x, current.y + 1, 1};
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
-                    next = coord{current.x - 2, current.y, 1};
+                    next = coord{current.x - 2, current.y, level};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x - 1, current.y, 1};
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
-                    next = coord{current.x, current.y - 2, 1};
+                    next = coord{current.x, current.y - 2, level};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x, current.y - 1, 1};
+                    wallCoord = {current.x, current.y - 1, level};
                     oppositeDirection = TileDirection::kUp;
                     break;
             }
@@ -319,6 +366,7 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
             //end of regular dfs search
             //start of second level dfs search check if has wall   
             //check for adjacentTiles and connecting them
+            
             if (currentTile->adjacentTiles_[static_cast<int>(direction)] == nullptr) {
                 int index = tilesMap.getIndex(next);
             
@@ -335,8 +383,15 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                     nextTile->setPosition(next);
                 }
             
-                currentTile->addAdjacentTile(direction, nextTile, wall);
-                nextTile->addAdjacentTile(oppositeDirection, currentTile, wall);
+                currentTile->addAdjacentTile(direction, nextTile, wall, false);
+
+                if(blueTile){
+                    nextTile->addAdjacentTile(oppositeDirection, nextTile, wall, true);
+                    blueTile = false;
+                }else{
+                    nextTile->addAdjacentTile(oppositeDirection, currentTile, wall, false);
+                }
+                
             
                 if (!wall) {
                     bool visitedFlag = false;
@@ -372,562 +427,3 @@ int main(){
     printf("DFS Finalizaado con %d movimienots", steps); 
     return 0;
 }
-
-/*Output: 
-❯ ./maze.out
-DFS IniciadoTile at (3, 5) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-llegue4llegue4Tile at (3, 5) comes from (1000, 1000)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (3, 5)
-Tile at (3, 7) comes from (3, 5)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . . v . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (3, 7)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (3, 5)
-Tile at (3, 7) comes from (1000, 1000)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (3, 7)
-Tile at (3, 9) comes from (3, 7)
-Tile at (1000, 1000) comes from (1000, 1000)
-Tile at (1000, 1000) comes from (1000, 1000)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . . v . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (3, 7)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (3, 9)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (3, 7)
-Tile at (3, 9) comes from (1000, 1000)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (3, 9)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . . v . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (1000, 1000)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (3, 9)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (1000, 1000)
-Tile at (3, 9) comes from (3, 11)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (3, 9)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X > . . . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . > . . . . # 
-# . . X . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (1000, 1000)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (1000, 1000)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (1000, 1000)
-Tile at (3, 9) comes from (5, 9)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (5, 11)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . * . > . . # 
-# . . X . X . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (1000, 1000)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (1000, 1000)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (1000, 1000)
-Tile at (3, 9) comes from (1000, 1000)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (5, 11)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . * . ^ X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . ^ . . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (1000, 1000)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (1000, 1000)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (1000, 1000)
-Tile at (3, 9) comes from (5, 9)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (7, 9)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . . . . # 
-# . X * . . . ^ . . # 
-# . . . . . . . . . # 
-# . X * . . . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4Tile at (3, 5) comes from (1000, 1000)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (1000, 1000)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (7, 7)
-Tile at (3, 9) comes from (1000, 1000)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (1000, 1000)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . X . . # 
-# . X * . . . < X . # 
-# . . . . . . . . . # 
-# . X * . . . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . . . X . . # 
-# . X * . < . * X . # 
-# . . . . . . . . . # 
-# . X * . . . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (3, 7)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (5, 7)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (1000, 1000)
-Tile at (3, 9) comes from (3, 7)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (5, 7)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . X . X . . # 
-# . X * . v . * X . # 
-# . . . . . . . . . # 
-# . X * . . . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . v . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4llegue4llegue4llegue4llegue4llegue4llegue4llegue4Tile at (3, 5) comes from (3, 7)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (3, 5)
-Tile at (3, 7) comes from (5, 7)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (5, 9)
-Tile at (3, 9) comes from (5, 9)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (1000, 1000)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . ^ . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . X . X . . # 
-# . X * . ^ . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . X . X . . # 
-# . X * . < . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . X . X . . # 
-# . X < . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . . . . . . # 
-# . . . . X . X . . # 
-# . X ^ . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X ^ . . . . . . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X > . . . . . . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . . . . . . # 
-# . X * . > . . . . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4llegue4Tile at (3, 5) comes from (5, 5)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (1000, 1000)
-Tile at (3, 7) comes from (3, 5)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (1000, 1000)
-Tile at (3, 9) comes from (1000, 1000)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (1000, 1000)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . . . . # 
-# . X * . * . > . . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-llegue4llegue4Tile at (3, 5) comes from (5, 5)
-Tile at (1, 5) comes from (1000, 1000)
-Tile at (3, 3) comes from (1000, 1000)
-Tile at (5, 5) comes from (7, 5)
-Tile at (3, 7) comes from (1000, 1000)
-Tile at (1, 7) comes from (1000, 1000)
-Tile at (5, 7) comes from (1000, 1000)
-Tile at (3, 9) comes from (1000, 1000)
-Tile at (1, 9) comes from (1000, 1000)
-Tile at (5, 9) comes from (1000, 1000)
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . X . . # 
-# . X * . * . < X . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . X . . # 
-# . X * . < . * X . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-# # # # # # # # # # # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . X . X . X . . # 
-# . X < . * . * X . # 
-# . . . . X . X . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . . . . . . . . # 
-# . X * . * . * X . # 
-# . . X . X . X . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# . . . . . . . . . # 
-# # # # # # # # # # # 
-DFS FinalizaadoDFS Finalizaado con 25 movimienots% */
