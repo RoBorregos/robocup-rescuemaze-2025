@@ -7,14 +7,15 @@ class Jetson{
   public: 
     Jetson();
     void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
-    void writeSerial(bool success, uint8_t* payload, int elements);
-    void readSerial();
+    void writeSerial(uint8_t code, uint8_t* payload, int elements);
+    bool readSerial();
+    void getDetection();
     String flag;
     uint8_t cube_offset;
     String state();
-  
-  private:
 
+  private:
+  int waitingTime=4000;
 };
 
 #endif

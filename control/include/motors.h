@@ -6,17 +6,20 @@
 #include "VLX.h"
 #include "BNO.H"
 #include <SPI.h>
-#include <unordered_map>
+// #include <unordered_map>
 #include "TCS.h"
 #include "LimitSwitch.h"
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
-constexpr uint8_t edgeTileDistance=5;
+constexpr uint8_t edgeTileDistance=10;
+constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
-constexpr uint8_t targetDistances[]={edgeTileDistance,30+edgeTileDistance,60+edgeTileDistance,90+edgeTileDistance};
+constexpr uint8_t targetDistances[]={edgeTileDistance,kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance,3*kTileLength+edgeTileDistance};
+struct Advanced{
+    int x,y;
+};
 class motors{
 private:
-    static constexpr uint8_t kTileLength=30;
     // static constexpr uint8_t edgeTileDistance=8;
     float targetAngle=0;
     static constexpr unsigned long delayTime=350;
@@ -107,6 +110,7 @@ public:
     void ahead();
     float limitCrash();
     uint16_t getAngleOrientation();
+    Advanced checkpointElection();
     void pidEncoders(int,bool);
     void ahead_ultra();//borrar
     float nearWall();//ver

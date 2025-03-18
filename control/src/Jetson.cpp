@@ -4,8 +4,32 @@
 Jetson::Jetson(){
   // Serial.begin(baud);
 }
-
-void Jetson::readSerial() {
+void Jetson::writeSerial(uint8_t ack, uint8_t* payload, int elements) {
+    //uint8_t ack = success ? 0x00 : 0x01;
+    Serial.write(0xFF);
+    Serial.write(0xAA);
+    Serial.write(sizeof(uint8_t) * elements + 1); // Packet size
+    Serial.write(ack); // ACK
+    
+    // Send payload bytes
+    for (size_t i = 0; i < elements; i++) {
+      Serial.write(payload[i]);
+    }
+  
+    Serial.write(0x00); // Footer
+    Serial.flush();
+  }
+void Jetson::getDetection(){
+    uint32_t t[] = {200};
+    writeSerial(0x02, (uint8_t*)t, sizeof(t));
+    int currentTime=millis();
+    while((millis()-currentTime)<waitingTime){
+        if(readSerial()){
+            break;
+        }
+    }
+}
+bool Jetson::readSerial() {
     static uint8_t buffer[18];
     static uint8_t index = 0;
     static uint8_t packet_size = 0;
@@ -49,8 +73,10 @@ void Jetson::readSerial() {
             // Reset index and packet_size
             index = 0;
             packet_size = 0;
+            return true;
         }
     }
+    return false;
     // if serial is not available, start a counter to stop the robot if nothing is received in a time frame
     // unactive_time_ = millis();
 }
@@ -60,57 +86,44 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x13: // Hardware Version 
             if (packet_size == 1) { // Check packet size
                 uint32_t version[] = {1};
-                writeSerial(true, (uint8_t*)version, sizeof(version));
+                writeSerial(0x00, (uint8_t*)version, sizeof(version));
             }
         break;
         case 0x00: // Baud
             if (packet_size == 1) { // Check packet size
                 uint32_t baud[] = {115200};
-                writeSerial(true, (uint8_t*)baud, sizeof(baud));
+                writeSerial(0x00, (uint8_t*)baud, sizeof(baud));
             }
             break;
-        case 0x01: // harmed victim
+        case 0x0A: // harmed victim
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
                 // robot.harmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
-                writeSerial(true, (uint8_t*)t, sizeof(t));
+                    
+                writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
             break;
-        case 0x02: // stable victim
+        case 0x0B: // stable victim
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
                 // robot.stableVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
-                writeSerial(true, (uint8_t*)t, sizeof(t));
+                writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
         break;
-        case 0x03: // unharmed victim
+        case 0x0C: // unharmed victim
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
                 // robot.unharmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
-                writeSerial(true, (uint8_t*)t, sizeof(t));
+                writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
+
         break;
     }
 }
 
-void Jetson::writeSerial(bool success, uint8_t* payload, int elements) {
-  uint8_t ack = success ? 0x00 : 0x01;
-  Serial.write(0xFF);
-  Serial.write(0xAA);
-  Serial.write(sizeof(uint8_t) * elements + 1); // Packet size
-  Serial.write(ack); // ACK
-  
-  // Send payload bytes
-  for (size_t i = 0; i < elements; i++) {
-    Serial.write(payload[i]);
-  }
-
-  Serial.write(0x00); // Footer
-  Serial.flush();
-}

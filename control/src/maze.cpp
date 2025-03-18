@@ -183,7 +183,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
         //visited.push_back(true);
-
+        /*
         if(robot.blackTile == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setBlackTile();
@@ -249,7 +249,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             //change level in the link of tiles
             currentTile = &tiles.getValue(tilesMap.getIndex(robotCoord));
             for(int i = 0; i < 4; i++){
-                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr)
+                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr){
                     if(currentTile -> adjacentTiles_[i]->position_ == current){
                         current = {current.x, current.y, level};
                         currentTile -> adjacentTiles_[i]->setPosition(current);
@@ -258,7 +258,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             for(int i = 0; i < 4; i++){
-                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr)
+                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr){
                     if(currentTile -> adjacentTiles_[i]->position_ == robotCoord){
                         current = {robotCoord.x, robotCoord.y, level};
                         currentTile -> adjacentTiles_[i]->setPosition(robotCoord);
@@ -268,6 +268,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             //remember the coord
             current = tempCurr;
         }
+            */
         robotCoord = current;
         
         for(const TileDirection direction: directions){

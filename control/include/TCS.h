@@ -1,6 +1,6 @@
 #ifndef TCS_h
 #define TCS_h
-
+#include <FastLED.h>
 #include "Adafruit_TCS34725.h"
 #include "MUX.h"
 // #include "CustomSerial.h"
@@ -9,7 +9,17 @@
 
 // TODO: check which address is the correct one
 #define TCS_ADDR 0x30 
+constexpr uint16_t whiteLow[]={0,0,240};
+constexpr uint16_t whiteHigh[]={360,10,255};
 
+constexpr uint16_t blueLow[]={130,130,200};
+constexpr uint16_t blueHigh[]={155,155,255};
+
+constexpr uint16_t blackLow[]={0,110,200};
+constexpr uint16_t blackHigh[]={40,140,255};
+
+constexpr uint16_t greyLow[]={50,90,160};
+constexpr uint16_t greyHigh[]={75,135,205};
 class TCS {
     private:
         Adafruit_TCS34725 tcs_ = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
@@ -22,9 +32,9 @@ class TCS {
         int8_t colorAmount_ = 3;
         int8_t precision_;
         const char *colorList_;
-        float red_;
-        float green_;
-        float blue_;
+        // float red_;
+        // float green_;
+        // float blue_;
         const int16_t (*colors_)[kColorAmount_];
 
         static constexpr int8_t kColorThresholdsAmount_ = 6;
@@ -41,10 +51,10 @@ class TCS {
         float kMaxRedValueInBlue_ = 132;
 
         float kMinGreenValueInBlue_ = 32;
-        float kMaxGreenValueInBlue_ = 132;
+        float kMaxGreenValueInBlue_ = 139;
 
         float kMinBlueValueInBlue_ = 58;
-        float kMaxBlueValueInBlue_ = 158;
+        float kMaxBlueValueInBlue_ = 164;
 
         float kMaxRedValueInRed_ = 0;
         float kMinRedValueInRed_ = 0;
@@ -64,13 +74,13 @@ class TCS {
         float kMinBlueValueInBlack_ = -2;
         float kMaxBlueValueInBlack_ = 98;
 
-        float kMinRedValueInCheckpoint_ = 316;
+        float kMinRedValueInCheckpoint_ = 150;
         float kMaxRedValueInCheckpoint_ = 416;
 
-        float kMinGreenValueInCheckpoint_ = 327;
+        float kMinGreenValueInCheckpoint_ = 130;
         float kMaxGreenValueInCheckpoint_ = 427;
 
-        float kMinBlueValueInCheckpoint_ = 291;
+        float kMinBlueValueInCheckpoint_ = 110;
         float kMaxBlueValueInCheckpoint_ = 391;
 
         float kMinRedValueInWhite_ = 0;
@@ -101,12 +111,15 @@ class TCS {
         float kRangeTolerance_ = 50;
 
     public:
+        float red_;
+        float green_;
+        float blue_;
         TCS();
 
         TCS(const uint8_t posMux);
 
         TCS(const uint8_t posMux, const int precision);
-
+        
         void init();
 
         void init(const int16_t colors[][kColumnAmount_], const int8_t colorAmount, const char colorList[], const int16_t colorThresholds[][kColorThresholdsAmount_]);
@@ -116,7 +129,7 @@ class TCS {
         void setPrecision(const uint8_t precision);
 
         void printRGB();
-
+        void HSV();
         void printRGBC();
 
         void printColor();

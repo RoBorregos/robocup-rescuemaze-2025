@@ -3,8 +3,8 @@
 #include <WiFi.h>
 WiFiServer server(1234);
 WiFiClient client;
-const char* ssid="RoBorregos2";
-const char* password="RoBorregos2024";
+const char* ssid="Roborregos";
+const char* password="RoBorregos2025";
 motors::motors(){
 }
 void motors::setupMotors(){
@@ -159,9 +159,19 @@ void motors::checkTileColor(){
             pidEncoders(speed,false);
         }
         stop();resetTics();
-    }else if(tileColor=kBlueColor&&inMotion==false){
+    }else if(tileColor==kBlueColor&&inMotion==false){
+        blueTile=true;
         wait(5100);
+        wifiPrint("BLUE",88);
+    }else if(tileColor==kCheckpointColor&&inMotion==false){
+        checkpoint=true;
+        wifiPrint("CHECKPOINT",99);
     }
+    // if(inMotion==false){
+    //     wifiPrint("red",tcs_.red_);
+    //     wifiPrint("green",tcs_.green_);
+    //     wifiPrint("blue",tcs_.blue_);
+    // }
 }
 
 void motors::ahead_ultra(){
@@ -455,7 +465,7 @@ void motors::stop(){
     for(uint8_t i=0;i<4;i++){ 
         motor[i].stop();}
     setSpeed(0);
-    inMotion=true;
+    inMotion=false;
 }
 void motors::printSpeeds(){
     double speedM1=motor[0].getSpeed();
@@ -534,37 +544,37 @@ bool motors::isWall(uint8_t direction){
           return false;
     }
 }
-float motors::getRealDistance(){
-    float distance;
-    uint8_t size=5;
-    float distances[size];
-    for(uint8_t i=0;i<size;i++){
-        distances[i]=findNearest(vlx[vlxID::frontLeft].getDistance(),targetDistances,4,true)+kTileLength;
-        wait(30);
-        Serial.print("dis ahead: ");
-        Serial.print(distances[i]);
-        wifiPrint("dis ahead: ",distances[i]);
-    }
-    std::unordered_map<int, int> freq;  // Mapa para contar frecuencia de cada número
+// float motors::getRealDistance(){
+//     float distance;
+//     uint8_t size=5;
+//     float distances[size];
+//     for(uint8_t i=0;i<size;i++){
+//         distances[i]=findNearest(vlx[vlxID::frontLeft].getDistance(),targetDistances,4,true)+kTileLength;
+//         wait(30);
+//         Serial.print("dis ahead: ");
+//         Serial.print(distances[i]);
+//         wifiPrint("dis ahead: ",distances[i]);
+//     }
+//     std::unordered_map<int, int> freq;  // Mapa para contar frecuencia de cada número
 
-    // 1. Contar la frecuencia de cada número en el array
-    for (int i = 0; i < size; i++) {
-        freq[distances[i]]++;  // Incrementa la cuenta del número en el mapa
-    }
+//     // 1. Contar la frecuencia de cada número en el array
+//     for (int i = 0; i < size; i++) {
+//         freq[distances[i]]++;  // Incrementa la cuenta del número en el mapa
+//     }
 
-    int mostFrequent = distances[0];  // Número más frecuente (inicializado con el primer elemento)
-    int maxCount = 0;           // Mayor frecuencia encontrada
+//     int mostFrequent = distances[0];  // Número más frecuente (inicializado con el primer elemento)
+//     int maxCount = 0;           // Mayor frecuencia encontrada
 
-    // 2. Buscar el número con mayor frecuencia
-    for (const auto& pair : freq) {
-        if (pair.second > maxCount) { // Si encontramos una frecuencia mayor
-            maxCount = pair.second;   // Actualizamos la frecuencia máxima
-            mostFrequent = pair.first;// Actualizamos el número más frecuente
-        }
-    }
+//     // 2. Buscar el número con mayor frecuencia
+//     for (const auto& pair : freq) {
+//         if (pair.second > maxCount) { // Si encontramos una frecuencia mayor
+//             maxCount = pair.second;   // Actualizamos la frecuencia máxima
+//             mostFrequent = pair.first;// Actualizamos el número más frecuente
+//         }
+//     }
 
-    return mostFrequent;
-}
+//     return mostFrequent;
+// }
 bool motors::rampInFront(){
     if((vlx[vlxID::frontLeft].getDistance()-vlx[vlxID::frontLeft/*down*/].getDistance())>=2){
         return true;
@@ -624,6 +634,33 @@ uint16_t motors::getAngleOrientation(){
     else if(currentAngle>135&&currentAngle<=225) return 180;
     else if(currentAngle>225&&currentAngle<=315) return 270;
 }
+Advanced motors::checkpointElection(){
+    float angleOrientation=getAngleOrientation();
+    uint8_t angleThreshold=10;
+    float currentAngle = (angleOrientation == 0) ? z_rotation : angle;
+    Advanced advanced;
+    int turn;
+    if((currentAngle-angleOrientation) < -angleThreshold) turn=-1;
+    else if((currentAngle-angleOrientation)<angleThreshold) turn=1;
+    else turn=0;
+
+    if(angleOrientation==0 && turn==-1) advanced={-1,1};
+    else if(angleOrientation==0 && turn==0) advanced={0,1};
+    else if(angleOrientation==0 && turn==1) advanced={1,1};
+    else if(angleOrientation==90 && turn==-1) advanced={1,1};
+    else if(angleOrientation==90 && turn==0) advanced={1,0};
+    else if(angleOrientation==90 && turn==1) advanced={1,-1};
+    else if(angleOrientation==180 && turn==-1) advanced={1,-1};
+    else if(angleOrientation==180 && turn==0) advanced={0,-1};
+    else if(angleOrientation==180 && turn==1) advanced={-1,-1};
+    else if(angleOrientation==270 && turn==-1) advanced={-1,-1};
+    else if(angleOrientation==270 && turn==0) advanced={-1,0};
+    else if(angleOrientation==270 && turn==1) advanced={-1,1};
+    targetAngle=angleOrientation;
+    rotate(targetAngle);
+    return advanced;
+}
+
 void motors::setupTCS() {
     tcs_.setMux(Pins::tcsPins[0]);
     tcs_.setPrecision(kPrecision);
