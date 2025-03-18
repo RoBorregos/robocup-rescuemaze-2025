@@ -228,7 +228,7 @@ class Esp32():
         
         self.mutex.release()
         return 1
-    
+#Main funtion
     def sentDetection(self):
         self.recv()
         if self.payload_ack==b'\x02':
@@ -240,8 +240,6 @@ class Esp32():
                 # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
                 return self.FAIL, 0
 
-
-
     def get_baud(self):
         ''' Get the current baud rate on the serial port.
         '''
@@ -252,135 +250,3 @@ class Esp32():
         else:
             # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
             return self.FAIL, 0
-    def sent_harmed_victim(self):
-        ''' sent harmed victim detection to leave the kits
-        '''
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x01)  + struct.pack("B", 0x02)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            return  self.SUCCESS
-        else:
-            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-            return self.FAIL, 0    
-    def sent_stable_victim(self):
-        ''' sent stable victim detection to leave the kits
-        '''
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x02)  + struct.pack("B", 0x03)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            return  self.SUCCESS
-        else:
-            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-            return self.FAIL, 0 
-    def sent_unharmed_victim(self):
-        ''' sent unharmed victim detection
-        '''
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x03)  + struct.pack("B", 0x04)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            return  self.SUCCESS
-        else:
-            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-            return self.FAIL, 0 
-            
-
-
-
-
-
-
-
-    """""
-    def sent_ahead(self):
-        ''' Get the current baud rate on the serial port.
-        '''
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x02)  + struct.pack("B", 0x03)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            return  self.SUCCESS
-        else:
-            # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-            return self.FAIL, 0    
-    def sent_stop(self):
-            ''' Get the current baud rate on the serial port.
-            '''
-            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x01)  + struct.pack("B", 0x02)
-            if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-                return  self.SUCCESS
-            else:
-                # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
-                return self.FAIL, 0 
-            
-    def sendLocation(self, tile, angle):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x01) + struct.pack("ii", tile, angle) + struct.pack("B", 0x02)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-           some, = struct.unpack('I', self.payload_args)
-           return  self.SUCCESS, some
-        else:
-           return self.FAIL
-    
-    def startLocation(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x02) + struct.pack("B", 0x03)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-           return  self.SUCCESS
-        else:
-           return self.FAIL
-    def cube_found(self, xpoint): # Send if there is a cube detection
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x04)  + struct.pack("f", xpoint) + struct.pack("B", 0x05)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('f', self.payload_args)
-            return  self.SUCCESS, some
-        else:
-            return self.FAIL, 0
-
-    def rotate_90(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x05)  + struct.pack("B", 0x06)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            return  self.SUCCESS
-        else:
-            return self.FAIL, 0
-    
-    def get_searching_for_cube(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x06)  + struct.pack("B", 0x07)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('i', self.payload_args)
-            return  self.SUCCESS, some
-        else:
-            return self.FAIL, 0
-    
-    def in_front_of_cube(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x07)  + struct.pack("B", 0x08)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('i', self.payload_args)
-            return  self.SUCCESS
-        else:
-            return self.FAIL, 0
-
-
-    def send_test(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            return  self.SUCCESS
-        else:
-            return self.FAIL, 0
-    
-    def getState(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x09)  + struct.pack("B", 0x0A)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('i', self.payload_args)
-            return  self.SUCCESS, some
-        else:
-            return self.FAIL, 0
-        
-    def setCubeDetection(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x0A)  + struct.pack("B", 0x0B)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            # some, = struct.unpack('i', self.payload_args)
-            return  self.SUCCESS
-        else:
-            return self.FAIL, 0
-    
-    def findOrigin(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x0B)  + struct.pack("B", 0x0C)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            # some, = struct.unpack('i', self.payload_args)
-            return  self.SUCCESS
-        else:
-            return self.FAIL, 0
-    """
