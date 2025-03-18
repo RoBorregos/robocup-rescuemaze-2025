@@ -62,8 +62,6 @@ public:
         }
         return array[0];
     }
-
-    // ✅ Extracts and Removes the Minimum Element
     T extractMin() {
         if (size <= 0) {
             printf("Heap is empty");
@@ -76,8 +74,6 @@ public:
         heapify(0);
         return root;
     }
-
-    // ✅ New: Removes the Minimum Element (Pop) Without Returning
     void pop() {
         if (size <= 0) {
             printf("Heap is empty");
