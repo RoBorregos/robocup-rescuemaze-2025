@@ -3,6 +3,7 @@
 #include "arrCustom.h"
 #include "Stack.h"
 #include "heap.h"
+#include <stdio.h>
 
 // center of tile, what is at the bottom of the tile
 // sides, what is at the walls of the tile.
@@ -10,21 +11,22 @@ char RealMaze[17][11] = {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
+        {'#', ' ', '#', ' ', ' ', ' ', ' ', 't', '#', ' ', '#'}, // 3.
         {'#', ' ', '.', ' ', '.', '#', '.', '#', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 5.
+        {'#', ' ', '#', 't', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 5.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', ' ', ' ', ' ', 'B', '#', ' ', '#'}, // 7.
+        {'#', ' ', '#', 'c', ' ', ' ', ' ', 'B', '#', ' ', '#'}, // 7.
         {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', ' ', '#', ' ', ' ', 'b', '#', ' ', '#'}, // 9.
-        {'#', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', 'h', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 1.
-        {'#', ' ', '.', '#', '.', ' ', '.', ' ', '.', ' ', '#'},
-        {'#', ' ', '#', 'B', ' ', ' ', ' ', ' ', '#', ' ', '#'}, // 3.
+        {'#', ' ', '#', 't', '#', ' ', ' ', 'b', '#', ' ', '#'}, // 9.
+        {'#', ' ', '.', ' ', '.', '#', '.', ' ', '.', ' ', '#'},
+        {'#', ' ', '#', 'h', ' ', 'l', ' ', ' ', '#', ' ', '#'}, // 1.
+        {'#', ' ', '.', '#', '.', '#', '.', ' ', '.', ' ', '#'},
+        {'#', ' ', '#', 'B', ' ', 't', ' ', ' ', '#', ' ', '#'}, // 3.
         {'#', ' ', '.', '#', '.', '#', '.', '#', '.', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
+//test later
 char RealMaze2[17][11] = {
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 1.
@@ -44,6 +46,7 @@ char RealMaze2[17][11] = {
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'}, // 5.
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
 };
+
 char discoverMaze[17][11] ={
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     {'#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'}, // 1.
@@ -65,17 +68,22 @@ char discoverMaze[17][11] ={
 };
 
 int steps = 0;
-coord inicio = {3,5,1};
-coord robotCoord = {3,5,1};
+coord inicio = {3,3,0};
+coord robotCoord = {3,3,0};
 char robotChar = 'v';
 TileDirection directions[4] = {TileDirection::kLeft,TileDirection::kDown,TileDirection::kRight,TileDirection::kUp};
 int robotOrientation = 0;
-const int kMaxSize = 100; 
+const int kMaxSize = 200; 
 bool blackTile = false;
 bool blueTile = false;
+bool checkpoint = false;
+bool lackProgress = false;
+coord checkpointCoord = {0,0,0};
+bool victim = false;
 int rampState = 0;
 //uint8_t, comienza en 128
 int level = 0;
+arrCustom<coord> visitedMapRecover(kMaxSize, kInvalidPosition);
 
 void printMaze(char maze[17][11]){
     for(int i = 0; i < 17; ++i){
@@ -160,21 +168,13 @@ int checkBlackBlue( const char maze[17][11], const coord& robotCoord){
     }
     return 0;
 }
-bool checkVictim( const char maze[17][11], const TileDirection& direction, const coord& robotCoord){
-    // if victim therefore wall
-    switch(direction){
-        case TileDirection::kRight:
-            return maze[robotCoord.y][robotCoord.x + 1] == 'v';
-        case TileDirection::kUp:
-            return maze[robotCoord.y + 1][robotCoord.x] == 'v';
-        case TileDirection::kLeft:
-            return maze[robotCoord.y][robotCoord.x - 1] == 'v';
-        case TileDirection::kDown:
-            return maze[robotCoord.y - 1][robotCoord.x] == 'v';
-        default:
-            break;
-    }
+bool checkVictim( const char maze[17][11], const coord& robotCoord){
+    return maze[robotCoord.y][robotCoord.x] == 't';
 }
+bool checkCheckpoint(const char maze[17][11], const coord& robotCoord){
+    return maze[robotCoord.y][robotCoord.x] == 'c';
+}
+
 void ahead(coord next){
     if(checkBlackBlue(RealMaze, next) == 1){
         blackTile = true;
@@ -192,19 +192,12 @@ void ahead(coord next){
         robotCoord = next;
         discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
         
-        printMaze(discoverMaze);
+        //printMaze(discoverMaze);
         steps++;
     }
-    
 }
-void changeLevel(){
-    if(rampState == 1){
-        level++;
-    }else if(rampState == 2){
-        level--;
-    }
-    rampState = 0;
-}
+//----------
+void changeLevel() { level += (rampState == 1) - (rampState == 2); rampState = 0; }
 void turnRobot(const int targetOrientation) {
     int difference = targetOrientation - robotOrientation;
     if (difference == 0) {
@@ -212,22 +205,33 @@ void turnRobot(const int targetOrientation) {
     }
     if (difference == 90 || difference == -270) {
         right();
+        steps++;
         robotOrientation = (robotOrientation + 90) % 360;
     } else if (difference == 270 || difference == -90) {
         left();
+        steps++;
         robotOrientation = (robotOrientation + 270) % 360;
     } else if (difference == 180|| difference == -180) {
         right();
         right();
+        steps++;
+        steps++;
         robotOrientation = (robotOrientation + 180) % 360;
     }
+    discoverMaze[robotCoord.y][robotCoord.x] = robotChar;
     printMaze(discoverMaze);
-    steps++;
 }
 void followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
         path.pop();
+        char opt = ' ';
+        
+        scanf("%c", &opt);
+        if(opt == 'l'){
+            lackProgress = true;
+            break;
+        }
         if (next.x > robotCoord.x) {
             turnRobot(270);
         } else if (next.x < robotCoord.x) {
@@ -237,12 +241,20 @@ void followPath(Stack& path){
         } else if (next.y < robotCoord.y) {
             turnRobot(180);
         }
+        printMaze(discoverMaze);
+        
+        scanf("%c", &opt);
+        if(opt == 'l'){
+            lackProgress = true;
+            break;
+        }
         ahead(next);
+        printMaze(discoverMaze);
         if(blackTile){
             continue;
         }
+        //std::cin>>opt;
         robotCoord = next;
-        //printMaze(discoverMaze);
     }
 
 }
@@ -316,7 +328,23 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
         if (visitedFlag) {
             continue;
         }
-        dijkstra(robotCoord, current, tilesMap, tiles);
+        
+        if(robotCoord != current){
+            dijkstra(robotCoord, current, tilesMap, tiles);
+        }
+
+        if(lackProgress){
+            printf("Lack of progress, returning to checkpoint \n");
+            robotCoord = checkpointCoord;
+            lackProgress = false;
+            for(int i = 0; i < visitedMapRecover.getSize(); i++){
+                visitedMap.set(i,visitedMapRecover.getValue(i));
+            }
+            unvisited.~Stack();
+            //unvisited.push(robotCoord);
+            //continue;
+        }
+        //dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
         visited.push_back(true);
         if(blackTile){
@@ -328,6 +356,29 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
         //change level if ramp
         changeLevel();
         robotCoord = current;
+        
+        if(checkVictim(RealMaze, robotCoord)){
+            victim = true;
+        }
+        if(checkCheckpoint(RealMaze, robotCoord)){
+            checkpoint = true;
+        }
+        if(victim){
+            printf("Victim found, deploying kits. \n");
+            victim = false;
+        }
+        if(checkpoint){
+            printf("Checkpoint reached \n");
+            currentTile = &tiles.getValue(tilesMap.getIndex(current));
+            currentTile->setCheckpoint();
+            checkpointCoord = robotCoord;
+            checkpoint = false;
+            for(int i = 0; i < visitedMap.getSize(); i++){
+                visitedMapRecover.set(i,visitedMap.getValue(i));
+            }
+        }
+        
+        
         printf("Current Position: %d %d %d \n", current.x, current.y, current.z);
         for(const TileDirection direction: directions){
             wall = false; 
@@ -337,7 +388,7 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
             }
             switch(direction) {
                 case TileDirection::kRight:
-                    next = coord{current.x + 2, current.y, 1};
+                    next = coord{current.x + 2, current.y, level};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     wallCoord = {current.x + 1, current.y, level};
                     oppositeDirection = TileDirection::kLeft;
@@ -345,13 +396,13 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                 case TileDirection::kUp:
                     next = coord{current.x, current.y + 2, level};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x, current.y + 1, 1};
+                    wallCoord = {current.x, current.y + 1, level};
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
                     next = coord{current.x - 2, current.y, level};
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
-                    wallCoord = {current.x - 1, current.y, 1};
+                    wallCoord = {current.x - 1, current.y, level};
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
@@ -378,7 +429,6 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                 } else {  // Tile exists, retrieve it
                     nextTile = &tiles.getValue(index);
                 }
-            
                 if (nextTile->position_ == kInvalidPosition) {
                     nextTile->setPosition(next);
                 }
@@ -410,6 +460,9 @@ void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>&
                     }
                 }
             }
+            /*else{
+
+            }*/
         }
     }
     dijkstra(robotCoord, inicio, tilesMap, tiles);
