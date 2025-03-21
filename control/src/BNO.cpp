@@ -18,7 +18,8 @@ void BNO::setupBNO() {
     if (!bno_.begin()){
         // There was a problem detecting the BNO055 ... check your connections
         // customPrint("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-        while(1);
+        Serial.println("error al iniciar BNO");
+        // while(1);
     }
     // customPrintln("BNO055 detected");
     delay(1000);

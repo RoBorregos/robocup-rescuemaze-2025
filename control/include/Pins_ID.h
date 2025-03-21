@@ -19,14 +19,14 @@ namespace Pins{
     constexpr uint8_t digitalOne[4] = {
         4, // BACK_RIGHT 4    2
         16, // BACK_LEFT 17   17
-        14,  // FRONT_RIGHT 14
-        33 // FRONT_LEFT 33   
+        27,  // FRONT_RIGHT 14
+        25 // FRONT_LEFT 33   
     };  
     constexpr uint8_t digitalTwo[4] = {
         2, // BACK_RIGHT 2   4
         17, // BACK_LEFT 5  16
-        27,  // FRONT_RIGHT 27
-        25 // FRONT_LEFT 25 
+        14,  // FRONT_RIGHT 27
+        33// FRONT_LEFT 25 
     };
     constexpr uint8_t vlxPins[5] = {//MUX
         // Defined Pins on 20th of March
@@ -43,23 +43,24 @@ namespace Pins{
         13, // LEFT
         23  // RIGHT
     };
+    constexpr uint8_t servoPin = 18;
 }
 namespace LimitSwitchID {
     constexpr uint8_t kLeft = 0;
     constexpr uint8_t kRight = 1;
 }
 namespace vlxID{
-    constexpr uint8_t right=2;//
-    constexpr uint8_t left=1;//
-    constexpr uint8_t frontRight=5;//
-    constexpr uint8_t frontLeft=3;//
-    //constexpr uint8_t front=4;
-    constexpr uint8_t back=0;//
+    constexpr uint8_t right=2;//si
+    constexpr uint8_t left=1;//si
+    constexpr uint8_t frontRight=5;//no
+    constexpr uint8_t frontLeft=3;//si
+    constexpr uint8_t front=4;//no
+    constexpr uint8_t back=0;//no
 }
 namespace MotorID{
     constexpr uint8_t kBackRight=0;
-    constexpr uint8_t kBackLeft=1;
-    constexpr uint8_t kFrontRight=2;
+    constexpr uint8_t kBackLeft=2;
+    constexpr uint8_t kFrontRight=1;
     constexpr uint8_t kFrontLeft=3;
 }
 #endif

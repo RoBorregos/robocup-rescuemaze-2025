@@ -6,12 +6,13 @@
 #include "VLX.h"
 #include "BNO.H"
 #include <SPI.h>
+#include <ESP32Servo.h>
 // #include <unordered_map>
 #include "TCS.h"
 #include "LimitSwitch.h"
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
-constexpr uint8_t edgeTileDistance=10;
+constexpr uint8_t edgeTileDistance=5;
 constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
 constexpr uint8_t targetDistances[]={edgeTileDistance,kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance,3*kTileLength+edgeTileDistance};
@@ -25,8 +26,8 @@ private:
     static constexpr unsigned long delayTime=350;
     PID myPID[4];
     //vlx
-    static constexpr uint8_t kNumVlx=5;
-    static constexpr uint8_t maxVlxDistance=68;
+    static constexpr uint8_t kNumVlx=6;
+    static constexpr uint8_t maxVlxDistance=100;
     
     //wheels
     static constexpr float wheelDiameter=8;
@@ -86,6 +87,7 @@ public:
     TCS tcs_;
     LimitSwitch limitSwitch_[2];
     VLX vlx[kNumVlx];
+    Servo servo;
     Motor motor[4];//0-BACK_RIGHT//1-BACK_LEFT//2-FRONT_RIGHT//3-FRONT_LEFT
     bool blackTile=false;
     bool blueTile=false;

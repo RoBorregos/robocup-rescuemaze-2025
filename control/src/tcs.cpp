@@ -150,7 +150,25 @@ char TCS::getColor() {
         return kUndefinedColor_;
     }
 }
-
+// char TCS::getColor() {
+//     updateRGB();
+//     CRGB colorRGB = CRGB(red_, green_, blue_);
+//     // Convertir a HSV
+//     uint8_t blackValue=50;
+//     uint16_t sum=red_+green_+blue_;
+//     float redN=red_/sum;
+//     float greenN=green_/sum;
+//     float blueN=blue_/sum;
+//     if(red_<blackValue && green_<blackValue && blue_<blackValue ){
+//         return kBlackColor_;
+//     }else if(blueN>37){
+//         return kBlueColor_;
+//     // }else if(colorHSV.h>=greyLow[0] && colorHSV.h<=greyHigh[0] && colorHSV.s>=greyLow[1] && colorHSV.s<=greyHigh[1] && colorHSV.v>=greyLow[2] && colorHSV.v<=greyHigh[2]){
+//     //     return kCheckpointColor_;
+//     }else{
+//         return kUndefinedColor_;
+//     }
+// }
 bool TCS::inRange(uint8_t colorInput, uint8_t colorRegistered) {
     return (((colorRegistered - precision_) <= colorInput) && (colorInput <= (colorRegistered + precision_)));
 }

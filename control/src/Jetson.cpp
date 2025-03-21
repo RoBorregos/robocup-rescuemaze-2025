@@ -4,6 +4,16 @@
 Jetson::Jetson(){
   // Serial.begin(baud);
 }
+void Jetson::getDetection(){
+    uint32_t t[] = {200};
+    writeSerial(0x02, (uint8_t*)t, sizeof(t));
+    int currentTime=millis();
+    while((millis()-currentTime)<waitingTime){
+        if(readSerial()){
+            break;
+        }
+    }
+}
 void Jetson::writeSerial(uint8_t ack, uint8_t* payload, int elements) {
     //uint8_t ack = success ? 0x00 : 0x01;
     Serial.write(0xFF);
@@ -18,17 +28,8 @@ void Jetson::writeSerial(uint8_t ack, uint8_t* payload, int elements) {
   
     Serial.write(0x00); // Footer
     Serial.flush();
-  }
-void Jetson::getDetection(){
-    uint32_t t[] = {200};
-    writeSerial(0x02, (uint8_t*)t, sizeof(t));
-    int currentTime=millis();
-    while((millis()-currentTime)<waitingTime){
-        if(readSerial()){
-            break;
-        }
-    }
 }
+
 bool Jetson::readSerial() {
     static uint8_t buffer[18];
     static uint8_t index = 0;
@@ -101,7 +102,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 // robot.harmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
-                    
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
             break;

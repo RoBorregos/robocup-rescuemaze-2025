@@ -8,40 +8,41 @@ const char* password="RoBorregos2025";
 motors::motors(){
 }
 void motors::setupMotors(){
-    ////wifi////////
-    WiFi.begin(ssid,password);
-    Serial.print("Conectando");
-    while (WiFi.status() != WL_CONNECTED){
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("conectado a WIFI");
-    Serial.print("Direccion IP: ");
-    Serial.println(WiFi.localIP());
-    server.begin();
-    while(!client) {
-        client = server.available();
-        delay(100);
-    }
+    // ////wifi////////
+    // WiFi.begin(ssid,password);
+    // Serial.print("Conectando");
+    // while (WiFi.status() != WL_CONNECTED){
+    //     delay(500);
+    //     Serial.print(".");
+    // }
+    // Serial.println("conectado a WIFI");
+    // Serial.print("Direccion IP: ");
+    // Serial.println(WiFi.localIP());
+    // server.begin();
+    // while(!client) {
+    //     client = server.available();
+    //     delay(100);
+    // }
     for(uint8_t i=0;i<4;i++){
         motor[i].initialize(Pins::digitalOne[i],Pins::digitalTwo[i],Pins::pwmPin[i],i);
         Serial.println(Pins::pwmPin[i]);
         myPID[i].changeConstants(6.5,0.1,0.005,50);
     }
     Wire.begin();  // Inicializa el bus I2C
-    setupVlx(vlxID::frontLeft);
-    // setupVlx(vlxID::frontRight);
-    setupVlx(vlxID::back);
-    setupVlx(vlxID::right);
-    setupVlx(vlxID::left);
     bno.setupBNO();
-    setupTCS();
-    tcs_.getColor();
-    // while(true){
-    //     tcs_.printColor();
-    // }
+    
+    setupVlx(vlxID::frontLeft);
+    setupVlx(vlxID::left);
+    
+    // setupVlx(vlxID::frontRight);
+    // setupVlx(vlxID::front);
+    setupVlx(vlxID::right);
+    setupVlx(vlxID::back);
+    // setupTCS();
+    // tcs_.getColor();
     limitSwitch_[LimitSwitchID::kLeft].initLimitSwitch(Pins::limitSwitchPins[LimitSwitchID::kLeft]);
     limitSwitch_[LimitSwitchID::kRight].initLimitSwitch(Pins::limitSwitchPins[LimitSwitchID::kRight]);
+    servo.attach(Pins::servoPin);
     delay(500);
     targetAngle=0;
 }
@@ -80,8 +81,8 @@ void motors::pidEncoders(int speedReference,bool ahead){
     bno.getOrientationX();
     speedReference;
     PID pidBno(0.5,0.1,0.01,1);
-    float changeAngle=nearWall();
-    float error=pidBno.calculate_PID(targetAngle+changeAngle,(targetAngle==0 ? z_rotation:angle));
+    // float changeAngle=nearWall();
+    float error=pidBno.calculate_PID(targetAngle/*+changeAngle*/,(targetAngle==0 ? z_rotation:angle));
     error=constrain(error,-8,8);//aumentar
     Serial.println(error);
     if(!ahead) error=-error;
@@ -101,51 +102,50 @@ void motors::ahead(){
         distance=frontDistance;
         encoder=false;
         frontVlx=true;
-        wifiPrint("vlx adelante",1);
+        // wifiPrint("vlx adelante",1);
     }else if(backDistance<maxVlxDistance-kTileLength){
         distance=backDistance;
         encoder=false;
         frontVlx=false;
-        wifiPrint("vlx atras",1);
+        // wifiPrint("vlx atras",1);
     }else{
         encoder=true;
-        wifiPrint("encoders ",1);
+        // wifiPrint("encoders ",1);
     }
-    setahead();
     if(!encoder){
         float targetDistance=findNearest(distance,targetDistances,4,frontVlx);//agregar variable de adelante atras
         while(frontVlx ? (distance>targetDistance):(distance<targetDistance)){//poner rango
-            // float changeAngle=nearWall();
-            limitCrash();
-            checkTileColor();
             setahead();
-            if(blackTile) break;
+            // float changeAngle=nearWall();
+            // limitCrash();
+            // checkTileColor();
+            // if(blackTile) break;
             distance=(frontVlx ? vlx[vlxID::frontLeft].getDistance():vlx[vlxID::back].getDistance());
             Serial.println(distance);
             float missingDistance=abs(distance-targetDistance);
             float speed;
             speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
             pidEncoders(speed,true);
-            if(isRamp()) break;
+            // if(isRamp()) break;
         }
     }else if(encoder){
+        Serial.println(getAvergeTics());
         while(getAvergeTics()<kTicsPerTile/*+obstacleDistance*/){
-            limitCrash();
-            checkTileColor();
-            if(blackTile) return;
+            setahead();
+            // limitCrash();
+            // checkTileColor();
+            // if(blackTile) return;
             bno.getOrientationX();
-            float changeAngle=nearWall();
+            // float changeAngle=nearWall();
             float missingDistance=kTileLength-(getAvergeTics()*kTileLength/kTicsPerTile);
             float speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
             pidEncoders(speed,true);
-            if(isRamp()) break;
-            // float speed=changeSpeedMove(true,false,kTicsPerTile,frontVlx);
-            // PID_speed((targetAngle+changeAngle),(targetAngle==0 ? z_rotation:angle),speed);
+            // if(isRamp()) break;
         }
     }
     resetTics();
-
-    stop();resetTics();checkTileColor();
+    Serial.println("aheadHecho");
+    stop();resetTics();/*checkTileColor();*/
 }
 void motors::checkTileColor(){
     tileColor=tcs_.getColor();
@@ -448,17 +448,17 @@ void motors::setback(){
     inMotion=true;
 }
 void motors::setright(){
-    motor[0].ahead();
-    motor[1].back();
-    motor[2].ahead();
-    motor[3].back();
+    motor[MotorID::kBackLeft].ahead();
+    motor[MotorID::kBackRight].back();
+    motor[MotorID::kFrontLeft].ahead();
+    motor[MotorID::kFrontRight].back();
     inMotion=true;
 }
 void motors::setleft(){
-    motor[0].back();
-    motor[1].ahead();
-    motor[2].back();
-    motor[3].ahead();
+    motor[MotorID::kBackLeft].back();
+    motor[MotorID::kBackRight].ahead();
+    motor[MotorID::kFrontLeft].back();
+    motor[MotorID::kFrontRight].ahead();
     inMotion=true;
 }
 void motors::stop(){
@@ -483,7 +483,7 @@ void motors::resetTics(){
         motor[i].resetTics();}
 }
 double motors::getAvergeTics(){
-    float totalTics;
+    float totalTics=0;
     for(int i=0;i<4;i++){
         totalTics+=motor[i].tics;
     }
@@ -544,37 +544,7 @@ bool motors::isWall(uint8_t direction){
           return false;
     }
 }
-// float motors::getRealDistance(){
-//     float distance;
-//     uint8_t size=5;
-//     float distances[size];
-//     for(uint8_t i=0;i<size;i++){
-//         distances[i]=findNearest(vlx[vlxID::frontLeft].getDistance(),targetDistances,4,true)+kTileLength;
-//         wait(30);
-//         Serial.print("dis ahead: ");
-//         Serial.print(distances[i]);
-//         wifiPrint("dis ahead: ",distances[i]);
-//     }
-//     std::unordered_map<int, int> freq;  // Mapa para contar frecuencia de cada número
 
-//     // 1. Contar la frecuencia de cada número en el array
-//     for (int i = 0; i < size; i++) {
-//         freq[distances[i]]++;  // Incrementa la cuenta del número en el mapa
-//     }
-
-//     int mostFrequent = distances[0];  // Número más frecuente (inicializado con el primer elemento)
-//     int maxCount = 0;           // Mayor frecuencia encontrada
-
-//     // 2. Buscar el número con mayor frecuencia
-//     for (const auto& pair : freq) {
-//         if (pair.second > maxCount) { // Si encontramos una frecuencia mayor
-//             maxCount = pair.second;   // Actualizamos la frecuencia máxima
-//             mostFrequent = pair.first;// Actualizamos el número más frecuente
-//         }
-//     }
-
-//     return mostFrequent;
-// }
 bool motors::rampInFront(){
     if((vlx[vlxID::frontLeft].getDistance()-vlx[vlxID::frontLeft/*down*/].getDistance())>=2){
         return true;
@@ -636,28 +606,33 @@ uint16_t motors::getAngleOrientation(){
 }
 Advanced motors::checkpointElection(){
     float angleOrientation=getAngleOrientation();
-    uint8_t angleThreshold=10;
+    targetAngle=angleOrientation;
+    uint8_t angleThreshold=7;
     float currentAngle = (angleOrientation == 0) ? z_rotation : angle;
     Advanced advanced;
     int turn;
-    if((currentAngle-angleOrientation) < -angleThreshold) turn=-1;
-    else if((currentAngle-angleOrientation)<angleThreshold) turn=1;
+    if((currentAngle-angleOrientation) < -angleThreshold){
+        turn=-1; 
+        ahead();
+        left();
+        ahead();
+    } 
+    else if((currentAngle-angleOrientation)<angleThreshold){
+        turn=1; 
+        ahead();
+        right();
+        ahead(); 
+    } 
     else turn=0;
-
     if(angleOrientation==0 && turn==-1) advanced={-1,1};
-    else if(angleOrientation==0 && turn==0) advanced={0,1};
     else if(angleOrientation==0 && turn==1) advanced={1,1};
     else if(angleOrientation==90 && turn==-1) advanced={1,1};
-    else if(angleOrientation==90 && turn==0) advanced={1,0};
     else if(angleOrientation==90 && turn==1) advanced={1,-1};
     else if(angleOrientation==180 && turn==-1) advanced={1,-1};
-    else if(angleOrientation==180 && turn==0) advanced={0,-1};
     else if(angleOrientation==180 && turn==1) advanced={-1,-1};
     else if(angleOrientation==270 && turn==-1) advanced={-1,-1};
-    else if(angleOrientation==270 && turn==0) advanced={-1,0};
     else if(angleOrientation==270 && turn==1) advanced={-1,1};
-    targetAngle=angleOrientation;
-    rotate(targetAngle);
+    else advanced={0,0};
     return advanced;
 }
 
@@ -677,21 +652,4 @@ void motors::wifiPrint(String message, float i){
     client.println(i);
     // Serial.println("Enviado: ");
 }
-void motors::printTicsSpeed(){
-     // double current_time=millis()-last_time;
-  // Serial.println(robot.motor[MotorID::kFrontLeft].tics);
-  // if(current_time>=calculate_time){
-  //   Serial.print("front left: ");
-  //   Serial.println(Encoder::deltaTics[MotorID::kFrontLeft]);
-  //   Serial.print("front right: ");
-  //   Serial.println(Encoder::deltaTics[MotorID::kFrontRight]);
-  //   Serial.print("back left: ");
-  //   Serial.println(Encoder::deltaTics[MotorID::kBackLeft]);
-  //   Serial.print("back right: ");
-  //   Serial.println(Encoder::deltaTics[MotorID::kBackRight]);
-  //   for(int i=0;i<4;i++){
-  //     Encoder::deltaTics[i]=0;
-  //   }
-  //   last_time=millis();
-  // }
-}
+

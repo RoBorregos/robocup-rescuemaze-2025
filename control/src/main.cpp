@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Encoder.h"
 #include "maze.h"
+#include "Test.h"
 #include <FastLED.h>
 #include "Jetson.h"
 maze m;
@@ -22,10 +23,26 @@ void setup() {
 void loop() {
 //  robot.tcs_.printRGB();
 // m.run_algs();
-jetson.getDetection();
+// jetson.getDetection();
 // delay(6000);
 // Serial.println(robot.tcs_.getColor());
 //  robot.tcs_.HSV();
+// Serial.println("loop");
+// testEncoder(MotorID::kFrontRight);
+// testVlx(vlxID::frontLeft);
+// Serial.println(robot.vlx[vlxID::frontLeft].getDistance());
+
+// robot.setahead();
+// robot.motor[MotorID::kFrontLeft].setSpeed(100);
+// delay(500);
+// robot.motor[MotorID::kFrontRight].setSpeed(100);
+// delay(500);
+// robot.motor[MotorID::kBackLeft].setSpeed(100);
+// delay(500);
+// robot.motor[MotorID::kBackRight].setSpeed(100);
+// delay(500);
+
+
 }
 
 // void loop0(void *parameter){

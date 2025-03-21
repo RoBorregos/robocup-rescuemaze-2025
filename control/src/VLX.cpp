@@ -31,7 +31,12 @@ float VLX::getDistance(){
     distance=distance/10;
     return distance;
     }else{
-        return 180;
+        updateDistance();
+        if (measure.RangeStatus != 4) {
+        distance=measure.RangeMilliMeter;
+        distance=distance/10;
+        return distance;
+        }
     }
 }
 
