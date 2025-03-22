@@ -1,15 +1,19 @@
 #include "Encoder.h"
 #include "motors.h"
 motors robot;
-void Encoder::backRightEncoder() {
+void Interrups::backRightEncoder() {
     robot.motor[MotorID::kBackRight].updateTics();
 }
-void Encoder::backLeftEncoder() {
+void Interrups::backLeftEncoder() {
     robot.motor[MotorID::kBackLeft].updateTics();
 }
-void Encoder::frontRightEncoder() {
+void Interrups::frontRightEncoder() {
     robot.motor[MotorID::kFrontRight].updateTics();
 }
-void Encoder::frontLeftEncoder() {
+void Interrups::frontLeftEncoder() {
     robot.motor[MotorID::kFrontLeft].updateTics();
 }
+void Interrups::lackOfProgress(){
+    robot.buttonPressed=true;
+}
+

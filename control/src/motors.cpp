@@ -27,6 +27,7 @@ void motors::setupMotors(){
         motor[i].initialize(Pins::digitalOne[i],Pins::digitalTwo[i],Pins::pwmPin[i],i);
         Serial.println(Pins::pwmPin[i]);
         myPID[i].changeConstants(6.5,0.1,0.005,50);
+        // myPID[i].changeConstants(7.5,0.1,0.005,50);
     }
     Wire.begin();  // Inicializa el bus I2C
     bno.setupBNO();
@@ -34,7 +35,7 @@ void motors::setupMotors(){
     setupVlx(vlxID::frontLeft);
     setupVlx(vlxID::left);
     
-    // setupVlx(vlxID::frontRight);
+    setupVlx(vlxID::frontRight);
     // setupVlx(vlxID::front);
     setupVlx(vlxID::right);
     setupVlx(vlxID::back);
@@ -42,6 +43,7 @@ void motors::setupMotors(){
     // tcs_.getColor();
     limitSwitch_[LimitSwitchID::kLeft].initLimitSwitch(Pins::limitSwitchPins[LimitSwitchID::kLeft]);
     limitSwitch_[LimitSwitchID::kRight].initLimitSwitch(Pins::limitSwitchPins[LimitSwitchID::kRight]);
+    pinMode(Pins::checkpointPin, INPUT_PULLDOWN);
     servo.attach(Pins::servoPin);
     delay(500);
     targetAngle=0;
@@ -81,18 +83,18 @@ void motors::pidEncoders(int speedReference,bool ahead){
     bno.getOrientationX();
     speedReference;
     PID pidBno(0.5,0.1,0.01,1);
-    // float changeAngle=nearWall();
-    float error=pidBno.calculate_PID(targetAngle/*+changeAngle*/,(targetAngle==0 ? z_rotation:angle));
+    float changeAngle=nearWall();
+    float error=pidBno.calculate_PID(targetAngle+changeAngle,(targetAngle==0 ? z_rotation:angle));
     error=constrain(error,-8,8);//aumentar
     Serial.println(error);
     if(!ahead) error=-error;
-    PID_Wheel(speedReference-error,MotorID::kFrontLeft);
-    PID_Wheel(speedReference-error,MotorID::kBackLeft);
-    PID_Wheel(speedReference+error,MotorID::kFrontRight);
-    PID_Wheel(speedReference+error,MotorID::kBackRight);
+    PID_Wheel(speedReference+error,MotorID::kFrontLeft);
+    PID_Wheel(speedReference+error,MotorID::kBackLeft);
+    PID_Wheel(speedReference-error,MotorID::kFrontRight);
+    PID_Wheel(speedReference-error,MotorID::kBackRight);
 }
 void motors::ahead(){
-    // double obstacleDistance=passObstacle();
+    float obstacleDistance=passObstacle();
     resetTics();
     float distance;
     float frontDistance=vlx[vlxID::frontLeft].getDistance();
@@ -125,12 +127,14 @@ void motors::ahead(){
             float missingDistance=abs(distance-targetDistance);
             float speed;
             speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
+            // speed=(kMaxSpeedFormard+kMinSpeedFormard)/2;
+            speed=constrain(speed,kMinSpeedFormard,kMaxSpeedFormard);
             pidEncoders(speed,true);
             // if(isRamp()) break;
         }
     }else if(encoder){
         Serial.println(getAvergeTics());
-        while(getAvergeTics()<kTicsPerTile/*+obstacleDistance*/){
+        while(getAvergeTics()<kTicsPerTile+obstacleDistance){
             setahead();
             // limitCrash();
             // checkTileColor();
@@ -139,6 +143,7 @@ void motors::ahead(){
             // float changeAngle=nearWall();
             float missingDistance=kTileLength-(getAvergeTics()*kTileLength/kTicsPerTile);
             float speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
+            speed=constrain(speed,kMinSpeedFormard,kMaxSpeedFormard);
             pidEncoders(speed,true);
             // if(isRamp()) break;
         }
@@ -167,11 +172,6 @@ void motors::checkTileColor(){
         checkpoint=true;
         wifiPrint("CHECKPOINT",99);
     }
-    // if(inMotion==false){
-    //     wifiPrint("red",tcs_.red_);
-    //     wifiPrint("green",tcs_.green_);
-    //     wifiPrint("blue",tcs_.blue_);
-    // }
 }
 
 void motors::ahead_ultra(){
@@ -231,23 +231,23 @@ float motors::nearWall(){
     return changeAngle;
 }
 float motors::passObstacle(){
-    float targetAngle_=targetAngle;
+    uint16_t targetAngle_=targetAngle;
     if(!vlx[vlxID::frontRight].isWall() && !vlx[vlxID::frontLeft].isWall()){
         return 0;
     }
     if(vlx[vlxID::frontRight].isWall()){
-        if(targetAngle=360){
+        if(targetAngle==360){
         targetAngle=0;
         }
         rotate(targetAngle+45);
     }else if(vlx[vlxID::frontLeft].isWall()){
-        if(targetAngle=0){
+        if(targetAngle==0){
         targetAngle=360;
         }
         rotate(targetAngle-45);
     }
     int backDistanceCm=7;
-    double distanceTics=backDistanceCm*kTicsPerRev/distancePerRev;
+    float distanceTics=backDistanceCm*kTicsPerRev/distancePerRev;
     wait(delayTime);
     resetTics();
     while(getAvergeTics()<distanceTics){
@@ -340,13 +340,10 @@ float motors::calculateAngularDistance(){
     return (rightAngularDistance<=leftAngularDistance) ? rightAngularDistance:-leftAngularDistance;
 }
 void motors::rotate(float deltaAngle){
-    Serial.println("rotate");
     targetAngle=deltaAngle;
-    Serial.println("rotate1");
     delayMicroseconds(1);
     bno.getOrientationX();
-    Serial.println("rotate2");
-    float currentAngle,rightAngularDistance, leftAngularDistance,minInterval,maxInterval,tolerance=1;
+    float currentAngle,rightAngularDistance, leftAngularDistance,minInterval,maxInterval,tolerance=2;
     bool hexadecimal;
     //calculate angular distance in both directions
     if(targetAngle>=angle){
@@ -361,20 +358,20 @@ void motors::rotate(float deltaAngle){
         minInterval=(targetAngle-tolerance),maxInterval=(targetAngle+tolerance);
         hexadecimal=true;
     }else{
+        targetAngle=0;
         minInterval=-tolerance,maxInterval=tolerance;
         hexadecimal=false;
     }
     //decide shortest route and rotate("?" es un operador ternario para remplazar if-else)
     (rightAngularDistance<=leftAngularDistance) ? setright():setleft();
     currentAngle=hexadecimal ? angle:z_rotation;
-    Serial.println("rotate3");
     while (currentAngle<minInterval||currentAngle>maxInterval){
         changeSpeedMove(false,true,0,false);
         bno.getOrientationX();
         currentAngle= hexadecimal ? angle:z_rotation;
         Serial.println(angle);
     }
-    stop();wait(20);
+    stop();wait(50);
 }
 float motors::changeSpeedMove(bool encoders,bool rotate,int targetDistance,bool frontVlx){
     float speed;
@@ -384,10 +381,6 @@ float motors::changeSpeedMove(bool encoders,bool rotate,int targetDistance,bool 
         speed=map(missingAngle,90,0,kMaxSpeedRotate,kMinSpeedRotate);
         speed=constrain(speed,kMinSpeedRotate,kMaxSpeedRotate);
         PID_AllWheels(speed);
-        // Serial.println(speed);
-        // speed=map(missingAngle,90,0,kMaxPwmRotate,kMinPwmRotate);
-        // speed=constrain(speed,kMinPwmRotate,kMaxPwmRotate);
-        // setSpeed(speed);
         return 0;
     }else{
         if(encoders==true){

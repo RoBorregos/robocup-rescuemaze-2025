@@ -69,6 +69,7 @@ void TCS::updateRGBC() {
     red_ = redR;
     green_ = greenR;
     blue_ = blueR;
+    clear_= clearR;
     tcs_.setInterrupt(true);
 }
 
@@ -149,6 +150,24 @@ char TCS::getColor() {
     }else{
         return kUndefinedColor_;
     }
+}
+char TCS::getColorClear(){
+    // updateRGBC();
+    // float scaleRedT = red_;
+    // scaleRedT = (scaleRedT / clear_ ) * 255;
+
+    // float scaleGreenT = green_;
+    // scaleGreenT = (scaleGreenT / clear_ ) * 255;
+
+    // float scaleBlueT = blue_;
+    // scaleBlueT = (scaleBlueT / clear_ ) * 255;
+
+    // ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
+    //                         static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
+
+    // nuanceT *= 360;
+    // Serial.println("Color detectado: " + printColorNameT() + "[" + String(nuanceT) + "]");
+    // delay(900);
 }
 // char TCS::getColor() {
 //     updateRGB();

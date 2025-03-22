@@ -3,4 +3,10 @@
 #include "Encoder.h"
 void testEncoder(uint8_t);
 void testVlx(uint8_t);
+void testVlxFrontLeft();
+void testVlxFrontRigth();
+void testVlxRight();
+void testVlxLeft();
+void testVlxBack();
+void testVlxFront();
 #endif

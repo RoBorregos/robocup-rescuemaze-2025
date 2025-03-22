@@ -12,7 +12,7 @@
 #include "LimitSwitch.h"
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
-constexpr uint8_t edgeTileDistance=5;
+constexpr uint8_t edgeTileDistance=7;
 constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
 constexpr uint8_t targetDistances[]={edgeTileDistance,kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance,3*kTileLength+edgeTileDistance};
@@ -40,7 +40,7 @@ private:
     uint16_t kMinPwmFormard=70;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
-    static constexpr uint16_t kMinSpeedRotate=10;////////////////
+    static constexpr uint16_t kMinSpeedRotate=8;////////////////
     static constexpr uint16_t kMaxSpeedRotate=30;
     static constexpr uint16_t kMinSpeedFormard=10;//36
     static constexpr uint16_t kMaxSpeedFormard=30;//70

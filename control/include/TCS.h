@@ -114,6 +114,7 @@ class TCS {
         float red_;
         float green_;
         float blue_;
+        float clear_;
         TCS();
 
         TCS(const uint8_t posMux);
@@ -139,6 +140,8 @@ class TCS {
         void updateRGBC();
 
         char getColor();
+
+        char getColorClear();
 
         char getColorWithPrecision();
         
