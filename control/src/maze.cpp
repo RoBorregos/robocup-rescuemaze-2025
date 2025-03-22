@@ -9,7 +9,7 @@ uint8_t robotOrientation = 0;
 uint8_t level = 128;
 maze::maze(){}
 // logic ---------------------------------------------------------
-void changeLevel() { level += (rampState == 1) - (rampState == 2); rampState = 0; }
+void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); rrobot.rampState = 0; }
 void maze::followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
