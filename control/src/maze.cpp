@@ -10,6 +10,7 @@ uint8_t level = 128;
 maze::maze(){}
 // logic ---------------------------------------------------------
 void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); robot.rampState = 0; }
+
 void maze::followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
