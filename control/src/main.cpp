@@ -4,6 +4,7 @@
 #include "Test.h"
 #include <FastLED.h>
 #include "Jetson.h"
+// #include "Screen.h"
 maze m;
 Jetson jetson;
 
@@ -11,6 +12,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   robot.setupMotors();
+  // screenBegin();
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Interrups::frontLeftEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontRight]), Interrups::frontRightEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Interrups::backLeftEncoder, RISING);
@@ -21,16 +23,20 @@ void setup() {
 
 void loop() {
 //  robot.tcs_.printRGB();
-// m.run_algs();
+// screenPrint("hello");
+m.run_algs();
+// testVlxRight();
 // jetson.getDetection();
 // delay(6000);
 // Serial.println(robot.tcs_.getColor());
 //  robot.tcs_.HSV();
+// testMotors();
 // Serial.println("loop");
 // testEncoder(MotorID::kFrontRight);
 // testVlx(vlxID::frontLeft);
 // Serial.println(robot.vlx[vlxID::frontLeft].getDistance());
-m.run_algs();
+// m.run_algs();
+// testMotors();
 // robot.setahead();
 // robot.motor[MotorID::kFrontLeft].setSpeed(100);
 // delay(500);

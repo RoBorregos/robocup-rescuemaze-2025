@@ -30,10 +30,10 @@ void maze::followPath(Stack& path){
             continue;;
         }
         robotCoord = next;
-        /*
+        
         if(robot.buttonPressed == true){
             break;
-        }*/
+        }
     }
 }
 void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles){
@@ -57,7 +57,6 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
                 if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
                     distance.set(tilesMap.getIndex(adjacent),weight);
                     previousPositions.set(tilesMap.getIndex(adjacent), current);
-                    printf("llegue4");
                 }
             }
         }
@@ -205,7 +204,20 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             */
         changeLevel();
         robotCoord = current;
-        
+
+        if(robot.buttonPressed){
+            robot.screenPrint("LoP");
+            delay(2000);
+            robot.buttonPressed = false;
+            robotCoord = inicio;
+            for(uint8_t i = 0; i < visitedMap.getSize(); i++){
+                visitedMap.set(i, kInvalidPosition);
+                tilesMap.set(i, kInvalidPosition);
+                tiles.set(i, Tile(kInvalidPosition));
+            }
+            tilesMap.push_back(robotCoord);
+            tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
+        }
         for(const TileDirection direction: directions){
             wall = false; 
             if(robot.isWall(static_cast<int>(direction))){

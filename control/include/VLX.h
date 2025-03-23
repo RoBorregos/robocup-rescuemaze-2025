@@ -8,11 +8,6 @@
 #include <Arduino.h>
 #include "MUX.H"
 
-//canels del mux (provisonales)
-  //canal 3 front left 0x08
-  //canal 5 front right 0x20-1
-  //0x02 color
-  //0x04 right
 class VLX{
 private:
     MUX mux_;

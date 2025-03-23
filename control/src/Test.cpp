@@ -27,3 +27,19 @@ void testVlxBack(){
 void testVlxFront(){
     Serial.println(robot.vlx[vlxID::front].getDistance());
 }
+void testMotors(){
+    robot.setahead();
+    Serial.println("FrontLeft");
+    robot.motor[MotorID::kFrontLeft].setSpeed(100);
+    delay(500);
+    Serial.println("FrontRight");
+    robot.motor[MotorID::kFrontRight].setSpeed(100);
+    delay(500);
+    Serial.println("BackLeft");
+    robot.motor[MotorID::kBackLeft].setSpeed(100);
+    delay(500);
+    Serial.println("BackRight");
+    robot.motor[MotorID::kBackRight].setSpeed(100);
+    delay(500);
+    robot.setSpeed(0);
+}

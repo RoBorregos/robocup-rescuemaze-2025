@@ -7,9 +7,17 @@
 #include "BNO.H"
 #include <SPI.h>
 #include <ESP32Servo.h>
-// #include <unordered_map>
+#include "Screen.h"
 #include "TCS.h"
 #include "LimitSwitch.h"
+
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define USING_SCREEN 1
+
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
 constexpr uint8_t edgeTileDistance=7;
@@ -27,10 +35,9 @@ private:
     PID myPID[4];
     //vlx
     static constexpr uint8_t kNumVlx=6;
-    static constexpr uint8_t maxVlxDistance=100;
-    
+    static constexpr uint8_t maxVlxDistance=68;
     //wheels
-    static constexpr float wheelDiameter=8;
+    static constexpr float wheelDiameter=8.5;
     static constexpr float distancePerRev=wheelDiameter*PI;
     static constexpr float kTicsPerRev=496.0;
     static constexpr float kTicsPerTile=30*kTicsPerRev/distancePerRev;
@@ -46,8 +53,6 @@ private:
     static constexpr uint16_t kMaxSpeedFormard=30;//70
     static constexpr uint16_t kSpeedRampUp=20;//70
     static constexpr uint16_t kSpeedRampDown=15;//70
-
-
     //ramp
     static constexpr float kMinRampOrientation=10.0;
     static constexpr float minDisToLateralWall=6;
@@ -81,65 +86,80 @@ private:
     };
     //movement
     bool inMotion=false;
+    //servo
+    float servoPos=0;
 public:
+    //objets
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();
     BNO bno;
     TCS tcs_;
     LimitSwitch limitSwitch_[2];
     VLX vlx[kNumVlx];
     Servo servo;
-    Motor motor[4];//0-BACK_RIGHT//1-BACK_LEFT//2-FRONT_RIGHT//3-FRONT_LEFT
+    Motor motor[4];
+    //public variables
     bool blackTile=false;
     bool blueTile=false;
     bool checkpoint=false;
     bool victim=false;
     bool buttonPressed=false;
     uint8_t rampState;
-    motors();
+    motors();//constructor
+    //PID´s--speeds
     void setupMotors();
     void PID_speed(float, float, uint16_t);
     void PID_Wheel(int,int);
     void PID_AllWheels(int);
+    void pidEncoders(int,bool);
     void setSpeed(uint16_t);
+    float changeSpeedMove(bool,bool,int,bool);
+    //set movement
     void setahead();
-    void moveDistance(uint8_t targetDistance);
-    float getCurrentDistanceCm();
     void setback();
     void setleft();
     void setright();
-    void checkTileColor();
     void stop();
-    void ahead();
-    float limitCrash();
-    uint16_t getAngleOrientation();
-    Advanced checkpointElection();
-    void pidEncoders(int,bool);
-    void ahead_ultra();//borrar
-    float nearWall();//ver
-    float passObstacle();
-    uint8_t findNearest(float,const uint8_t[],uint8_t,bool);
+    //movements
+    void ahead();    
     void back();
     void left();
-    void right();
-    void printSpeeds();
-    float calculateAngularDistance();
-    void rotate(float);
-    float changeSpeedMove(bool,bool,int,bool);
-    void changePwm(bool,double);
-    void resetTics();
+    void right();  
+    void rotate(float);  
+    void moveDistance(uint8_t targetDistance);
+    //setups
+    void setupTCS();
+    void setupVlx(const uint8_t);
+    //sensors
+    void checkTileColor();
+    float limitCrash();
+    float nearWall();
+    float passObstacle();
+    bool isWall(uint8_t);
+    //victims
+    void harmedVictim();
+    void stableVictim();
+    void unharmedVictim();
+    //gets
+    float getCurrentDistanceCm();
+    uint16_t getAngleOrientation();
     double getAvergeTics();
     double getTicsSpeed();
-    void printAngle();
-    void setupVlx(const uint8_t);
-    void printTicsSpeed();
-    bool isWall(uint8_t);
-    float getRealDistance();
+    //logic
+    Advanced checkpointElection();
+    uint8_t findNearest(float,const uint8_t[],uint8_t,bool);
+    float calculateAngularDistance();
+    void resetTics();
+    //ramp
     bool rampInFront();
     bool isRamp();
     void ramp();
-    void setupTCS();
+    //comunication
     void wait(unsigned long);
     void wifiPrint(String,float);
+    void screenBegin();
+    void screenPrint(String);
+    void printSpeeds();
+    void printAngle();
 };
 
 #endif

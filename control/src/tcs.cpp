@@ -152,22 +152,21 @@ char TCS::getColor() {
     }
 }
 char TCS::getColorClear(){
-    // updateRGBC();
-    // float scaleRedT = red_;
-    // scaleRedT = (scaleRedT / clear_ ) * 255;
+    double nuanceT, saturationT, valueT;
+    updateRGBC();
+    float scaleRedT = red_;
+    scaleRedT = (scaleRedT / clear_ ) * 255;
 
-    // float scaleGreenT = green_;
-    // scaleGreenT = (scaleGreenT / clear_ ) * 255;
+    float scaleGreenT = green_;
+    scaleGreenT = (scaleGreenT / clear_ ) * 255;
 
-    // float scaleBlueT = blue_;
-    // scaleBlueT = (scaleBlueT / clear_ ) * 255;
+    float scaleBlueT = blue_;
+    scaleBlueT = (scaleBlueT / clear_ ) * 255;
 
-    // ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
-    //                         static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
-
-    // nuanceT *= 360;
-    // Serial.println("Color detectado: " + printColorNameT() + "[" + String(nuanceT) + "]");
-    // delay(900);
+    ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
+                            static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
+    nuanceT *= 360;
+    
 }
 // char TCS::getColor() {
 //     updateRGB();

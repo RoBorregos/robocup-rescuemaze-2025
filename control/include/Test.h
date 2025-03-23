@@ -9,4 +9,5 @@ void testVlxRight();
 void testVlxLeft();
 void testVlxBack();
 void testVlxFront();
+void testMotors();
 #endif
