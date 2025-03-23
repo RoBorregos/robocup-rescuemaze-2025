@@ -23,34 +23,33 @@ class Model():
         
         print("Presiona 'q' para salir...")
     def getDetection(self):
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                print("No se pudo leer el frame de la cámara.")
-                break
-        
-            # Preprocesar la imagen para el modelo
-            image = cv2.resize(frame, (224, 224))
-            image_np = np.expand_dims(image.astype(np.float32) / 255.0, axis=0)
-        
-            # Configurar entrada y ejecutar inferencia
-            interpreter.set_tensor(input_details[0]['index'], image_np)
-            interpreter.invoke()
-            output_data = interpreter.get_tensor(output_details[0]['index'])
-        
-            prediction = np.argmax(output_data)
-            label = labels.get(prediction, "unknown")
-        
-            # Mostrar resultados en la imagen
-            #cv2.putText(frame, f"Pred: {label}", (10, 30),
-            #            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        
-            # Mostrar el frame (solo si no estás en SSH)
-            print("Detección:", label)
-        
-            # Salir con 'q'
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-            return label
-        cap.release()
-        cv2.destroyAllWindows()
+        ret, frame = cap.read()
+        if not ret:
+            print("No se pudo leer el frame de la cámara.")
+            break
+    
+        # Preprocesar la imagen para el modelo
+        image = cv2.resize(frame, (224, 224))
+        image_np = np.expand_dims(image.astype(np.float32) / 255.0, axis=0)
+    
+        # Configurar entrada y ejecutar inferencia
+        interpreter.set_tensor(input_details[0]['index'], image_np)
+        interpreter.invoke()
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+    
+        prediction = np.argmax(output_data)
+        label = labels.get(prediction, "unknown")
+    
+        # Mostrar resultados en la imagen
+        #cv2.putText(frame, f"Pred: {label}", (10, 30),
+        #            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    
+        # Mostrar el frame (solo si no estás en SSH)
+        print("Detección:", label)
+    
+        # Salir con 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+        return label
+    cap.release()
+    cv2.destroyAllWindows()
