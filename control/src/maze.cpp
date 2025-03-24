@@ -110,23 +110,12 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         }
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
+
         if(robot.blackTile){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setBlackTile();
             robot.blackTile = false;
             continue;
-        }
-        //visited.push_back(true);
-        /*
-        if(robot.blackTile == true){
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            currentTile -> setBlackTile();
-            robot.blackTile = false;
-        }
-        if(robot.blueTile == true){
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            currentTile -> setObstacle();
-            robot.blueTile = false;
         }
         
         if(robot.checkpoint == true){
@@ -144,15 +133,40 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             currentTile -> setVictim();
             robot.victim = false;
         }
+        
         //button checkpoint logic
         if(robot.buttonPressed){
+            robot.screenPrint("LoP");
+            delay(2000);
             robot.buttonPressed = false;
-            for(uint8_t i = 0; i < kMaxSize; i++){
-                visitedMap.set(i, visitedMapRecover.getValue(i));
+
+            //option 1 (starting on 0 with past priority)
+            current = inicio;
+            for(uint8_t i = 0; i < visitedMap.getSize(); i++){
+                visitedMap.set(i, kInvalidPosition);
+                visitedMap.reset();
+                tilesMap.set(i, kInvalidPosition);
+                tilesMap.reset();
+                tiles.set(i, Tile(kInvalidPosition));
+                tiles.reset();
             }
-            while(robot.buttonPressed == false){
-                //get button state, not continuing until it is true again
+            tilesMap.push_back(robotCoord);
+            tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
+            /
+            //option2 (starting on 0 with past priority and setting new priority)
+            /*
+            current = inicio;
+            for(uint8_t i = 0; i < visitedMap.getSize(); i++){
+                visitedMap.set(i, kInvalidPosition);
+                visitedMap.reset();
+                tilesMap.set(i, kInvalidPosition);
+                tilesMap.reset();
+                tiles.set(i, Tile(kInvalidPosition));
+                tiles.reset();
             }
+            tilesMap.push_back(robotCoord);
+            tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
+
             float orientation = robot.getAngleOrientation();
             current = checkpointCoord;
             if(orientation == 0){
@@ -164,61 +178,50 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }else if(orientation == 270){
                 orientation = 3;
             }
-            //clear unvisited stack 
-            unvisited.~Stack();
-            //set the new priority to the front of the robot
-            TileDirection temp = directions[3];
-            for(int i = 3; i > 0; i--){
-                directions[i] = directions[i-1];
-            }
-            directions[0] = temp;
-        }
-        //ramp logic -> 1 pa arriba - 2 para abajo - 0 normal
-        if(robot.rampState != 0){
-            if(robot.rampState == 1){level++;}
-            if(robot.rampState == 2){level--;}
-            robot.rampState = 0;
-            coord tempCurr = current;
-            tempCurr.z = level;
-            //change level in the link of tiles
-            currentTile = &tiles.getValue(tilesMap.getIndex(robotCoord));
-            for(int i = 0; i < 4; i++){
-                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr){
-                    if(currentTile -> adjacentTiles_[i]->position_ == current){
-                        current = {current.x, current.y, level};
-                        currentTile -> adjacentTiles_[i]->setPosition(current);
-                    }
+            for(int i = 0; i < orientation; i++){
+                TileDirection temp = directions[3];
+                for(int i = 3; i > 0; i--){
+                    directions[i] = directions[i-1];
                 }
+                directions[0] = temp;
             }
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            for(int i = 0; i < 4; i++){
-                if(currentTile -> adjacentTiles_[static_cast<int>(i)] != nullptr){
-                    if(currentTile -> adjacentTiles_[i]->position_ == robotCoord){
-                        current = {robotCoord.x, robotCoord.y, level};
-                        currentTile -> adjacentTiles_[i]->setPosition(robotCoord);
-                    }
-                }
-            }
-            //remember the coord
-            current = tempCurr;
-        }
             */
+            //option3 (setting new priority and recovering the map)
+            /*
+            for(uint8_t i = 0; i < visitedMapRecover.getSize(); i++){
+                visitedMap.set(i, visitedMapRecover.getValue(i));
+                visitedMap.reset();
+            }
+            unvisited.~Stack();
+            unvisited.push(checkpointCoord);
+            float orientation = robot.getAngleOrientation();
+            current = checkpointCoord;
+            if(orientation == 0){
+                orientation = 0;
+            }else if(orientation == 90){
+                orientation = 1;
+            }else if(orientation == 180){
+                orientation = 2;
+            }else if(orientation == 270){
+                orientation = 3;
+            }
+            for(int i = 0; i < orientation; i++){
+                TileDirection temp = directions[3];
+                for(int i = 3; i > 0; i--){
+                    directions[i] = directions[i-1];
+                }
+                directions[0] = temp;
+            }
+                */
+            //working on it
+
+            //option4 (setting new priority, recovering the map and applying angle setup)
+            /*pendiente*/
+        }
+
         changeLevel();
         robotCoord = current;
 
-        if(robot.buttonPressed){
-            robot.screenPrint("LoP");
-            delay(2000);
-            robot.buttonPressed = false;
-            robotCoord = inicio;
-            for(uint8_t i = 0; i < visitedMap.getSize(); i++){
-                visitedMap.set(i, kInvalidPosition);
-                tilesMap.set(i, kInvalidPosition);
-                tiles.set(i, Tile(kInvalidPosition));
-            }
-            tilesMap.push_back(robotCoord);
-            tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
-        }
         for(const TileDirection direction: directions){
             wall = false; 
             if(robot.isWall(static_cast<int>(direction))){

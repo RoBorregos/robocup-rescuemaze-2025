@@ -61,4 +61,7 @@ public:
         positions[i] = position;
         i++;
     }
+    void reset() {
+        i = 0;
+    }
 };
