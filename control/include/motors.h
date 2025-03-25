@@ -7,7 +7,6 @@
 #include "BNO.H"
 #include <SPI.h>
 #include <ESP32Servo.h>
-#include "Screen.h"
 #include "TCS.h"
 #include "LimitSwitch.h"
 
@@ -36,6 +35,7 @@ private:
     //vlx
     static constexpr uint8_t kNumVlx=6;
     static constexpr uint8_t maxVlxDistance=68;
+    static constexpr uint8_t brakingDis=2;
     //wheels
     static constexpr float wheelDiameter=8.5;
     static constexpr float distancePerRev=wheelDiameter*PI;
@@ -47,7 +47,7 @@ private:
     uint16_t kMinPwmFormard=70;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
-    static constexpr uint16_t kMinSpeedRotate=8;////////////////
+    static constexpr uint16_t kMinSpeedRotate=6;////////////////
     static constexpr uint16_t kMaxSpeedRotate=30;
     static constexpr uint16_t kMinSpeedFormard=10;//36
     static constexpr uint16_t kMaxSpeedFormard=30;//70
@@ -103,7 +103,7 @@ public:
     bool checkpoint=false;
     bool victim=false;
     bool buttonPressed=false;
-    uint8_t rampState;
+    uint8_t rampState=0;
     motors();//constructor
     //PID´s--speeds
     void setupMotors();

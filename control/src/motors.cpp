@@ -38,10 +38,10 @@ void motors::setupMotors(){
     setupVlx(vlxID::left);
     
     setupVlx(vlxID::frontRight);
-    // setupVlx(vlxID::front);
+    setupVlx(vlxID::front);
     setupVlx(vlxID::right);
     setupVlx(vlxID::back);
-    // setupTCS();
+    setupTCS();
     // tcs_.getColor();
     limitSwitch_[LimitSwitchID::kLeft].initLimitSwitch(Pins::limitSwitchPins[LimitSwitchID::kLeft]);
     limitSwitch_[LimitSwitchID::kRight].initLimitSwitch(Pins::limitSwitchPins[LimitSwitchID::kRight]);
@@ -86,6 +86,7 @@ void motors::pidEncoders(int speedReference,bool ahead){
     speedReference;
     PID pidBno(0.5,0.1,0.01,1);
     float changeAngle=nearWall();
+    // float changeAngle=(rampState==0) ? 0:nearWall();
     float error=pidBno.calculate_PID(targetAngle+changeAngle,(targetAngle==0 ? z_rotation:angle));
     error=constrain(error,-8,8);//aumentar
     Serial.println(error);
@@ -100,7 +101,9 @@ void motors::ahead(){
     screenPrint("Ahead");
     resetTics();
     float distance;
-    float frontDistance=vlx[vlxID::frontLeft].getDistance();
+    float frontLeftDistance=vlx[vlxID::frontLeft].getDistance();
+    float frontRightDistance=vlx[vlxID::frontRight].getDistance();
+    float frontDistance=(frontLeftDistance>frontRightDistance) ? frontLeftDistance:frontRightDistance;
     float backDistance=vlx[vlxID::back].getDistance();
     bool encoder,frontVlx;
     if(frontDistance<maxVlxDistance){
@@ -123,12 +126,11 @@ void motors::ahead(){
             // checkTileColor();
             // if(blackTile) break;
             if(buttonPressed) break;
-            distance=(frontVlx ? vlx[vlxID::frontLeft].getDistance():vlx[vlxID::back].getDistance());
+            distance=(frontVlx ? vlx[vlxID::front].getDistance():vlx[vlxID::back].getDistance());
             Serial.println(distance);
             float missingDistance=abs(distance-targetDistance);
             float speed;
             speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
-            // speed=(kMaxSpeedFormard+kMinSpeedFormard)/2;
             speed=constrain(speed,kMinSpeedFormard,kMaxSpeedFormard);
             pidEncoders(speed,true);
             if(isRamp()) break;
@@ -151,7 +153,6 @@ void motors::ahead(){
         }
     }
     resetTics();
-    Serial.println("aheadHecho");
     stop();resetTics();/*checkTileColor();*/
 }
 void motors::checkTileColor(){

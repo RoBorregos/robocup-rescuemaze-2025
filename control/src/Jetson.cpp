@@ -99,7 +99,7 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x0A: // harmed victim
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
-                // robot.harmedVictim();
+                robot.harmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
@@ -108,7 +108,7 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x0B: // stable victim
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
-                // robot.stableVictim();
+                robot.stableVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
@@ -117,7 +117,7 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x0C: // unharmed victim
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
-                // robot.unharmedVictim();
+                robot.unharmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));

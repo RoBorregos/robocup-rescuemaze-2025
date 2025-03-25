@@ -10,17 +10,8 @@
 
 // TODO: check which address is the correct one
 #define TCS_ADDR 0x30 
-constexpr uint16_t whiteLow[]={0,0,240};
-constexpr uint16_t whiteHigh[]={360,10,255};
+constexpr uint8_t blackThreshold=95;
 
-constexpr uint16_t blueLow[]={130,130,200};
-constexpr uint16_t blueHigh[]={155,155,255};
-
-constexpr uint16_t blackLow[]={0,110,200};
-constexpr uint16_t blackHigh[]={40,140,255};
-
-constexpr uint16_t greyLow[]={50,90,160};
-constexpr uint16_t greyHigh[]={75,135,205};
 class TCS {
     private:
         Adafruit_TCS34725 tcs_ = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
@@ -47,51 +38,6 @@ class TCS {
         static constexpr int8_t kPrecision_ = 10;
 
         static constexpr int8_t millisToWait_ = 50;
-
-        float kMinRedValueInBlue_ = 32;
-        float kMaxRedValueInBlue_ = 132;
-
-        float kMinGreenValueInBlue_ = 32;
-        float kMaxGreenValueInBlue_ = 139;
-
-        float kMinBlueValueInBlue_ = 58;
-        float kMaxBlueValueInBlue_ = 164;
-
-        float kMaxRedValueInRed_ = 0;
-        float kMinRedValueInRed_ = 0;
-
-        float kMaxGreenValueInRed_ = 0;
-        float kMinGreenValueInRed_ = 0;
-
-        float kMaxBlueValueInRed_ = 0;
-        float kMinBlueValueInRed_ = 0;
-
-        float kMinRedValueInBlack_ = 19;
-        float kMaxRedValueInBlack_ = 119;
-
-        float kMinGreenValueInBlack_ = 2;
-        float kMaxGreenValueInBlack_ = 102;
-
-        float kMinBlueValueInBlack_ = -2;
-        float kMaxBlueValueInBlack_ = 98;
-
-        float kMinRedValueInCheckpoint_ = 150;
-        float kMaxRedValueInCheckpoint_ = 416;
-
-        float kMinGreenValueInCheckpoint_ = 130;
-        float kMaxGreenValueInCheckpoint_ = 427;
-
-        float kMinBlueValueInCheckpoint_ = 110;
-        float kMaxBlueValueInCheckpoint_ = 391;
-
-        float kMinRedValueInWhite_ = 0;
-        float kMaxRedValueInWhite_ = 0;
-
-        float kMinGreenValueInWhite_ = 0;
-        float kMaxGreenValueInWhite_ = 0;
-
-        float kMinBlueValueInWhite_ = 0;
-        float kMaxBlueValueInWhite_ = 0;
 
         static constexpr char kRedColor_ = 'r';
         static constexpr char kBlueColor_ = 'B';

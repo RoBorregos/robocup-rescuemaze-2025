@@ -10,4 +10,5 @@ void testVlxLeft();
 void testVlxBack();
 void testVlxFront();
 void testMotors();
+void testTCS();
 #endif

@@ -75,36 +75,30 @@ void TCS::updateRGBC() {
 
 void TCS::printRGB() {
     updateRGBC();
-        // Serial.println(red_);
-        // Serial.println(green_);
-        // Serial.println(blue_);
-    // #if DEBUG_TCS
-    // customPrint("R:\t"); customPrint(red_);
-    // customPrint("\tG:\t"); customPrint(green_);
-    // customPrint("\tB:\t"); customPrint(blue_);
-    // customPrint("\n");
-    // #endif
+    Serial.println(red_);
+    Serial.println(green_);
+    Serial.println(blue_);
 }
-void TCS::HSV(){
-    updateRGB();
-    //  CRGB colorRGB = CRGB(205, 183, 155);//blanco
-    CRGB colorRGB = CRGB(red_, green_, blue_);//blue
-    // Convertir a HSV
-    CHSV colorHSV = rgb2hsv_approximate(colorRGB);
+// void TCS::HSV(){
+//     updateRGB();
+//     //  CRGB colorRGB = CRGB(205, 183, 155);//blanco
+//     CRGB colorRGB = CRGB(red_, green_, blue_);//blue
+//     // Convertir a HSV
+//     CHSV colorHSV = rgb2hsv_approximate(colorRGB);
 
-    if(colorHSV.h>=blueLow[0] && colorHSV.h<=blueHigh[0] && colorHSV.s>=blueLow[1] && colorHSV.s<=blueHigh[1] && colorHSV.v>=blueLow[2] && colorHSV.v<=blueHigh[2]){
-        Serial.println("blue");
-    }else if(colorHSV.h>=blackLow[0] && colorHSV.h<=blackHigh[0] && colorHSV.s>=blackLow[1] && colorHSV.s<=blackHigh[1] && colorHSV.v>=blackLow[2] && colorHSV.v<=blackHigh[2]){
-        Serial.println("black");
-    }else if(colorHSV.h>=greyLow[0] && colorHSV.h<=greyHigh[0] && colorHSV.s>=greyLow[1] && colorHSV.s<=greyHigh[1] && colorHSV.v>=greyLow[2] && colorHSV.v<=greyHigh[2]){
-        Serial.println("grey");
-    }else{
-        Serial.println("undef");
-    }
-    Serial.print("H: "); Serial.print(colorHSV.h);
-    Serial.print(" S: "); Serial.print(colorHSV.s);
-    Serial.print(" V: "); Serial.println(colorHSV.v);
-}
+//     if(colorHSV.h>=blueLow[0] && colorHSV.h<=blueHigh[0] && colorHSV.s>=blueLow[1] && colorHSV.s<=blueHigh[1] && colorHSV.v>=blueLow[2] && colorHSV.v<=blueHigh[2]){
+//         Serial.println("blue");
+//     }else if(colorHSV.h>=blackLow[0] && colorHSV.h<=blackHigh[0] && colorHSV.s>=blackLow[1] && colorHSV.s<=blackHigh[1] && colorHSV.v>=blackLow[2] && colorHSV.v<=blackHigh[2]){
+//         Serial.println("black");
+//     }else if(colorHSV.h>=greyLow[0] && colorHSV.h<=greyHigh[0] && colorHSV.s>=greyLow[1] && colorHSV.s<=greyHigh[1] && colorHSV.v>=greyLow[2] && colorHSV.v<=greyHigh[2]){
+//         Serial.println("grey");
+//     }else{
+//         Serial.println("undef");
+//     }
+//     Serial.print("H: "); Serial.print(colorHSV.h);
+//     Serial.print(" S: "); Serial.print(colorHSV.s);
+//     Serial.print(" V: "); Serial.println(colorHSV.v);
+// }
 void TCS::printRGBC() {
     const unsigned long t = millis();
     updateRGBC();
@@ -116,17 +110,6 @@ void TCS::printRGBC() {
     #endif
 }
 
-void TCS::printColor() {
-    Serial.println(getColor());
-    // #if DEBUG_TCS
-    // customPrint("Color:\t");
-    // #endif
-    // const char color = (colors_) ? getColorWithPrecision() : getColor();
-    // #if DEBUG_TCS
-    // customPrintln(color);
-    // #endif
-}
-
 void TCS::setMux(const uint8_t posMux) {
     mux_.setNewChannel(posMux);
 }
@@ -135,58 +118,34 @@ void TCS::setPrecision(const uint8_t precision) {
     this->precision_ = precision;
 }
 
-char TCS::getColor() {
-    updateRGB();
-    CRGB colorRGB = CRGB(red_, green_, blue_);
-    // Convertir a HSV
-    CHSV colorHSV = rgb2hsv_approximate(colorRGB);
-    
-    if(colorHSV.h>=blueLow[0] && colorHSV.h<=blueHigh[0] && colorHSV.s>=blueLow[1] && colorHSV.s<=blueHigh[1] && colorHSV.v>=blueLow[2] && colorHSV.v<=blueHigh[2]){
-        return kBlueColor_;
-    }else if(colorHSV.h>=blackLow[0] && colorHSV.h<=blackHigh[0] && colorHSV.s>=blackLow[1] && colorHSV.s<=blackHigh[1] && colorHSV.v>=blackLow[2] && colorHSV.v<=blackHigh[2]){
-        return kBlackColor_;
-    }else if(colorHSV.h>=greyLow[0] && colorHSV.h<=greyHigh[0] && colorHSV.s>=greyLow[1] && colorHSV.s<=greyHigh[1] && colorHSV.v>=greyLow[2] && colorHSV.v<=greyHigh[2]){
-        return kCheckpointColor_;
-    }else{
-        return kUndefinedColor_;
-    }
-}
-char TCS::getColorClear(){
+char TCS::getColor(){
     double nuanceT, saturationT, valueT;
     updateRGBC();
     float scaleRedT = red_;
-    scaleRedT = (scaleRedT / clear_ ) * 255;
-
     float scaleGreenT = green_;
-    scaleGreenT = (scaleGreenT / clear_ ) * 255;
-
     float scaleBlueT = blue_;
+    if(clear_>0){
+        scaleRedT = (scaleRedT / clear_ ) * 255;
+    scaleGreenT = (scaleGreenT / clear_ ) * 255;
     scaleBlueT = (scaleBlueT / clear_ ) * 255;
-
+    }
     ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
                             static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
     nuanceT *= 360;
-    
+    Serial.println("HSU");
+    Serial.println(nuanceT);
+    Serial.println(saturationT);
+    Serial.println(valueT);
+    if(red_<blackThreshold && green_<blackThreshold && blue_<blackThreshold) return kBlackColor_;
+    else if(nuanceT>180 && nuanceT<280) return kBlueColor_;
+    else if(nuanceT<20) return kRedColor_;
+    else return kUndefinedColor_;
+
+    // Serial.println("RGB");
+    // Serial.println(red_);
+    // Serial.println(green_);
+    // Serial.println(blue_);    
 }
-// char TCS::getColor() {
-//     updateRGB();
-//     CRGB colorRGB = CRGB(red_, green_, blue_);
-//     // Convertir a HSV
-//     uint8_t blackValue=50;
-//     uint16_t sum=red_+green_+blue_;
-//     float redN=red_/sum;
-//     float greenN=green_/sum;
-//     float blueN=blue_/sum;
-//     if(red_<blackValue && green_<blackValue && blue_<blackValue ){
-//         return kBlackColor_;
-//     }else if(blueN>37){
-//         return kBlueColor_;
-//     // }else if(colorHSV.h>=greyLow[0] && colorHSV.h<=greyHigh[0] && colorHSV.s>=greyLow[1] && colorHSV.s<=greyHigh[1] && colorHSV.v>=greyLow[2] && colorHSV.v<=greyHigh[2]){
-//     //     return kCheckpointColor_;
-//     }else{
-//         return kUndefinedColor_;
-//     }
-// }
 bool TCS::inRange(uint8_t colorInput, uint8_t colorRegistered) {
     return (((colorRegistered - precision_) <= colorInput) && (colorInput <= (colorRegistered + precision_)));
 }
@@ -335,53 +294,4 @@ void TCS::printColorList() {
 
     customPrintln("");
 #endif
-}
-
-void TCS::getBlueRanges() {
-    updateRGBC();
-    // customPrintln("red: " + String(red_ - kRangeTolerance_) + " " + String(red_ + kRangeTolerance_) + " green: " + String(green_ - kRangeTolerance_) +  " " + String(green_ + kRangeTolerance_) + " blue: " + String(blue_ - kRangeTolerance_) +  " " + String(blue_ + kRangeTolerance_));
-    kMinRedValueInBlue_ = red_ - kRangeTolerance_;
-    kMaxRedValueInBlue_ = red_ + kRangeTolerance_;
-    kMinGreenValueInBlue_ = green_ - kRangeTolerance_;
-    kMaxGreenValueInBlue_ = green_ + kRangeTolerance_;
-    kMinBlueValueInBlue_ = blue_ - kRangeTolerance_;
-    kMaxBlueValueInBlue_ = blue_ + kRangeTolerance_;
-    #if DEBUG_TCS
-    customPrintln("red: " + String(kMinRedValueInBlue_) + " " + String(kMaxRedValueInBlue_) + " green: " + String(kMinGreenValueInBlue_) +  " " + String(kMaxGreenValueInBlue_) + " blue: " + String(kMinBlueValueInBlue_) +  " " + String(kMaxBlueValueInBlue_));
-    #endif
-}
-
-void TCS::getBlackRanges() {
-    updateRGBC();
-    kMinRedValueInBlack_ = red_ - kRangeTolerance_;
-    kMaxRedValueInBlack_ = red_ + kRangeTolerance_;
-    kMinGreenValueInBlack_ = green_ - kRangeTolerance_;
-    kMaxGreenValueInBlack_ = green_ + kRangeTolerance_;
-    kMinBlueValueInBlack_ = blue_ - kRangeTolerance_;
-    kMaxBlueValueInBlack_ = blue_ + kRangeTolerance_;
-    #if DEBUG_TCS
-    customPrintln("red: " + String(kMinRedValueInBlack_) + " " + String(kMaxRedValueInBlack_) + " green: " + String(kMinGreenValueInBlack_) +  " " + String(kMaxGreenValueInBlack_) + " blue: " + String(kMinBlueValueInBlack_) +  " " + String(kMaxBlueValueInBlack_));
-    #endif
-}
-
-void TCS::getCheckpointRanges() {
-    // float adc = photoresistor.readADC_SingleEnded(0);
-    // #if DEBUG_TCS
-    // customPrintln(adc);
-    // #endif
-    // kMinPhotoresistorValue_ = adc - kPhotoresistorThreshold_;
-    // kMaxPhotoresistorValue_ = adc + kPhotoresistorThreshold_;
-    // #if DEBUG_TCS
-    // customPrintln("photoresistor: " + String(kMinPhotoresistorValue_) + " " + String(kMaxPhotoresistorValue_));
-    // #endif
-    updateRGBC();
-    kMinRedValueInCheckpoint_ = red_ - kRangeTolerance_;
-    kMaxRedValueInCheckpoint_ = red_ + kRangeTolerance_;
-    kMinGreenValueInCheckpoint_ = green_ - kRangeTolerance_;
-    kMaxGreenValueInCheckpoint_ = green_ + kRangeTolerance_;
-    kMinBlueValueInCheckpoint_ = blue_ - kRangeTolerance_;
-    kMaxBlueValueInCheckpoint_ = blue_ + kRangeTolerance_;
-    #if DEBUG_TCS
-    customPrintln("red: " + String(kMinRedValueInCheckpoint_) + " " + String(kMaxRedValueInCheckpoint_) + " green: " + String(kMinGreenValueInCheckpoint_) +  " " + String(kMaxGreenValueInCheckpoint_) + " blue: " + String(kMinBlueValueInCheckpoint_) +  " " + String(kMaxBlueValueInCheckpoint_));
-    #endif
 }

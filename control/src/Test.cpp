@@ -8,7 +8,10 @@ void testVlx(uint8_t id){
     Serial.println(robot.vlx[id].getDistance());
 }
 void testVlxFrontLeft(){
-    Serial.println(robot.vlx[vlxID::frontLeft].getDistance());
+    float distance=robot.vlx[vlxID::frontLeft].getDistance();
+    Serial.println(distance);
+    String print=static_cast<String>(distance);
+    robot.screenPrint(print);
 }
 void testVlxFrontRigth(){
     Serial.println(robot.vlx[vlxID::frontRight].getDistance());
@@ -19,7 +22,10 @@ void testVlxRight(){
 
 }
 void testVlxLeft(){
-    Serial.println(robot.vlx[vlxID::left].getDistance());
+    float distance=robot.vlx[vlxID::left].getDistance();
+    Serial.println(distance);
+    String print=static_cast<String>(distance);
+    robot.screenPrint(print);
 }
 void testVlxBack(){
     Serial.println(robot.vlx[vlxID::back].getDistance());
@@ -42,4 +48,9 @@ void testMotors(){
     robot.motor[MotorID::kBackRight].setSpeed(100);
     delay(500);
     robot.setSpeed(0);
+}
+void testTCS(){
+    String print=static_cast<String>(robot.tcs_.getColorClear());
+    robot.screenPrint(print);
+    delay(300);
 }
