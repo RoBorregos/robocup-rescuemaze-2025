@@ -23,8 +23,8 @@ void loop() {
 
 // m.run_algs();
   // testVlxLeft();
-  // m.run_algs();
-  testTCS();
+  m.run_algs();
+  // testTCS();
   // Serial.println("hola");
   // delay(300);
   // jetson.getDetection();

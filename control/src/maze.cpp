@@ -133,27 +133,36 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             currentTile -> setVictim();
             robot.victim = false;
         }
-        
+        changeLevel();
+        robotCoord = current;
         //button checkpoint logic
         if(robot.buttonPressed){
             robot.screenPrint("LoP");
-            delay(2000);
+            //delay(2000);
             robot.buttonPressed = false;
-
             //option 1 (starting on 0 with past priority)
-            current = inicio;
-            for(uint8_t i = 0; i < visitedMap.getSize(); i++){
-                visitedMap.set(i, kInvalidPosition);
+            robotCoord = inicio;
+            robot.screenPrint("Inicio");
+            delay(5000);
+            dijkstra(robotCoord, current, tilesMap, tiles);
+            robotCoord = current;
+
+            /*
+            for(uint8_t j = 0; j < kMaxSize; j++){
+                visitedMap.getValue(j) = kInvalidPosition;
+                //visitedMap.set(j, kInvalidPosition);
                 visitedMap.reset();
-                tilesMap.set(i, kInvalidPosition);
+                tilesMap.getValue(j) = kInvalidPosition;
+                //tilesMap.set(j, kInvalidPosition);
                 tilesMap.reset();
-                tiles.set(i, Tile(kInvalidPosition));
+                tiles.getValue(j) = Tile(kInvalidPosition);
+                //tiles.set(j, Tile(kInvalidPosition));
                 tiles.reset();
             }
             tilesMap.push_back(robotCoord);
-            tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
-            /
+            tiles.getValue(tilesMap.getIndex(robotCoord))=Tile(robotCoord);
             //option2 (starting on 0 with past priority and setting new priority)
+            */
             /*
             current = inicio;
             for(uint8_t i = 0; i < visitedMap.getSize(); i++){
@@ -219,8 +228,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             /*pendiente*/
         }
 
-        changeLevel();
-        robotCoord = current;
+        
 
         for(const TileDirection direction: directions){
             wall = false; 

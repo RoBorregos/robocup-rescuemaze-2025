@@ -88,7 +88,7 @@ class TCS {
 
         char getColor();
 
-        char getColorClear();
+        char getColorClear(){return 'r';};
 
         char getColorWithPrecision();
         
