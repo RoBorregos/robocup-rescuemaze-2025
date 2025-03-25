@@ -4,6 +4,11 @@ void testEncoder(uint8_t id){
     robot.motor[id].setSpeed(100);
     Serial.println(robot.motor[id].tics);
 }
+void testEncoders(){
+    String print=static_cast<String>(robot.getAvergeTics());
+    Serial.println(print);
+    robot.screenPrint(print);
+}
 void testVlx(uint8_t id){
     Serial.println(robot.vlx[id].getDistance());
 }
@@ -53,4 +58,8 @@ void testTCS(){
     String print=static_cast<String>(robot.tcs_.getColorClear());
     robot.screenPrint(print);
     delay(300);
+}
+void testPIDWheel(){
+    robot.setahead();
+    robot.PID_Wheel(20,MotorID::kFrontLeft);
 }

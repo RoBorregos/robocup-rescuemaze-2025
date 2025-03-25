@@ -27,8 +27,8 @@ void motors::setupMotors(){
     for(uint8_t i=0;i<4;i++){
         motor[i].initialize(Pins::digitalOne[i],Pins::digitalTwo[i],Pins::pwmPin[i],i);
         Serial.println(Pins::pwmPin[i]);
-        myPID[i].changeConstants(6.5,0.1,0.005,50);
-        // myPID[i].changeConstants(7.5,0.1,0.005,50);
+        myPID[i].changeConstants(5.5,0.1,0.005,50);
+        // myPID[i].changeConstants(kp_,ki_,kd_,kPidTime);
     }
     screenBegin();
     Wire.begin();
@@ -97,9 +97,10 @@ void motors::pidEncoders(int speedReference,bool ahead){
     PID_Wheel(speedReference-error,MotorID::kBackRight);
 }
 void motors::ahead(){
-    // float obstacleDistance=passObstacle();
+    float obstacleDistance=passObstacle();
     screenPrint("Ahead");
     resetTics();
+    int edgeVlx;
     float distance;
     float frontLeftDistance=vlx[vlxID::frontLeft].getDistance();
     float frontRightDistance=vlx[vlxID::frontRight].getDistance();
@@ -110,21 +111,28 @@ void motors::ahead(){
         distance=frontDistance;
         encoder=false;
         frontVlx=true;
+        edgeVlx=2;
+        screenPrint("FRONT");
     }else if(backDistance<maxVlxDistance-kTileLength){
         distance=backDistance;
         encoder=false;
         frontVlx=false;
+        edgeVlx=-3;
+        screenPrint("BACK");
     }else{
         encoder=true;
+        screenPrint("ENCODER");
     }
     if(!encoder){
-        float targetDistance=findNearest(distance,targetDistances,4,frontVlx);//agregar variable de adelante atras
+        float targetDistance=findNearest(distance,targetDistances,4,frontVlx);
+        targetDistance=targetDistance+edgeVlx;
         while(frontVlx ? (distance>targetDistance):(distance<targetDistance)){//poner rango
+            String print=static_cast<String>(targetDistance);
+            screenPrint(print);
             setahead();
-            // float changeAngle=nearWall();
             // limitCrash();
-            // checkTileColor();
-            // if(blackTile) break;
+            checkTileColor();
+            if(blackTile) break;
             if(buttonPressed) break;
             distance=(frontVlx ? vlx[vlxID::front].getDistance():vlx[vlxID::back].getDistance());
             Serial.println(distance);
@@ -140,11 +148,10 @@ void motors::ahead(){
         while(getAvergeTics()<kTicsPerTile/*+obstacleDistance*/){
             setahead();
             // limitCrash();
-            // checkTileColor();
-            // if(blackTile) return;
+            checkTileColor();
+            if(blackTile) return;
             if(buttonPressed) break;
             bno.getOrientationX();
-            // float changeAngle=nearWall();
             float missingDistance=kTileLength-(getAvergeTics()*kTileLength/kTicsPerTile);
             float speed=map(missingDistance,kTileLength,0,kMaxSpeedFormard,kMinSpeedFormard);
             speed=constrain(speed,kMinSpeedFormard,kMaxSpeedFormard);
@@ -153,7 +160,7 @@ void motors::ahead(){
         }
     }
     resetTics();
-    stop();resetTics();/*checkTileColor();*/
+    stop();resetTics();checkTileColor();
 }
 void motors::checkTileColor(){
     tileColor=tcs_.getColor();
@@ -170,10 +177,8 @@ void motors::checkTileColor(){
     }else if(tileColor==kBlueColor&&inMotion==false){
         blueTile=true;
         wait(5100);
-        wifiPrint("BLUE",88);
     }else if(tileColor==kCheckpointColor&&inMotion==false){
         checkpoint=true;
-        wifiPrint("CHECKPOINT",99);
     }
 }
 
@@ -203,6 +208,7 @@ float motors::passObstacle(){
         targetAngle=360;
         }
         rotate(targetAngle-45);
+        targetAngle=0;
     }
     int backDistanceCm=7;
     float distanceTics=backDistanceCm*kTicsPerRev/distancePerRev;

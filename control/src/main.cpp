@@ -23,10 +23,16 @@ void loop() {
 
 // m.run_algs();
   // testVlxLeft();
+  // robot.servo.write(0);
+
   m.run_algs();
   // testTCS();
   // Serial.println("hola");
   // delay(300);
   // jetson.getDetection();
+  // testEncoders();
+  // testPIDWheel();
+  // robot.ahead();
+  // delay(1500);
   // delay(5000);
 }

@@ -11,4 +11,6 @@ void testVlxBack();
 void testVlxFront();
 void testMotors();
 void testTCS();
+void testEncoders();
+void testPIDWheel();
 #endif
