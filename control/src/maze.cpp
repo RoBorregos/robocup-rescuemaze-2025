@@ -1,5 +1,7 @@
 #include "maze.h"
 #include "Arduino.h"
+#include "Jetson.h"
+Jetson jetson;
 coord inicio = {128, 128, 128};
 coord robotCoord = {128, 128, 128};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
@@ -28,7 +30,7 @@ void maze::followPath(Stack& path){
         }
         robot.ahead();
         if(robot.blackTile){
-            continue;;
+            continue;
         }
         robotCoord = next;
         
@@ -134,6 +136,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.victim = false;
         }
         changeLevel();
+        jetson.getDetection();
         robotCoord = current;
         //button checkpoint logic
         if(robot.buttonPressed){
@@ -143,7 +146,9 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             //option 1 (starting on 0 with past priority)
             robotCoord = inicio;
             robot.screenPrint("Inicio");
-            delay(5000);
+            while(robot.buttonPressed == false){
+                robot.screenPrint("Esperando");
+            }
             dijkstra(robotCoord, current, tilesMap, tiles);
             robotCoord = current;
 
