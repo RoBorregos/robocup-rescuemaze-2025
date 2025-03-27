@@ -30,15 +30,17 @@ void motors::setupMotors(){
         myPID[i].changeConstants(5.5,0.1,0.005,50);
         // myPID[i].changeConstants(kp_,ki_,kd_,kPidTime);
     }
-    screenBegin();
     Wire.begin();
+    screenBegin();
+    screenPrint("vlx");
     bno.setupBNO();
     setupVlx(vlxID::frontLeft);
-    screenPrint("vlx");
+    
     setupVlx(vlxID::left);
     
-    setupVlx(vlxID::frontRight);
+    
     setupVlx(vlxID::front);
+    setupVlx(vlxID::frontRight);
     setupVlx(vlxID::right);
     setupVlx(vlxID::back);
     setupTCS();
