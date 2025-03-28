@@ -9,7 +9,7 @@ import time
 import struct
 import _thread
 import binascii
-from load_model import Model
+from load_model_final import Model
 
 """"
 #the protocol use 8 bytes
