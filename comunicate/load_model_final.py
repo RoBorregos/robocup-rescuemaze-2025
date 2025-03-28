@@ -22,9 +22,9 @@ class Model():
         self.cap1 = cv2.VideoCapture(self.cam1, cv2.CAP_GSTREAMER)
 
         if not self.cap0.isOpened():
-            print("❌ No se pudo acceder a la cámara 0")
+            print("No se pudo acceder a la cámara 0")
         if not self.cap1.isOpened():
-            print("❌ No se pudo acceder a la cámara 1")
+            print("No se pudo acceder a la cámara 1")
 
     def _gstreamer_pipeline(self, sensor_id=0, width=640, height=480, framerate=30):
         return (
@@ -35,19 +35,16 @@ class Model():
         )
 
     def getColor(self, imageHSV):
-        redLow1 = np.array([0, 200, 25], np.uint8)
+        redLow1 = np.array([0, 120, 70], np.uint8)
         redHigh1 = np.array([10, 255, 255], np.uint8)
-        redLow2 = np.array([175, 200, 25], np.uint8)
+        redLow2 = np.array([170, 120, 70], np.uint8)
         redHigh2 = np.array([180, 255, 255], np.uint8)
-        yellowLow = np.array([25, 150, 25], np.uint8)
+        yellowLow = np.array([20, 100, 100], np.uint8)
         yellowHigh = np.array([35, 255, 255], np.uint8)
-        greenLow = np.array([42, 150, 25], np.uint8)
-        greenHigh = np.array([72, 255, 255], np.uint8)
+        greenLow = np.array([36, 80, 80], np.uint8)
+        greenHigh = np.array([89, 255, 255], np.uint8)
 
-        redPixels = cv2.add(
-            cv2.inRange(imageHSV, redLow1, redHigh1),
-            cv2.inRange(imageHSV, redLow2, redHigh2)
-        )
+        redPixels = cv2.inRange(imageHSV, redLow1, redHigh1) + cv2.inRange(imageHSV, redLow2, redHigh2)
         yellowPixels = cv2.inRange(imageHSV, yellowLow, yellowHigh)
         greenPixels = cv2.inRange(imageHSV, greenLow, greenHigh)
 
@@ -75,7 +72,7 @@ class Model():
         hsv = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2HSV)
         color = self.getColor(hsv)
         if color is not None:
-            print("🎨 Color detectado:", color)
+            print("Color detectado:", color)
             return color
 
         image_np = np.expand_dims(frame_resized.astype(np.float32) / 255.0, axis=0)
@@ -85,7 +82,7 @@ class Model():
 
         prediction = np.argmax(output_data)
         label = self.labels.get(prediction, 0xD)
-        print("🧠 Modelo detectó:", label)
+        print("Modelo detectó:", label)
         return label
 
     def getDetection(self):
