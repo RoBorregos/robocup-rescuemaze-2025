@@ -52,7 +52,7 @@ private:
     static constexpr uint16_t kMinSpeedFormard=10;//36
     static constexpr uint16_t kMaxSpeedFormard=30;//70
     static constexpr uint16_t kSpeedRampUp=20;//70
-    static constexpr uint16_t kSpeedRampDown=15;//70
+    static constexpr uint16_t kSpeedRampDown=9;//70
     //ramp
     static constexpr float kMinRampOrientation=10.0;
     static constexpr float minDisToLateralWall=6;
@@ -102,6 +102,7 @@ public:
     bool blueTile=false;
     bool checkpoint=false;
     bool victim=false;
+    uint8_t camDetection=2;
     bool buttonPressed=false;
     uint8_t rampState=0;
     motors();//constructor
@@ -129,6 +130,7 @@ public:
     //setups
     void setupTCS();
     void setupVlx(const uint8_t);
+    void resetOrientation();
     //sensors
     void checkTileColor();
     float limitCrash();
@@ -141,7 +143,7 @@ public:
     void unharmedVictim();
     //gets
     float getCurrentDistanceCm();
-    uint16_t getAngleOrientation();
+    float getAngleOrientation();
     double getAvergeTics();
     double getTicsSpeed();
     //logic

@@ -1,7 +1,7 @@
 #include "maze.h"
 #include "Arduino.h"
 #include "Jetson.h"
-Jetson jetson;
+// Jetson jetson;
 coord inicio = {128, 128, 128};
 coord robotCoord = {128, 128, 128};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
@@ -21,14 +21,17 @@ void maze::followPath(Stack& path){
         path.pop();
         if (next.x > robotCoord.x) {
             robot.rotate(90);
+            // jetson.getDetection();
         } else if (next.x < robotCoord.x) {
             robot.rotate(270);
+            // jetson.getDetection();
         } else if (next.y > robotCoord.y) {
             robot.rotate(0);
         } else if (next.y < robotCoord.y) {
             robot.rotate(180);
         }
         robot.ahead();
+        // jetson.getDetection();
         if(robot.blackTile){
             continue;
         }
@@ -136,10 +139,11 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.victim = false;
         }
         changeLevel();
-        jetson.getDetection();
+        // jetson.getDetection();
         robotCoord = current;
         //button checkpoint logic
         if(robot.buttonPressed){
+            break;
             robot.screenPrint("LoP");
             //delay(2000);
             robot.buttonPressed = false;
@@ -300,7 +304,10 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
         }
     }
-    dijkstra(robotCoord, inicio, tilesMap, tiles);
+    if(robot.buttonPressed==false){
+        dijkstra(robotCoord, inicio, tilesMap, tiles);
+    }
+    
 }
 void maze::run_algs(){
     arrCustom<coord> visitedMap(kMaxSize, kInvalidPosition);
@@ -310,3 +317,6 @@ void maze::run_algs(){
     tiles.getValue(tilesMap.getIndex(robotCoord)) = Tile(robotCoord);
     dfs(visitedMap, tiles, tilesMap);
 }
+// void maze::getDetectionJetson(){
+//     jetson.getDetection()
+// }

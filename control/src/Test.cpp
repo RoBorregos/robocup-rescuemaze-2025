@@ -41,16 +41,16 @@ void testVlxFront(){
 void testMotors(){
     robot.setahead();
     Serial.println("FrontLeft");
-    robot.motor[MotorID::kFrontLeft].setSpeed(100);
+    robot.motor[MotorID::kFrontLeft].setSpeed(200);
     delay(500);
     Serial.println("FrontRight");
-    robot.motor[MotorID::kFrontRight].setSpeed(100);
+    robot.motor[MotorID::kFrontRight].setSpeed(200);
     delay(500);
     Serial.println("BackLeft");
-    robot.motor[MotorID::kBackLeft].setSpeed(100);
+    robot.motor[MotorID::kBackLeft].setSpeed(200);
     delay(500);
     Serial.println("BackRight");
-    robot.motor[MotorID::kBackRight].setSpeed(100);
+    robot.motor[MotorID::kBackRight].setSpeed(200);
     delay(500);
     robot.setSpeed(0);
 }
@@ -62,4 +62,8 @@ void testTCS(){
 void testPIDWheel(){
     robot.setahead();
     robot.PID_Wheel(20,MotorID::kFrontLeft);
+}
+
+void testButton(){
+    Serial.println(robot.buttonPressed);
 }

@@ -13,4 +13,5 @@ void testMotors();
 void testTCS();
 void testEncoders();
 void testPIDWheel();
+void testButton();
 #endif

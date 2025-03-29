@@ -5,12 +5,13 @@
 #include "algs/heap.h"
 #include "algs/coord.h"
 #include "Encoder.h"
-
+#include "Jetson.h"
 class maze{
     public:
         void run_algs();
         maze();
-        
+        void getDetectionJetson();
+        // Jetson jetson;
     private:
         uint8_t level; 
         uint8_t getLevel();

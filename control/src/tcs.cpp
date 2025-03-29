@@ -126,25 +126,30 @@ char TCS::getColor(){
     float scaleBlueT = blue_;
     if(clear_>0){
         scaleRedT = (scaleRedT / clear_ ) * 255;
-    scaleGreenT = (scaleGreenT / clear_ ) * 255;
-    scaleBlueT = (scaleBlueT / clear_ ) * 255;
+        scaleGreenT = (scaleGreenT / clear_ ) * 255;
+        scaleBlueT = (scaleBlueT / clear_ ) * 255;
     }
     ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
                             static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
     nuanceT *= 360;
-    Serial.println("HSU");
-    Serial.println(nuanceT);
-    Serial.println(saturationT);
-    Serial.println(valueT);
-    if(red_<blackThreshold && green_<blackThreshold && blue_<blackThreshold) return kBlackColor_;
-    else if(nuanceT>180 && nuanceT<280) return kBlueColor_;
-    else if(nuanceT<20) return kRedColor_;
-    else return kUndefinedColor_;
+    // Serial.println("HSU");
+    // Serial.println(nuanceT);
+    // Serial.println(saturationT);
+    // Serial.println(valueT);
 
     // Serial.println("RGB");
     // Serial.println(red_);
     // Serial.println(green_);
-    // Serial.println(blue_);    
+    // Serial.println(blue_); 
+    // Serial.println(clear_); 
+
+
+    if(nuanceT>180 && nuanceT<280) return kBlueColor_;
+    else if(nuanceT<20) return kRedColor_;
+    else if(red_<blackThreshold && green_<blackThreshold && blue_<blackThreshold) return kBlackColor_;
+    else return kUndefinedColor_;
+
+  
 }
 bool TCS::inRange(uint8_t colorInput, uint8_t colorRegistered) {
     return (((colorRegistered - precision_) <= colorInput) && (colorInput <= (colorRegistered + precision_)));

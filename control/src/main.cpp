@@ -5,10 +5,11 @@
 #include <FastLED.h>
 #include "Jetson.h"
 maze m;
-Jetson jetson;
 
 void setup() {
   // put your setup code here, to run once:
+  pinMode(2,OUTPUT);
+  digitalWrite(2,1);
   Serial.begin(115200);
   robot.setupMotors();
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Interrups::frontLeftEncoder, RISING);
@@ -20,19 +21,26 @@ void setup() {
 }
 
 void loop() {
+  // m.getDetectionJetson();
+  digitalWrite(2,1);
 
-// m.run_algs();
-  // testVlxLeft();
-  // robot.servo.write(0);
-
-  // m.run_algs();
-  // testTCS();
-  // Serial.println("hola");
-  // delay(300);
+  m.run_algs();
+  // delay(3000);
+  // float aglueee=robot.getAngleOrientation();
+  // robot.rotate(aglueee);
+  // robot.checkpointElection(); 
+  // robot.buttonPressed=false;
+  // Serial.println(robot.limitSwitch_[LimitSwitchID::kLeft].getState());
+  // Serial.println(robot.limitSwitch_[LimitSwitchID::kRight].getState());
+  // jeetson.getDetection();
   // jetson.getDetection();
+  // testTCS();
+  // testMotors();
   // testEncoders();
-  // testPIDWheel();
-  // robot.ahead();
-  // delay(1500);
-  // delay(5000);
+  // testVlxFrontLeft();
+  // testVlxFrontRigth();
+  // testVlxRight();
+  // testVlxLeft();
+  // testVlxFront();
+  // testVlxBack();
 }
