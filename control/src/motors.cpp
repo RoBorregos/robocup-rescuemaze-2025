@@ -494,6 +494,7 @@ void motors::ramp(){
     }
     while(bno.getOrientationY() < -kMinAngleRamp){
         // pidEncoders(kSpeedRampDown,true);
+        rampPID.changeConstants(0.5,0.1,0.01,20);
         float error=rampPID.calculate_PID(0,(vlx[vlxID::right].getDistance()-vlx[vlxID::left].getDistance()));
         error=constrain(error,-6,6);
         Serial.println(error);
@@ -503,7 +504,7 @@ void motors::ramp(){
         PID_Wheel(kSpeedRampDown+error,MotorID::kFrontRight);
         PID_Wheel(kSpeedRampDown+error,MotorID::kBackRight);
     }
-    moveDistance(kTileLength/3);
+    moveDistance(kTileLength/2);
     stop();
 }
 void motors::moveDistance(uint8_t targetDistance){

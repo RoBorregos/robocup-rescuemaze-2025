@@ -55,9 +55,10 @@ void testMotors(){
     robot.setSpeed(0);
 }
 void testTCS(){
-    String print=static_cast<String>(robot.tcs_.getColorClear());
+    String print=static_cast<String>(robot.tcs_.getColor());
     robot.screenPrint(print);
-    delay(300);
+    Serial.println(print);
+    delay(1000);
 }
 void testPIDWheel(){
     robot.setahead();
