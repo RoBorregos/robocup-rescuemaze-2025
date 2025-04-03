@@ -14,7 +14,6 @@ class Model():
             print("No se pudo acceder a la cámara 0")
         if not self.cap1.isOpened():
             print("No se pudo acceder a la cámara 1")
-
     def _gstreamer_pipeline(self, sensor_id=0, width=640, height=480, framerate=30):
         return (
             f"nvarguscamerasrc sensor-id={sensor_id} ! "
@@ -22,7 +21,6 @@ class Model():
             f"nvvidconv flip-method=0 ! video/x-raw, format=BGRx ! "
             f"videoconvert ! video/x-raw, format=BGR ! appsink"
         )
-
     def getColor(self, imageHSV):
         redLow1 = np.array([0, 120, 70], np.uint8)
         redHigh1 = np.array([10, 255, 255], np.uint8)
