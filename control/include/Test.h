@@ -14,4 +14,7 @@ void testTCS();
 void testEncoders();
 void testPIDWheel();
 void testButton();
+void testVlxFrontDistance();
+void testBnoY();
+void calibrateColors();
 #endif

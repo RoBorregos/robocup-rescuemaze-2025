@@ -23,8 +23,9 @@ void setup() {
 void loop() {
   // m.getDetectionJetson();
   digitalWrite(2,1);
-
+  // robot.leds.sequency();
   m.run_algs();
+  // calibrateColors();
   // delay(3000);
   // float aglueee=robot.getAngleOrientation();
   // robot.rotate(aglueee);
@@ -35,8 +36,10 @@ void loop() {
   // jeetson.getDetection();
   // jetson.getDetection();
   // testTCS();
+  // testBnoY();
   // testMotors();
   // testEncoders();
+  // testVlxFrontDistance();
   // testVlxFrontLeft();
   // testVlxFrontRigth();
   // testVlxRight();

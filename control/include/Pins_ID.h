@@ -45,6 +45,8 @@ namespace Pins{
     };
     constexpr uint8_t servoPin = 18;
     constexpr uint8_t checkpointPin = 19;
+    constexpr uint8_t LedsPin = 12;
+
 
 }
 namespace LimitSwitchID {

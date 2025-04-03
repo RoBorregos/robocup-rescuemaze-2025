@@ -38,6 +38,55 @@ class TCS {
         static constexpr int8_t kPrecision_ = 10;
 
         static constexpr int8_t millisToWait_ = 50;
+        //BLUE TILE
+        static constexpr float kRedValueInBlue_ = 41.00;
+        static constexpr float kGreenValueInBlue_ = 52.00;
+        static constexpr float kBlueValueInBlue_ = 62.00;
+        //BLACK TILE
+        static constexpr float kRedValueInBlack_ = 21.00;
+        static constexpr float kGreenValueInBlack_ = 17.00;
+        static constexpr float kBlueValueInBlack_ = 14.00;
+        //CHECKPOINT TILE
+        static constexpr float kRedValueInCheckpoint_ = 256.00;
+        static constexpr float kGreenValueInCheckpoint_ = 165.00;
+        static constexpr float kBlueValueInCheckpoint_ = 127.00;
+
+        static constexpr uint8_t rgbThreshold=25;
+        static constexpr float kMinRedValueInBlue_ = kRedValueInBlue_-rgbThreshold;
+        static constexpr float kMaxRedValueInBlue_ = kRedValueInBlue_+rgbThreshold;
+
+        static constexpr float kMinGreenValueInBlue_ = kGreenValueInBlue_-rgbThreshold;
+        static constexpr float kMaxGreenValueInBlue_ = kGreenValueInBlue_+rgbThreshold;
+
+        static constexpr float kMinBlueValueInBlue_ = kBlueValueInBlue_-rgbThreshold;
+        static constexpr float kMaxBlueValueInBlue_ = kBlueValueInBlue_+rgbThreshold;
+
+        static constexpr float kMaxRedValueInRed_ = 0;
+        static constexpr float kMinRedValueInRed_ = 0;
+
+        static constexpr float kMaxGreenValueInRed_ = 0;
+        static constexpr float kMinGreenValueInRed_ = 0;
+
+        static constexpr float kMaxBlueValueInRed_ = 0;
+        static constexpr float kMinBlueValueInRed_ = 0;
+
+        static constexpr float kMinRedValueInBlack_ = kRedValueInBlack_-rgbThreshold;
+        static constexpr float kMaxRedValueInBlack_ = kRedValueInBlack_+rgbThreshold;
+
+        static constexpr float kMinGreenValueInBlack_ = kGreenValueInBlack_-rgbThreshold;
+        static constexpr float kMaxGreenValueInBlack_ = kGreenValueInBlack_+rgbThreshold;
+
+        static constexpr float kMinBlueValueInBlack_ = kBlueValueInBlack_-rgbThreshold;
+        static constexpr float kMaxBlueValueInBlack_ = kBlueValueInBlack_+rgbThreshold;
+
+        static constexpr float kMinRedValueInCheckpoint_ = kRedValueInCheckpoint_-rgbThreshold;
+        static constexpr float kMaxRedValueInCheckpoint_ = kRedValueInCheckpoint_+rgbThreshold;
+
+        static constexpr float kMinGreenValueInCheckpoint_ = kGreenValueInCheckpoint_-rgbThreshold;
+        static constexpr float kMaxGreenValueInCheckpoint_ = kGreenValueInCheckpoint_+rgbThreshold;
+
+        static constexpr float kMinBlueValueInCheckpoint_ = kBlueValueInCheckpoint_-rgbThreshold;
+        static constexpr float kMaxBlueValueInCheckpoint_ = kBlueValueInCheckpoint_+rgbThreshold;
 
         static constexpr char kRedColor_ = 'r';
         static constexpr char kBlueColor_ = 'B';

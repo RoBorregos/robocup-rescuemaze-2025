@@ -38,6 +38,15 @@ void testVlxBack(){
 void testVlxFront(){
     Serial.println(robot.vlx[vlxID::front].getDistance());
 }
+void testVlxFrontDistance(){
+    robot.vlx[vlxID::frontLeft].getDistance();
+    robot.vlx[vlxID::frontRight].getDistance();
+    float frontDistance=(robot.vlx[vlxID::frontLeft].distance>robot.vlx[vlxID::frontRight].distance) ? robot.vlx[vlxID::frontLeft].distance:robot.vlx[vlxID::frontRight].distance;
+    String print = static_cast<String>(frontDistance);
+    robot.screenPrint(print);
+    Serial.println(frontDistance);
+
+}
 void testMotors(){
     robot.setahead();
     Serial.println("FrontLeft");
@@ -58,6 +67,9 @@ void testTCS(){
     String print=static_cast<String>(robot.tcs_.getColor());
     robot.screenPrint(print);
     Serial.println(print);
+    Serial.println(robot.tcs_.red_);
+    Serial.println(robot.tcs_.green_);
+    Serial.println(robot.tcs_.blue_);
     delay(1000);
 }
 void testPIDWheel(){
@@ -65,6 +77,15 @@ void testPIDWheel(){
     robot.PID_Wheel(20,MotorID::kFrontLeft);
 }
 
+
 void testButton(){
     Serial.println(robot.buttonPressed);
+}
+void testBnoY(){
+    String print=static_cast<String>(robot.bno.getOrientationY());
+    robot.screenPrint(print);
+    Serial.println(print);
+}
+void calibrateColors(){
+    robot.calibrateColors();
 }

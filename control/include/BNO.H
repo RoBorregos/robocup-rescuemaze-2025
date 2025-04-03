@@ -23,8 +23,8 @@ class BNO {
         void updateBNO(sensors_event_t &event);
         float getOrientationX();
         float getOrientationY();
-        void setPhaseCorrection(const float phaseCorrection);
-        void setPhaseCorrectionY(const float phaseCorrectionY);
+        void setPhaseCorrection(float phaseCorrection);
+        void setPhaseCorrectionY(float phaseCorrectionY);
         void resetOrientation();
 };
 

@@ -11,12 +11,13 @@
 class VLX{
 private:
     MUX mux_;
-    static constexpr uint8_t kDistanceToWall=15;
+    
     static constexpr uint8_t kMaxInitAttempts_ = 5;
 public:
+    static constexpr uint8_t kDistanceToWall=15;
     Adafruit_VL53L0X VLX_ = Adafruit_VL53L0X();
     VL53L0X_RangingMeasurementData_t measure;
-    double distance;
+    float distance;
     VLX();
     VLX(const uint8_t);
     void setMux(const uint8_t);

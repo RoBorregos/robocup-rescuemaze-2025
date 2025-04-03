@@ -24,9 +24,8 @@ void BNO::setupBNO() {
     // customPrintln("BNO055 detected");
     delay(1000);
     bno_.setExtCrystalUse(true);
-    delay(1000);
-    angle_initial=getOrientationX();
-    Serial.println(angle_initial);
+    // angle_initial=getOrientationX();
+    // Serial.println(angle_initial);
     
 }
 
@@ -37,7 +36,6 @@ void BNO::updateBNO(sensors_event_t &event) {
 float BNO::getOrientationX() {
     updateBNO(event_);
     angle=event_.orientation.x - phaseCorrection_;
-    angle = angle - angle_initial;
     if (angle < 0) {
         angle+= 360;
     } else if (angle >= 360) {
@@ -53,7 +51,7 @@ float BNO::getOrientationX() {
 
 float BNO::getOrientationY() {
     updateBNO(event_);
-    return event_.orientation.y;
+    return event_.orientation.y-phaseCorrectionY_;
 }
 
 void BNO::setPhaseCorrection(const float phaseCorrection) {
@@ -61,7 +59,7 @@ void BNO::setPhaseCorrection(const float phaseCorrection) {
 }
 
 // Establecer corrección de fase para el eje Y
-void BNO::setPhaseCorrectionY(const float phaseCorrectionY) {
+void BNO::setPhaseCorrectionY(float phaseCorrectionY) {
     phaseCorrectionY_ = phaseCorrectionY;
 }
 

@@ -9,6 +9,7 @@
 #include <ESP32Servo.h>
 #include "TCS.h"
 #include "LimitSwitch.h"
+#include "Leds.h"
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -19,6 +20,7 @@
 
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
+
 constexpr uint8_t edgeTileDistance=4;
 constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
@@ -54,11 +56,22 @@ private:
     static constexpr uint16_t kSpeedRampUp=20;//70
     static constexpr uint16_t kSpeedRampDown=9;//70
     //ramp
+    PID rampUpPID;
+    PID rampDownPID;
     static constexpr float kMinRampOrientation=10.0;
     static constexpr float minDisToLateralWall=6;
     static constexpr float impactDisToLateralWall=2;
     static constexpr uint8_t maxChangeAngle=5;
     static constexpr uint8_t kMinAngleRamp=10;
+    //ramp up constants
+    static constexpr float kP_RampDown=0.75;
+    static constexpr float kI_RampDown=0.1;
+    static constexpr float kD_RampDown=0.01;
+    static constexpr uint8_t rampTime=20;
+    //ramp down constants
+    static constexpr float kP_RampUp=1;
+    static constexpr float kI_RampUp=0.1;
+    static constexpr float kD_RampUp=0.01;
     //TCS
     char tileColor;
     static constexpr int kPrecision = 100;
@@ -86,6 +99,7 @@ private:
     };
     //movement
     bool inMotion=false;
+    bool limitColition=false;
     //servo
     float servoPos=0;
 public:
@@ -97,6 +111,7 @@ public:
     VLX vlx[kNumVlx];
     Servo servo;
     Motor motor[4];
+    Leds leds;
     //public variables
     bool blackTile=false;
     bool blueTile=false;
@@ -119,7 +134,10 @@ public:
     void setback();
     void setleft();
     void setright();
+    void setleftTraslation();
+    void setrightTraslation();
     void stop();
+    void calibrateColors();
     //movements
     void ahead();    
     void back();

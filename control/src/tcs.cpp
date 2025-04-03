@@ -74,7 +74,7 @@ void TCS::updateRGBC() {
 }
 
 void TCS::printRGB() {
-    updateRGBC();
+    // updateRGBC();
     Serial.println(red_);
     Serial.println(green_);
     Serial.println(blue_);
@@ -118,39 +118,85 @@ void TCS::setPrecision(const uint8_t precision) {
     this->precision_ = precision;
 }
 
-char TCS::getColor(){
-    double nuanceT, saturationT, valueT;
-    updateRGBC();
-    float scaleRedT = red_;
-    float scaleGreenT = green_;
-    float scaleBlueT = blue_;
-    if(clear_>0){
-        scaleRedT = (scaleRedT / clear_ ) * 255;
-        scaleGreenT = (scaleGreenT / clear_ ) * 255;
-        scaleBlueT = (scaleBlueT / clear_ ) * 255;
-    }
-    ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
-                            static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
-    nuanceT *= 360;
-    Serial.println("HSU");
-    Serial.println(nuanceT);
-    Serial.println(saturationT);
-    Serial.println(valueT);
+// char TCS::getColor(){
+//     double nuanceT, saturationT, valueT;
+//     updateRGBC();
+//     float scaleRedT = red_;
+//     float scaleGreenT = green_;
+//     float scaleBlueT = blue_;
+//     if(clear_>0){
+//         scaleRedT = (scaleRedT / clear_ ) * 255;
+//         scaleGreenT = (scaleGreenT / clear_ ) * 255;
+//         scaleBlueT = (scaleBlueT / clear_ ) * 255;
+//     }
 
-    Serial.println("RGB");
-    Serial.println(red_);
-    Serial.println(green_);
-    Serial.println(blue_); 
-    Serial.println(clear_); 
+//     // ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
+//     //                         static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
+//     ColorConverter::RgbToHsv(static_cast<uint16_t>(red_), static_cast<uint16_t>(green_),
+//                             static_cast<uint16_t>(blue_), nuanceT, saturationT, valueT);
+//     nuanceT *= 180;
+//     saturationT *= 255;
+//     valueT *= 255;
+//     Serial.println("HSU");
+//     Serial.println(nuanceT);
+//     Serial.println(saturationT);
+//     Serial.println(valueT);
+
+//     Serial.println("RGB");
+//     Serial.println(red_);
+//     Serial.println(green_);
+//     Serial.println(blue_); 
+//     Serial.println(clear_); 
 
 
-    if(nuanceT>150 && nuanceT<280) return kBlueColor_;
-    
-    else if(red_<blackThreshold && green_<blackThreshold && blue_<blackThreshold) return kBlackColor_;
-    // else if(nuanceT<20) return kRedColor_;
-    else return kUndefinedColor_;
+//     if(nuanceT>80 && nuanceT<145) return kBlueColor_;
+//     else if(valueT<120 && nuanceT<45) return kBlackColor_;
+//     else if(nuanceT<10 || nuanceT>170) return kRedColor_;
+//     else return kUndefinedColor_;
 
   
+// }
+char TCS::getColor() {
+    updateRGBC();
+    char colorLetter = kUndefinedColor_;
+    // float adc = photoresistor.readADC_SingleEnded(0);
+    #if DEBUG_TCS
+    customPrintln(String(kMinPhotoresistorValue_) + " " + String(kMaxPhotoresistorValue_) + " " + String(adc));
+    #endif
+    // TODO: check each color
+    Serial.println("red: " + String(red_) + " green: " + String(green_) + " blue: " + String(blue_) + "clear" + String(clear_));
+    // Serial.println("for BLUE: max red: " + String(kMaxRedValueInBlue_) + " min green: " + String(kMinGreenValueInBlue_) + " min blue: " + String(kMinBlueValueInBlue_));
+    // Serial.println("for RED: min red: " + String(kMinRedValueInRed_) + " max green: " + String(kMaxGreenValueInRed_) + " max blue: " + String(kMaxBlueValueInRed_));
+    // Serial.println("for BLACK: max red: " + String(kMaxRedValueInBlack_) + " max green: " + String(kMaxGreenValueInBlack_) + " max blue: " + String(kMaxBlueValueInBlack_));
+    // customPrint(String(kMinRedValueInBlue_) + " " + String(kMaxRedValueInBlue_) + " " + String(kMinGreenValueInBlue_) + " " + String(kMaxGreenValueInBlue_) + " " + String(kMinBlueValueInBlue_) + " " + String(kMaxBlueValueInBlue_) + "\n");
+    // customPrint(String(kMinRedValueInBlack_) + " " + String(kMaxRedValueInBlack_) + " " + String(kMinGreenValueInBlack_) + " " + String(kMaxGreenValueInBlack_) + " " + String(kMinBlueValueInBlack_) + " " + String(kMaxBlueValueInBlack_) + "\n");
+    if (red_ > kMinRedValueInBlue_ && green_ > kMinGreenValueInBlue_ && blue_ > kMinBlueValueInBlue_ && red_ < kMaxRedValueInBlue_  && green_ < kMaxGreenValueInBlue_ && blue_ < kMaxBlueValueInBlue_) {
+        // blue
+        colorLetter = kBlueColor_;
+        #if DEBUG_TCS
+        customPrintln("blue");
+        #endif
+    } else if (red_ > kMinRedValueInBlack_ && green_ > kMinGreenValueInBlack_ && blue_ > kMinBlueValueInBlack_ && red_ < kMaxRedValueInBlack_ && green_ < kMaxGreenValueInBlack_ && blue_ < kMaxBlueValueInBlack_) {
+        // black
+        colorLetter = kBlackColor_;
+        #if DEBUG_TCS
+        customPrintln("black");
+        #endif
+    } else if (red_ > kMinRedValueInCheckpoint_ && green_ > kMinGreenValueInCheckpoint_ && blue_ > kMinBlueValueInCheckpoint_ && red_ < kMaxRedValueInCheckpoint_ && green_ < kMaxGreenValueInCheckpoint_ && blue_ < kMaxBlueValueInCheckpoint_) { // adc < kMinPhotoresistorValue_ || adc > kMaxPhotoresistorValue_
+        colorLetter = kCheckpointColor_;
+        #if DEBUG_TCS
+        customPrintln("checkpoint");
+        #endif
+    } else {
+        colorLetter = kUndefinedColor_;
+        #if DEBUG_TCS
+        customPrintln("unknown");
+        #endif
+    }
+    #if DEBUG_TCS
+    customPrint("colorLetter: "); customPrintln(colorLetter);
+    #endif
+    return colorLetter;
 }
 bool TCS::inRange(uint8_t colorInput, uint8_t colorRegistered) {
     return (((colorRegistered - precision_) <= colorInput) && (colorInput <= (colorRegistered + precision_)));

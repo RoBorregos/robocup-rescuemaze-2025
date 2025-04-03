@@ -1,0 +1,8 @@
+{
+    "cmake.sourceDirectory": "C:/Users/ferna/Documents/robocup-rescuemaze-2025-2/control/lib/Adafruit_BusIO",
+    "files.associations": {
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "condition_variable": "cpp"
+    }
+}
