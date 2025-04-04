@@ -58,14 +58,14 @@ class Esp32():
             self.port = Serial(port=self.port, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.writeTimeout)
             # The next line is necessary to give the firmware time to wake up.
             time.sleep(1)
-            state_, val = self.get_baud()
-            if val != self.baudrate:
-                time.sleep(1)
-                state_, val  = self.get_baud()
-                if val != self.baudrate:
-                    raise SerialException
-            print("Connected at", self.baudrate)
-            print("Microcontroller is ready.")
+            # state_, val = self.get_baud()
+            # if val != self.baudrate:
+            #     time.sleep(1)
+            #     state_, val  = self.get_baud()
+            #     if val != self.baudrate:
+            #         raise SerialException
+            # print("Connected at", self.baudrate)
+            # print("Microcontroller is ready.")
 
         except SerialException:
             print("Serial Exception:")
@@ -234,6 +234,23 @@ class Esp32():
         if self.payload_ack==b'\x02':
             detection=self.model.getDetection()
             cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, detection) + struct.pack("B", detection+0x01)
+            if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+                return  self.SUCCESS
+            else:
+                # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+                return self.FAIL, 0
+        elif self.payload_ack==b'\x03':
+            detection=self.model.getDetection()
+            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, detection) + struct.pack("B", detection+0x01)
+            if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+                return  self.SUCCESS
+            else:
+                # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+                return self.FAIL, 0
+    def sentWall(self,wall):
+        self.recv()
+        if self.payload_ack==b'\x03':
+            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, wall) + struct.pack("B", wall+0x01)
             if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
                 return  self.SUCCESS
             else:

@@ -1,0 +1,6 @@
+when 
+with custom_object_scope({'KerasLayer': hub.KerasLayer}):
+    model = tf.keras.models.load_model(path)
+doesnt work try this in cmd:
+    rmdir /s /q C:\Users\ferna\AppData\Local\Temp\tfhub_modules
+its to clean tensorflow_hub cache

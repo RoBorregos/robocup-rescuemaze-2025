@@ -1,9 +1,9 @@
+import cv2
 import tensorflow as tf
 import numpy as np
-import cv2
 import matplotlib.pyplot as plt
 import tensorflow_datasets as tfd
-from keras.utils import custom_object_scope
+from tensorflow.keras.utils import custom_object_scope
 import tensorflow_hub as hub
 import time
 def getColor(imageHSV):
@@ -39,9 +39,9 @@ def getColor(imageHSV):
     return color
 #carga de modelo
 with custom_object_scope({'KerasLayer': hub.KerasLayer}):
-    model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetv5.h5")
+    model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetJetson.h5")
 #imiciar camara
-cam=cv2.VideoCapture(1)
+cam=cv2.VideoCapture(0)
 # #verificar camara
 if not cam.isOpened():
     print("error al iniciar camara")

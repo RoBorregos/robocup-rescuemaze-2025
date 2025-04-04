@@ -48,7 +48,8 @@ with custom_object_scope({'KerasLayer': hub.KerasLayer}):
     model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetJetson.h5")
 
 # Load image using PIL (instead of OpenCV)
-image_path = "C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU\\S\\image7.jpeg"
+image_path = "C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\fotos\\U4.png"
+
 try:
     image = Image.open(image_path).convert("RGB")  # Ensure RGB format
 except Exception as e:
@@ -65,6 +66,7 @@ plt.show()
 
 # Perform prediction
 result = model.predict(image.reshape(1, 224, 224, 3))  # Reshape for model input
+print(result)
 result = np.argmax(result)
 
 # Label mapping
