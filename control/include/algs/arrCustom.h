@@ -67,7 +67,7 @@ public:
     void reset() {
         i = 0;
         for (uint8_t j = 0; j < size; j++) {
-            positions[j] = T(); // valor por defecto
+            positions[j] = T();
         }        
     }
 };

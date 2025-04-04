@@ -24,6 +24,7 @@ constexpr coord kInvalidPosition = coord{255,255,255};
 constexpr uint8_t kMaxInt = 255;
 constexpr uint8_t kMaxSize = 70;
 constexpr uint8_t kMaxStackSize = 10;
+constexpr uint8_t kBaseCoord = 128;
 
 class Tile{
     public:

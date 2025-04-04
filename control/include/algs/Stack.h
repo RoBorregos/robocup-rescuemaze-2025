@@ -1,6 +1,6 @@
 
-#include "coord.h"
-#include "Tile.h"
+//#include "coord.h"
+//#include "Tile.h"
 // #include <iostream>
 
 struct Item {

@@ -2,13 +2,13 @@
 #include "Arduino.h"
 #include "Jetson.h"
 // Jetson jetson;
-coord inicio = {128, 128, 128};
-coord robotCoord = {128, 128, 128};
+coord inicio = {kBaseCoord, kBaseCoord, kBaseCoord};
+coord robotCoord = {kBaseCoord, kBaseCoord, kBaseCoord};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
-coord checkpointCoord = {128, 128,128};
+coord checkpointCoord = {kBaseCoord, kBaseCoord, kBaseCoord};
 arrCustom<coord> visitedMapRecover(kMaxSize, kInvalidPosition);
 uint8_t robotOrientation = 0;
-uint8_t level = 128;
+uint8_t level = kBaseCoord;
 maze::maze(){}
 // logic ---------------------------------------------------------
 void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); robot.rampState = 0; }
@@ -51,7 +51,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
 
     distance.set(tilesMap.getIndex(start), 0);
     explored.set(tilesMap.getIndex(start), true);
-    int minDist;
+    uint8_t minDist;
     coord current = start;
     while(!explored.getValue(tilesMap.getIndex(end))){ 
         for(const TileDirection& direction : directions){
@@ -66,7 +66,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
                 }
             }
         }
-        minDist = INT_MAX;
+        minDist = kMaxInt;
         //find the minimum distance to the path line
         for(int i = 0; i < tilesMap.getSize(); i++){
             const coord& currentCoord = tilesMap.getValue(i);
@@ -122,7 +122,6 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.blackTile = false;
             continue;
         }
-        /*
         if(robot.checkpoint == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setCheckpoint();
@@ -132,10 +131,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             for(uint8_t i = 0; i < kMaxSize; i++){
                 visitedMapRecover.set(i, visitedMap.getValue(i));
             }
-        }*/
-        
-        
-        
+        }
         if(robot.victim == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setVictim();
@@ -282,9 +278,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
 
         for(const TileDirection direction: directions){
             wall = false; 
-            if(robot.isWall(static_cast<int>(direction))){
-                wall = true;
-            }
+            if(robot.isWall(static_cast<int>(direction))) wall = true;
             switch(direction) {
                 case TileDirection::kRight:
                     next = coord{static_cast<uint8_t>(current.x + 1), current.y, level};
@@ -311,7 +305,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             if(currentTile -> adjacentTiles_[static_cast<int>(direction)] == nullptr){
                 int index = tilesMap.getIndex(next);
                 Tile* nextTile;
-                if (index == 255) { 
+                if (index == kMaxInt) { 
                     tilesMap.push_back(next);
                     tiles.set(tilesMap.getIndex(next), Tile(next));
                     nextTile = &tiles.getValue(tilesMap.getIndex(next));
