@@ -5,6 +5,7 @@
 #include <FastLED.h>
 #include "Jetson.h"
 maze m;
+Jetson jeetson;
 
 void setup() {
   // put your setup code here, to run once:

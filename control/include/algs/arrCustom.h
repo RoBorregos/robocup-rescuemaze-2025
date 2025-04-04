@@ -37,12 +37,14 @@ public:
         return 255;
     }
     T& getValue(size_t index) const {
+        
         if (index < size && index >= 0) {
             return positions[index];
         }
         else{
             Serial.println("Index out of bounds");
         }
+        
     }
     size_t getSize() const {
         return size;
@@ -55,6 +57,7 @@ public:
             for (uint8_t j = 0; j < size; j++) {
                 temp[j] = positions[j];
             }
+            delete[] positions;
             positions = temp;
             size++;
         }
@@ -63,5 +66,8 @@ public:
     }
     void reset() {
         i = 0;
+        for (uint8_t j = 0; j < size; j++) {
+            positions[j] = T(); // valor por defecto
+        }        
     }
 };

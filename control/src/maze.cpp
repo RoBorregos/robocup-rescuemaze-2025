@@ -122,7 +122,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.blackTile = false;
             continue;
         }
-        
+        /*
         if(robot.checkpoint == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setCheckpoint();
@@ -132,7 +132,10 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             for(uint8_t i = 0; i < kMaxSize; i++){
                 visitedMapRecover.set(i, visitedMap.getValue(i));
             }
-        }
+        }*/
+        
+        
+        
         if(robot.victim == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setVictim();
@@ -141,79 +144,55 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         changeLevel();
         // jetson.getDetection();
         robotCoord = current;
+        
         //button checkpoint logic
         if(robot.buttonPressed){
-            break;
+            //break;
             robot.screenPrint("LoP");
             //delay(2000);
-            robot.buttonPressed = false;
             //option 1 (starting on 0 with past priority)
+            
             robotCoord = inicio;
             robot.screenPrint("Inicio");
-            while(robot.buttonPressed == false){
+            while(robot.buttonPressed == true){
                 robot.screenPrint("Esperando");
             }
-            dijkstra(robotCoord, current, tilesMap, tiles);
-            robotCoord = current;
-
-            /*
-            for(uint8_t j = 0; j < kMaxSize; j++){
-                visitedMap.getValue(j) = kInvalidPosition;
+            robot.screenPrint("Dale");
+            // dijkstra(robotCoord, current, tilesMap, tiles);
+            // robotCoord = current;
+            
+            // arrCustom<coord> visitedMapR(kMaxSize, kInvalidPosition);
+            // arrCustom<coord> tilesMapR(kMaxSize, kInvalidPosition);
+            // arrCustom<Tile> tilesR(kMaxSize, Tile(kInvalidPosition));
+            // visitedMap = visitedMapR;
+            // tilesMap = tilesMapR;
+            // tiles = tilesR;
+            
+            //tilesMap.push_back(robotCoord);
+            //tiles.getValue(tilesMap.getIndex(robotCoord)) = Tile(robotCoord);
+            
+            //for(uint8_t j = 0; j < kMaxSize; j++){
+                // visitedMap.getValue(j) = kInvalidPosition;
                 //visitedMap.set(j, kInvalidPosition);
+                Serial.println("resetting visitedMap");
                 visitedMap.reset();
-                tilesMap.getValue(j) = kInvalidPosition;
+                // tilesMap.getValue(j) = kInvalidPosition;
                 //tilesMap.set(j, kInvalidPosition);
+                Serial.println("resetting tilesMap");
                 tilesMap.reset();
-                tiles.getValue(j) = Tile(kInvalidPosition);
+                // tiles.getValue(j) = Tile(kInvalidPosition);
                 //tiles.set(j, Tile(kInvalidPosition));
+                Serial.println("resetting tiles");
                 tiles.reset();
-            }
-            tilesMap.push_back(robotCoord);
-            tiles.getValue(tilesMap.getIndex(robotCoord))=Tile(robotCoord);
-            //option2 (starting on 0 with past priority and setting new priority)
-            */
-            /*
-            current = inicio;
-            for(uint8_t i = 0; i < visitedMap.getSize(); i++){
-                visitedMap.set(i, kInvalidPosition);
-                visitedMap.reset();
-                tilesMap.set(i, kInvalidPosition);
-                tilesMap.reset();
-                tiles.set(i, Tile(kInvalidPosition));
-                tiles.reset();
-            }
-            tilesMap.push_back(robotCoord);
-            tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
-
-            float orientation = robot.getAngleOrientation();
-            current = checkpointCoord;
-            if(orientation == 0){
-                orientation = 0;
-            }else if(orientation == 90){
-                orientation = 1;
-            }else if(orientation == 180){
-                orientation = 2;
-            }else if(orientation == 270){
-                orientation = 3;
-            }
-            for(int i = 0; i < orientation; i++){
-                TileDirection temp = directions[3];
-                for(int i = 3; i > 0; i--){
-                    directions[i] = directions[i-1];
-                }
-                directions[0] = temp;
-            }
-            */
-            //option3 (setting new priority and recovering the map)
-            /*
-            for(uint8_t i = 0; i < visitedMapRecover.getSize(); i++){
-                visitedMap.set(i, visitedMapRecover.getValue(i));
-                visitedMap.reset();
-            }
+            //}
+            // tilesMap.push_back(robotCoord);
+            current = robotCoord;
             unvisited.~Stack();
-            unvisited.push(checkpointCoord);
+            unvisited.push(robotCoord);
+            tilesMap.push_back(robotCoord);
+            tiles.push_back(Tile(robotCoord));
+            Serial.println("good");
             float orientation = robot.getAngleOrientation();
-            current = checkpointCoord;
             if(orientation == 0){
                 orientation = 0;
             }else if(orientation == 90){
@@ -230,12 +209,74 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                 }
                 directions[0] = temp;
             }
-                */
+            //tiles.getValue(tilesMap.getIndex(robotCoord))=Tile(robotCoord);
+            //continue;
+            //option2 (starting on 0 with past priority and setting new priority)
+            
+            
+            // current = inicio;
+            // for(uint8_t i = 0; i < visitedMap.getSize(); i++){
+            //     visitedMap.set(i, kInvalidPosition);
+            //     visitedMap.reset();
+            //     tilesMap.set(i, kInvalidPosition);
+            //     tilesMap.reset();
+            //     tiles.set(i, Tile(kInvalidPosition));
+            //     tiles.reset();
+            // }
+            // tilesMap.push_back(robotCoord);
+            // tiles.set(tilesMap.getIndex(robotCoord),Tile(robotCoord));
+
+            // float orientation = robot.getAngleOrientation();
+            // current = checkpointCoord;
+            // if(orientation == 0){
+            //     orientation = 0;
+            // }else if(orientation == 90){
+            //     orientation = 1;
+            // }else if(orientation == 180){
+            //     orientation = 2;
+            // }else if(orientation == 270){
+            //     orientation = 3;
+            // }
+            // for(int i = 0; i < orientation; i++){
+            //     TileDirection temp = directions[3];
+            //     for(int i = 3; i > 0; i--){
+            //         directions[i] = directions[i-1];
+            //     }
+            //     directions[0] = temp;
+            // }
+            
+            //option3 (setting new priority and recovering the map)
+            
+            // for(uint8_t i = 0; i < visitedMapRecover.getSize(); i++){
+            //     visitedMap.set(i, visitedMapRecover.getValue(i));
+            //     visitedMap.reset();
+            // }
+            // unvisited.~Stack();
+            // unvisited.push(checkpointCoord);
+            // float orientation = robot.getAngleOrientation();
+            // current = checkpointCoord;
+            // if(orientation == 0){
+            //     orientation = 0;
+            // }else if(orientation == 90){
+            //     orientation = 1;
+            // }else if(orientation == 180){
+            //     orientation = 2;
+            // }else if(orientation == 270){
+            //     orientation = 3;
+            // }
+            // for(int i = 0; i < orientation; i++){
+            //     TileDirection temp = directions[3];
+            //     for(int i = 3; i > 0; i--){
+            //         directions[i] = directions[i-1];
+            //     }
+            //     directions[0] = temp;
+            // }
+            
             //working on it
 
             //option4 (setting new priority, recovering the map and applying angle setup)
-            /*pendiente*/
         }
+        
 
         
 
