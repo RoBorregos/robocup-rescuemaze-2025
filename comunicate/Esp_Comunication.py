@@ -9,7 +9,7 @@ import time
 import struct
 import _thread
 import binascii
-from load_model import Model
+from load_model_final import Model
 
 """"
 #the protocol use 8 bytes
@@ -232,7 +232,15 @@ class Esp32():
     def sentDetection(self):
         self.recv()
         if self.payload_ack==b'\x02':
-            detection=self.model.getDetection()
+            detection=self.model.getDetectionRight()
+            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, detection) + struct.pack("B", detection+0x01)
+            if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+                return  self.SUCCESS
+            else:
+                # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
+                return self.FAIL, 0
+        if self.payload_ack==b'\x03':
+            detection=self.model.getDetectionLeft()
             cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, detection) + struct.pack("B", detection+0x01)
             if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
                 return  self.SUCCESS

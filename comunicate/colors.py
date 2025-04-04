@@ -1,19 +1,8 @@
 import cv2
 import numpy as np
-import tensorflow as tf
-import tensorflow_hub as hub
-from tensorflow.keras.utils import custom_object_scope
 
 class Model():
     def __init__(self):
-        # Cargar modelo .h5 con capa personalizada
-        print("🚀 Cargando modelo .h5 con capa personalizada...")
-        with custom_object_scope({'KerasLayer': hub.KerasLayer}):
-            self.model = tf.keras.models.load_model("HSU_detection_mobilenetJetson.h5")
-
-        # Etiquetas hexadecimales
-        self.labels = {0: 0xA, 1: 0xB, 2: 0xC, 3: 0xD}  # H, S, U, none
-
         # Pipelines CSI para Jetson Nano
         self.cam0 = self._gstreamer_pipeline(sensor_id=0)
         self.cam1 = self._gstreamer_pipeline(sensor_id=1)
@@ -22,18 +11,16 @@ class Model():
         self.cap1 = cv2.VideoCapture(self.cam1, cv2.CAP_GSTREAMER)
 
         if not self.cap0.isOpened():
-            print("❌ No se pudo acceder a la cámara 0")
+            print("No se pudo acceder a la cámara 0")
         if not self.cap1.isOpened():
-            print("❌ No se pudo acceder a la cámara 1")
-
-    def _gstreamer_pipeline(self, sensor_id=0, width=224, height=224, framerate=30):
+            print("No se pudo acceder a la cámara 1")
+    def _gstreamer_pipeline(self, sensor_id=0, width=640, height=480, framerate=30):
         return (
             f"nvarguscamerasrc sensor-id={sensor_id} ! "
             f"video/x-raw(memory:NVMM), width={width}, height={height}, format=NV12, framerate={framerate}/1 ! "
-            f"nvvidconv flip-method=2 ! video/x-raw, format=BGRx ! "
+            f"nvvidconv flip-method=0 ! video/x-raw, format=BGRx ! "
             f"videoconvert ! video/x-raw, format=BGR ! appsink"
         )
-
     def getColor(self, imageHSV):
         redLow1 = np.array([0, 120, 70], np.uint8)
         redHigh1 = np.array([10, 255, 255], np.uint8)
@@ -55,15 +42,15 @@ class Model():
         threshold = 0.05 * (224 * 224)
 
         if numRed > threshold:
-            return 0xA  # H
+            return 0xA
         elif numYellow > threshold:
-            return 0xB  # S
+            return 0xB
         elif numGreen > threshold:
-            return 0xC  # U
+            return 0xC
         else:
             return None
 
-    def _detect_from_cap(self, cap):
+    def _detect_color_from_cap(self, cap):
         ret, frame = cap.read()
         if not ret:
             return None
@@ -74,26 +61,19 @@ class Model():
         if color is not None:
             print("🎨 Color detectado:", hex(color))
             return color
-
-        # Modelo si no hay color
-        image_np = np.expand_dims(frame_resized.astype(np.float32) / 255.0, axis=0)
-        prediction = self.model.predict(image_np)
-        result = np.argmax(prediction)
-        label = self.labels.get(result, 0xD)
-        print("🤖 Modelo detectó:", hex(label))
-        return label
+        return None
 
     def getDetectionRight(self):
-        label = self._detect_from_cap(self.cap0)
+        label = self._detect_color_from_cap(self.cap0)
         if label is not None:
             return label
         return 0xD  # Nada detectado
     def getDetectionLeft(self):
-        label = self._detect_from_cap(self.cap1)
+        label = self._detect_color_from_cap(self.cap1)
         if label is not None:
             return label
         return 0xD
-
+    
     def close(self):
         self.cap0.release()
         self.cap1.release()
