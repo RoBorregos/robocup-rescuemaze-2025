@@ -13,15 +13,20 @@ private:
     uint32_t kRedBite; //Red
     uint32_t kGreenBite; // Green;
     uint32_t kBlueBite; //Blue
+    uint32_t kYellowBite; //Blue
+    uint8_t bright=40;
     static constexpr char kWhiteColor='W';
     Adafruit_NeoPixel strip=Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 public:
     Leds();
     void setupLeds();
     void setBrightness(uint8_t);
-    void setColor(char);
+    void setColor(uint32_t);
     void sequency();
     void turnOff();
-
+    void setRed();
+    void setYellow();
+    void setGreen();
+    void setWhite();
 };
 #endif 

@@ -39,19 +39,19 @@ class TCS {
 
         static constexpr int8_t millisToWait_ = 50;
         //BLUE TILE
-        static constexpr float kRedValueInBlue_ = 41.00;
-        static constexpr float kGreenValueInBlue_ = 52.00;
-        static constexpr float kBlueValueInBlue_ = 62.00;
+        static constexpr float kRedValueInBlue_ = 94.00;
+        static constexpr float kGreenValueInBlue_ = 89.00;
+        static constexpr float kBlueValueInBlue_ = 114.00;
         //BLACK TILE
-        static constexpr float kRedValueInBlack_ = 21.00;
-        static constexpr float kGreenValueInBlack_ = 17.00;
-        static constexpr float kBlueValueInBlack_ = 14.00;
+        static constexpr float kRedValueInBlack_ = 24.00;
+        static constexpr float kGreenValueInBlack_ = 18.00;
+        static constexpr float kBlueValueInBlack_ = 16.00;
         //CHECKPOINT TILE
-        static constexpr float kRedValueInCheckpoint_ = 256.00;
-        static constexpr float kGreenValueInCheckpoint_ = 165.00;
-        static constexpr float kBlueValueInCheckpoint_ = 127.00;
+        static constexpr float kRedValueInCheckpoint_ = 212.00;
+        static constexpr float kGreenValueInCheckpoint_ = 177.00;
+        static constexpr float kBlueValueInCheckpoint_ = 143.00;
 
-        static constexpr uint8_t rgbThreshold=25;
+        static constexpr uint8_t rgbThreshold=50;
         static constexpr float kMinRedValueInBlue_ = kRedValueInBlue_-rgbThreshold;
         static constexpr float kMaxRedValueInBlue_ = kRedValueInBlue_+rgbThreshold;
 

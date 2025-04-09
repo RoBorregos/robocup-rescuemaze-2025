@@ -17,4 +17,6 @@ void testButton();
 void testVlxFrontDistance();
 void testBnoY();
 void calibrateColors();
+void testLimits();
+void pidTest();
 #endif

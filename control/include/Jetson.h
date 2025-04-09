@@ -1,25 +1,26 @@
-// #ifndef JETSON_H
-// #define JETSON_H
+#ifndef JETSON_H
+#define JETSON_H
 
-// #include "Encoder.h"
-// #include "Arduino.h"
-// class Jetson{
-//   public: 
-//     Jetson();
-//     void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
-//     void writeSerial(uint8_t code, uint8_t* payload, int elements);
-//     bool readSerial();
-//     void getDetectionRight();
-//     void getDetectionLeft();
-//     void getDetection();
-//     void getWall();
+#include "Encoder.h"
+#include "Arduino.h"
+class Jetson{
+  public: 
+    Jetson();
+    void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
+    void writeSerial(uint8_t code, uint8_t* payload, int elements);
+    bool readSerial();
+    void getDetectionRight();
+    void getDetectionLeft();
+    void getDetection();
+    void getWall();
+    void connect();
 
-//     String flag;
-//     uint8_t cube_offset;
-//     String state();
+    String flag;
+    uint8_t cube_offset;
+    String state();
 
-//   private:
-//   int waitingTime=4000;
-// };
+  private:
+  int waitingTime=2000;
+};
 
-// #endif
+#endif

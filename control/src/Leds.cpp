@@ -8,19 +8,32 @@ void Leds::setupLeds(){
     kRedBite=strip.Color(255,   0,   0); //Red
     kGreenBite=strip.Color(  0, 255,   0); // Green;
     kBlueBite=strip.Color(  0,   0, 255); //Blue
-    strip.setBrightness(40);
+    kYellowBite=strip.Color(  255,   255, 0); //Blue
+    bright=40;
+    strip.setBrightness(bright);
     strip.fill(strip.Color(255, 255, 255)); // White color
     strip.show();
 }
 void Leds::setBrightness(uint8_t brightness){
+    bright=brightness;
     strip.setBrightness(brightness);
 }
-void Leds::setColor(char color){
-    strip.setBrightness(20);
-    if(color=kWhiteColor){
-        strip.fill(strip.Color(255, 255, 255)); // White color
-        strip.show();
-    }
+void Leds::setColor(uint32_t color){
+    strip.setBrightness(bright);
+    strip.fill(color); // White color
+    strip.show();
+}
+void Leds::setRed(){
+    setColor(kRedBite);
+}
+void Leds::setYellow(){
+    setColor(kYellowBite);
+}
+void Leds::setGreen(){
+    setColor(kGreenBite);
+}
+void Leds::setWhite(){
+    setColor(kWhiteBite);
 }
 void Leds::turnOff(){
     strip.setBrightness(0);

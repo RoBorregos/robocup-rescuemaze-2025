@@ -21,10 +21,13 @@
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
 
-constexpr uint8_t edgeTileDistance=4;
+constexpr uint8_t edgeTileDistance=5;
 constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
-constexpr uint8_t targetDistances[]={edgeTileDistance,kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance,3*kTileLength+edgeTileDistance};
+constexpr uint8_t targetDistances[]={edgeTileDistance+5,kTileLength+edgeTileDistance+4};
+constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance-4,};
+
+
 struct Advanced{
     int x,y;
 };
@@ -38,6 +41,7 @@ private:
     static constexpr uint8_t kNumVlx=6;
     static constexpr uint8_t maxVlxDistance=68;
     static constexpr uint8_t brakingDis=2;
+    static constexpr uint8_t kDistanceToWall=15;
     //wheels
     static constexpr float wheelDiameter=8.5;
     static constexpr float distancePerRev=wheelDiameter*PI;
@@ -58,7 +62,7 @@ private:
     //ramp
     PID rampUpPID;
     PID rampDownPID;
-    static constexpr float kMinRampOrientation=10.0;
+    static constexpr float kMinRampOrientation=15.0;
     static constexpr float minDisToLateralWall=6;
     static constexpr float impactDisToLateralWall=2;
     static constexpr uint8_t maxChangeAngle=5;
@@ -144,16 +148,16 @@ public:
     void left();
     void right();  
     void rotate(float);  
-    void moveDistance(uint8_t targetDistance);
+    void moveDistance(uint8_t targetDistance,bool);
     //setups
     void setupTCS();
     void setupVlx(const uint8_t);
     void resetOrientation();
     //sensors
     void checkTileColor();
-    float limitCrash();
+    void limitCrash();
     float nearWall();
-    float passObstacle();
+    void passObstacle();
     bool isWall(uint8_t);
     //victims
     void harmedVictim();

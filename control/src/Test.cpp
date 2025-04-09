@@ -19,11 +19,17 @@ void testVlxFrontLeft(){
     robot.screenPrint(print);
 }
 void testVlxFrontRigth(){
-    Serial.println(robot.vlx[vlxID::frontRight].getDistance());
+    float distance=robot.vlx[vlxID::frontRight].getDistance();
+    Serial.println(distance);
+    String print=static_cast<String>(distance);
+    robot.screenPrint(print);
 
 }
 void testVlxRight(){
-    Serial.println(robot.vlx[vlxID::right].getDistance());
+    float distance=robot.vlx[vlxID::right].getDistance();
+    Serial.println(distance);
+    String print=static_cast<String>(distance);
+    robot.screenPrint(print);
 
 }
 void testVlxLeft(){
@@ -33,10 +39,16 @@ void testVlxLeft(){
     robot.screenPrint(print);
 }
 void testVlxBack(){
-    Serial.println(robot.vlx[vlxID::back].getDistance());
+    float distance=robot.vlx[vlxID::back].getDistance();
+    Serial.println(distance);
+    String print=static_cast<String>(distance);
+    robot.screenPrint(print);
 }
 void testVlxFront(){
-    Serial.println(robot.vlx[vlxID::front].getDistance());
+    float distance=robot.vlx[vlxID::front].getDistance();
+    Serial.println(distance);
+    String print=static_cast<String>(distance);
+    robot.screenPrint(print);
 }
 void testVlxFrontDistance(){
     robot.vlx[vlxID::frontLeft].getDistance();
@@ -77,7 +89,10 @@ void testPIDWheel(){
     robot.PID_Wheel(20,MotorID::kFrontLeft);
 }
 
-
+void testLimits(){
+    Serial.println(robot.limitSwitch_[LimitSwitchID::kLeft].getState());
+    Serial.println(robot.limitSwitch_[LimitSwitchID::kRight].getState());
+}
 void testButton(){
     Serial.println(robot.buttonPressed);
 }
@@ -88,4 +103,8 @@ void testBnoY(){
 }
 void calibrateColors(){
     robot.calibrateColors();
+}
+void pidTest(){
+    robot.setahead();
+    robot.pidEncoders(20,true);
 }
