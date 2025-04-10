@@ -138,7 +138,7 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x0A: // harmed victim 
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
-                // robot.screenPrint("harmed");
+                robot.screenPrint("harmed");
                 robot.harmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
@@ -148,7 +148,7 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x0B: // stable victim 
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
-                // robot.screenPrint("stable");
+                robot.screenPrint("stable");
                 robot.stableVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
@@ -158,7 +158,7 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x0C: // unharmed victim 
             if (packet_size == 1) { // Check packet size
                 robot.victim=true;
-                // robot.screenPrint("unharm");
+                robot.screenPrint("unharm");
                 robot.unharmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));

@@ -1,6 +1,8 @@
 #include "motors.h"
 #include "Pins_ID.h"
 #include <WiFi.h>
+#include "Jetson.h"
+Jetson jettson;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 motors::motors(){
 }
@@ -109,14 +111,11 @@ void motors::ahead(){
         float targetDistance=findNearest(distance,frontVlx ? targetDistances:targetDistancesB,2,frontVlx);
         targetDistance=targetDistance+edgeVlx;
         while(frontVlx ? (distance>targetDistance):(distance<targetDistance)){//poner rango
-            screenPrint("entre");
-            // String print=static_cast<String>(targetDistance);
-            // screenPrint(print);
             setahead();
             limitCrash();
             checkTileColor();
-            if(blackTile) break;
-            if(buttonPressed) break;
+            // if(blackTile) break;
+            // if(buttonPressed) break;
             distance=(frontVlx ? vlx[vlxID::front].getDistance():vlx[vlxID::back].getDistance());
             Serial.println(distance);
             float missingDistance=abs(distance-targetDistance);
@@ -148,7 +147,7 @@ void motors::ahead(){
         }
     }
     resetTics();
-    stop();resetTics();checkTileColor();
+    stop();resetTics();delay(400);/*checkTileColor();*/jettson.getDetection();jettson.getDetection();jettson.getDetection();
 }
 void motors::checkTileColor(){
     tileColor=tcs_.getColor();

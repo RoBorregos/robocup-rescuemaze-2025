@@ -12,7 +12,7 @@ void setup() {
   pinMode(2,OUTPUT);
   digitalWrite(2,1);
   Serial.begin(115200);
-  // robot.setupMotors();
+  robot.setupMotors();
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Interrups::frontLeftEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontRight]), Interrups::frontRightEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Interrups::backLeftEncoder, RISING);
@@ -23,26 +23,15 @@ void setup() {
 
 void loop() {
   // m.getDetectionJetson();
-
-  // digitalWrite(2,1);
-  // delay(500);
-  // digitalWrite(2,1);
-
   // // robot.leds.sequency();
-  int f=1;
-  if(f==1){
-    jeetson.getDetectionRight();
-    f=2;
-  }
-  
-  // delay(1000);
-  // delay(400);
   // m.run_algs();
+  // jeetson.getDetection();
+  
+  robot.ahead();
+  robot.ahead();
+  delay(100000000);
   // pidTest();
   // calibrateColors();
-  // delay(3000);
-  // float aglueee=robot.getAngleOrientation();
-  // robot.rotate(aglueee);
   // robot.checkpointElection(); 
   // robot.buttonPressed=false;
   // Serial.println(robot.limitSwitch_[LimitSwitchID::kLeft].getState());
