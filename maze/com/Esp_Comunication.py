@@ -69,7 +69,7 @@ class Esp32():
                 # print("Connected at", self.baudrate)
                 # print("Microcontroller is ready.")
                 break
-            except SerialException:
+            except:
                 print("Serial Exception:")
     def reconnect(self):
         self.port.close()
@@ -110,81 +110,87 @@ class Esp32():
         self.port.write(cmd)
     
     def recv(self, timeout=0.5):
-        timeout = min(timeout, self.timeout)
-        ''' This command should not be used on its own: it is called by the execute commands   
-            below in a thread safe manner.  Note: we use read() instead of readline() since
-            readline() tends to return garbage characters from the Microcontroller
-        '''
-        c = ''
-        value = ''
-        attempts = 0
-        c = self.port.read(1)
-        while self.receiveFiniteStates(c) != 1:
+        try:
+            timeout = min(timeout, self.timeout)
+            ''' This command should not be used on its own: it is called by the execute commands
+                below in a thread safe manner.  Note: we use read() instead of readline() since
+                readline() tends to return garbage characters from the Microcontroller
+            '''
+            c = ''
+            value = ''
+            attempts = 0
             c = self.port.read(1)
-            attempts += 1
-            if attempts * self.interCharTimeout > timeout:
-                return 0
-        return 1
-
+            while self.receiveFiniteStates(c) != 1:
+                c = self.port.read(1)
+                attempts += 1
+                if attempts * self.interCharTimeout > timeout:
+                    return 0
+            return 1
+        except:
+            self.connect()
     def receiveFiniteStates(self, rx_data):
-        if self.receive_state_ == self.WAITING_FF:
-            #print str(binascii.b2a_hex(rx_data))
-            if rx_data == b'\xff':
-                self.receive_state_ = self.WAITING_AA
-                self.receive_check_sum_ =0
-                self.receive_message_length_ = 0
-                self.byte_count_=0
-                self.payload_ack = b''
-                self.payload_args = b''
-                self.payload_len = 0
+        try:
+            if self.receive_state_ == self.WAITING_FF:
+                #print str(binascii.b2a_hex(rx_data))
+                if rx_data == b'\xff':
+                    self.receive_state_ = self.WAITING_AA
+                    self.receive_check_sum_ =0
+                    self.receive_message_length_ = 0
+                    self.byte_count_=0
+                    self.payload_ack = b''
+                    self.payload_args = b''
+                    self.payload_len = 0
 
 
-        elif self.receive_state_ == self.WAITING_AA :
-             if rx_data == b'\xaa':
-                 self.receive_state_ = self.RECEIVE_LEN
-                 self.receive_check_sum_ = 0
-             else:
-                 self.receive_state_ = self.WAITING_FF
+            elif self.receive_state_ == self.WAITING_AA :
+                if rx_data == b'\xaa':
+                    self.receive_state_ = self.RECEIVE_LEN
+                    self.receive_check_sum_ = 0
+                else:
+                    self.receive_state_ = self.WAITING_FF
 
-        elif self.receive_state_ == self.RECEIVE_LEN:
-             self.receive_message_length_, = struct.unpack("B",rx_data)
-             self.receive_state_ = self.RECEIVE_PACKAGE
-             self.receive_check_sum_ = self.receive_message_length_
-        elif self.receive_state_ == self.RECEIVE_PACKAGE:
-             if self.byte_count_==0:
-                 self.payload_ack = rx_data
-             else:
-                 self.payload_args += rx_data
-             uc_tmp_, = struct.unpack("B",rx_data)
-             self.receive_check_sum_ = self.receive_check_sum_ + uc_tmp_
-             self.byte_count_ +=1
-             if self.byte_count_ >= self.receive_message_length_:
-                 self.receive_state_ = self.RECEIVE_CHECK
+            elif self.receive_state_ == self.RECEIVE_LEN:
+                self.receive_message_length_, = struct.unpack("B",rx_data)
+                self.receive_state_ = self.RECEIVE_PACKAGE
+                self.receive_check_sum_ = self.receive_message_length_
+            elif self.receive_state_ == self.RECEIVE_PACKAGE:
+                if self.byte_count_==0:
+                    self.payload_ack = rx_data
+                else:
+                    self.payload_args += rx_data
+                uc_tmp_, = struct.unpack("B",rx_data)
+                self.receive_check_sum_ = self.receive_check_sum_ + uc_tmp_
+                self.byte_count_ +=1
+                if self.byte_count_ >= self.receive_message_length_:
+                    self.receive_state_ = self.RECEIVE_CHECK
 
-        elif self.receive_state_ == self.RECEIVE_CHECK:
-            self.receive_state_ = self.WAITING_FF
-            return 1 
-        else:
-            self.receive_state_ = self.WAITING_FF
-        return 0
-
+            elif self.receive_state_ == self.RECEIVE_CHECK:
+                self.receive_state_ = self.WAITING_FF
+                return 1
+            else:
+                self.receive_state_ = self.WAITING_FF
+            return 0
+        except:
+            self.connect()
     def recv(self, timeout=0.5):
-        timeout = min(timeout, self.timeout)
-        ''' This command should not be used on its own: it is called by the execute commands   
-            below in a thread safe manner.  Note: we use read() instead of readline() since
-            readline() tends to return garbage characters from the Microcontroller
-        '''
-        c = ''
-        value = ''
-        attempts = 0
-        c = self.port.read(1)
-        while self.receiveFiniteStates(c) != 1:
+        try:
+            timeout = min(timeout, self.timeout)
+            ''' This command should not be used on its own: it is called by the execute commands
+                below in a thread safe manner.  Note: we use read() instead of readline() since
+                readline() tends to return garbage characters from the Microcontroller
+            '''
+            c = ''
+            value = ''
+            attempts = 0
             c = self.port.read(1)
-            attempts += 1
-            if attempts * self.interCharTimeout > timeout:
-                return 0
-        return 1
-            
+            while self.receiveFiniteStates(c) != 1:
+                c = self.port.read(1)
+                attempts += 1
+                if attempts * self.interCharTimeout > timeout:
+                    return 0
+            return 1
+        except SerialException:
+            self.connect()            
     def recv_ack(self):
         ''' This command should not be used on its own: it is called by the execute commands
             below in a thread safe manner.

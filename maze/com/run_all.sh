@@ -11,9 +11,7 @@ tmux send-keys -t $SESSION "export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libGLdi
 tmux split-window -v -t $SESSION
 
 # Panel 1: scripts del modelo
-tmux send-keys -t $SESSION "python3 /home/jetson/maze/com/Constants.py & \
-python3 /home/jetson/maze/com/model_class.py & \
-python3 /home/jetson/maze/com/Esp_Comunication.py & \
+tmux send-keys -t $SESSION "
 python3 /home/jetson/maze/com/test.py" C-m
 
 # Adjuntar a la sesión
