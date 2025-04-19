@@ -5,9 +5,15 @@ void testEncoder(uint8_t id){
     Serial.println(robot.motor[id].tics);
 }
 void testEncoders(){
-    String print=static_cast<String>(robot.getAvergeTics());
-    Serial.println(print);
-    robot.screenPrint(print);
+    Serial.println("kFrontLeft");
+    Serial.println(robot.motor[MotorID::kFrontLeft].tics);
+    Serial.println("kFrontRight");
+    Serial.println(robot.motor[MotorID::kFrontRight].tics);
+    Serial.println("kBackLeft");
+    Serial.println(robot.motor[MotorID::kBackLeft].tics);
+    Serial.println("kBackRight");
+    Serial.println(robot.motor[MotorID::kBackRight].tics);
+    delay(1000);
 }
 void testVlx(uint8_t id){
     Serial.println(robot.vlx[id].getDistance());
@@ -60,20 +66,21 @@ void testVlxFrontDistance(){
 
 }
 void testMotors(){
+    int dt=1000;
     robot.setahead();
     Serial.println("FrontLeft");
-    robot.motor[MotorID::kFrontLeft].setSpeed(200);
-    delay(500);
-    Serial.println("FrontRight");
-    robot.motor[MotorID::kFrontRight].setSpeed(200);
-    delay(500);
-    Serial.println("BackLeft");
-    robot.motor[MotorID::kBackLeft].setSpeed(200);
-    delay(500);
-    Serial.println("BackRight");
-    robot.motor[MotorID::kBackRight].setSpeed(200);
-    delay(500);
-    robot.setSpeed(0);
+    robot.motor[MotorID::kFrontLeft].setSpeed(30);
+    // delay(dt);
+    // Serial.println("FrontRight");
+    // robot.motor[MotorID::kFrontRight].setSpeed(200);
+    // delay(dt);
+    // Serial.println("BackLeft");
+    // robot.motor[MotorID::kBackLeft].setSpeed(200);
+    // delay(dt);
+    // Serial.println("BackRight");
+    // robot.motor[MotorID::kBackRight].setSpeed(200);
+    // delay(dt);
+    // robot.setSpeed(0);
 }
 void testTCS(){
     String print=static_cast<String>(robot.tcs_.getColor());
@@ -86,7 +93,7 @@ void testTCS(){
 }
 void testPIDWheel(){
     robot.setahead();
-    robot.PID_Wheel(20,MotorID::kFrontLeft);
+    robot.PID_Wheel(4,MotorID::kFrontLeft);
 }
 
 void testLimits(){
@@ -106,5 +113,6 @@ void calibrateColors(){
 }
 void pidTest(){
     robot.setahead();
-    robot.pidEncoders(20,true);
+    // robot.pidEncoders(20,true);
+    robot.PID_Wheel(4,MotorID::kFrontLeft);
 }

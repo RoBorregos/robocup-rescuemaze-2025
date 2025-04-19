@@ -24,12 +24,13 @@ void setup() {
 void loop() {
   // m.getDetectionJetson();
   // // robot.leds.sequency();
-  // m.run_algs();
-  // jeetson.getDetection();
-  
-  robot.ahead();
-  robot.ahead();
-  delay(100000000);
+  m.run_algs();
+  // robot.kitLeft(2);
+  // testPIDWheel();
+
+  // robot.ahead();
+  // robot.ahead();
+  // delay(100000000);
   // pidTest();
   // calibrateColors();
   // robot.checkpointElection(); 
@@ -37,7 +38,6 @@ void loop() {
   // Serial.println(robot.limitSwitch_[LimitSwitchID::kLeft].getState());
   // Serial.println(robot.limitSwitch_[LimitSwitchID::kRight].getState());
   // jeetson.getDetection();
-  // jetson.getDetection();
   // testTCS();
   // testLimits();
   // testBnoY();

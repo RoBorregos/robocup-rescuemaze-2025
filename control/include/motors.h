@@ -38,7 +38,7 @@ private:
     static constexpr unsigned long delayTime=350;
     PID myPID[4];
     //vlx
-    static constexpr uint8_t kNumVlx=6;
+    static constexpr uint8_t kNumVlx=8;
     static constexpr uint8_t maxVlxDistance=68;
     static constexpr uint8_t brakingDis=2;
     static constexpr uint8_t kDistanceToWall=15;
@@ -53,7 +53,7 @@ private:
     uint16_t kMinPwmFormard=70;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
-    static constexpr uint16_t kMinSpeedRotate=6;////////////////
+    static constexpr uint16_t kMinSpeedRotate=7;////////////////
     static constexpr uint16_t kMaxSpeedRotate=30;
     static constexpr uint16_t kMinSpeedFormard=10;//36
     static constexpr uint16_t kMaxSpeedFormard=30;//70
@@ -66,11 +66,10 @@ private:
     static constexpr float minDisToLateralWall=6;
     static constexpr float impactDisToLateralWall=2;
     static constexpr uint8_t maxChangeAngle=5;
-    static constexpr uint8_t kMinAngleRamp=10;
     //ramp up constants
-    static constexpr float kP_RampDown=0.75;
-    static constexpr float kI_RampDown=0.1;
-    static constexpr float kD_RampDown=0.01;
+    static constexpr float kP_RampDown=0.08;
+    static constexpr float kI_RampDown=0.00;
+    static constexpr float kD_RampDown=0.03;
     static constexpr uint8_t rampTime=20;
     //ramp down constants
     static constexpr float kP_RampUp=1;
@@ -105,7 +104,9 @@ private:
     bool inMotion=false;
     bool limitColition=false;
     //servo
-    float servoPos=0;
+    float servoPos=90;
+    static constexpr uint16_t servoPosRight=136;
+    static constexpr uint16_t servoPosLeft=47;
 public:
     //objets
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();
@@ -121,9 +122,9 @@ public:
     bool blueTile=false;
     bool checkpoint=false;
     bool victim=false;
-    uint8_t camDetection=2;
+    uint8_t kitState=kitID::kNone;
     bool buttonPressed=false;
-    uint8_t rampState=0;
+    uint8_t rampState=rampID::kNone;
     motors();//constructor
     //PID´s--speeds
     void setupMotors();
@@ -163,6 +164,8 @@ public:
     void harmedVictim();
     void stableVictim();
     void unharmedVictim();
+    void kitRight(uint8_t);
+    void kitLeft(uint8_t);
     //gets
     float getCurrentDistanceCm();
     float getAngleOrientation();

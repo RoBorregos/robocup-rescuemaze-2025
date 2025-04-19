@@ -6,13 +6,15 @@ Jetson::Jetson(){
 void Jetson::getDetection(){
     float current=millis();
     if(robot.vlx[vlxID::right].isWall()){
+        robot.kitState=kitID::kRight;
         getDetectionRight();
+        robot.kitState=kitID::kNone;
     }
     if(robot.vlx[vlxID::left].isWall()){
+        robot.kitState=kitID::kLeft;
         getDetectionLeft();
+        robot.kitState=kitID::kNone;
     }
-    String time=static_cast<String>(millis()-current);
-    // robot.screenPrint(time);
 }
 void Jetson::getDetectionRight(){
     uint32_t t[] = {200};
@@ -34,16 +36,7 @@ void Jetson::getDetectionLeft(){
         }
     }
 }
-void Jetson::getWall(){
-    uint32_t t[] = {200};
-    writeSerial(0x03, (uint8_t*)t, sizeof(t));
-    int currentTime=millis();
-    while((millis()-currentTime)<waitingTime){
-        if(readSerial()){
-            break;
-        }
-    }
-}
+
 void Jetson::connect(){
     while(true){
         // uint32_t t[] = {200};

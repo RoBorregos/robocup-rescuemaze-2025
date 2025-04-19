@@ -1,7 +1,7 @@
 #include "maze.h"
 #include "Arduino.h"
 #include "Jetson.h"
-// Jetson jetson;
+Jetson jetson;
 coord inicio = {kBaseCoord, kBaseCoord, kBaseCoord};
 coord robotCoord = {kBaseCoord, kBaseCoord, kBaseCoord};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
@@ -21,17 +21,17 @@ void maze::followPath(Stack& path){
         path.pop();
         if (next.x > robotCoord.x) {
             robot.rotate(90);
-            // jetson.getDetection();
+            jetson.getDetection();
         } else if (next.x < robotCoord.x) {
             robot.rotate(270);
-            // jetson.getDetection();
+            jetson.getDetection();
         } else if (next.y > robotCoord.y) {
             robot.rotate(0);
         } else if (next.y < robotCoord.y) {
             robot.rotate(180);
         }
         robot.ahead();
-        // jetson.getDetection();
+        jetson.getDetection();
         if(robot.blackTile){
             continue;
         }

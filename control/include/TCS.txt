@@ -1,0 +1,12 @@
+ //BLUE TILE
+        static constexpr float kRedValueInBlue_ = 94.00;
+        static constexpr float kGreenValueInBlue_ = 89.00;
+        static constexpr float kBlueValueInBlue_ = 114.00;
+        //BLACK TILE
+        static constexpr float kRedValueInBlack_ = 24.00;
+        static constexpr float kGreenValueInBlack_ = 18.00;
+        static constexpr float kBlueValueInBlack_ = 16.00;
+        //CHECKPOINT TILE
+        static constexpr float kRedValueInCheckpoint_ = 212.00;
+        static constexpr float kGreenValueInCheckpoint_ = 177.00;
+        static constexpr float kBlueValueInCheckpoint_ = 143.00;

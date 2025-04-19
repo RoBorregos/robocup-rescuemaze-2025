@@ -28,5 +28,8 @@ public:
     void setYellow();
     void setGreen();
     void setWhite();
+    void harmedVictim();
+    void stableVictim();
+    void unharmedVictim();
 };
 #endif 

@@ -41,6 +41,37 @@ void Leds::turnOff(){
     strip.show();
 }
 
+void Leds::harmedVictim(){
+    float current=millis();
+    while((millis()-current)<5100){
+        setRed();
+        delay(500);
+        turnOff();
+        delay(500);
+    }
+    setWhite(); 
+}
+void Leds::stableVictim(){
+    float current=millis();
+    while((millis()-current)<5100){
+        setYellow();
+        delay(500);
+        turnOff();
+        delay(500);
+    }
+    setWhite();
+}
+void Leds::unharmedVictim(){
+    float current=millis();
+    while((millis()-current)<5100){
+        setGreen();
+        delay(500);
+        turnOff();
+        delay(500);
+    }
+    setWhite();
+}
+
 void Leds::sequency(){
     turnOff();
     setBrightness(20);
