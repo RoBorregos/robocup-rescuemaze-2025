@@ -8,13 +8,12 @@ import matplotlib.pyplot as plt
 import tensorflow_hub as hub
 from tensorflow.keras.utils import custom_object_scope
 from PIL import Image  # Replaces OpenCV
-model_path="C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetJetson.h5"
+model_path="C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\HSU_detection_Jetson3.h5"
 
 class Model():   
     def __init__(self):
         # Load model
-        with custom_object_scope({'KerasLayer': hub.KerasLayer}):
-            self.model = tf.keras.models.load_model(model_path)
+        self.model = tf.keras.models.load_model(model_path)
     def getDetection(self):
         # Load image using PIL (instead of OpenCV)
         image_path = "C:\\Users\\ferna\\Documents\\vision_artificial\\fotos\\dataset_HSU\\S\\image7.jpeg"

@@ -6,6 +6,8 @@ import tensorflow_datasets as tfd
 from tensorflow.keras.utils import custom_object_scope
 import tensorflow_hub as hub
 import time
+from PIL import Image  # Replaces OpenCV
+
 def getColor(imageHSV):
     #red
     redLow1=np.array([0,200,25],np.uint8)
@@ -37,44 +39,61 @@ def getColor(imageHSV):
     elif numGreenPixels>thresholdColor: color = 1
     else: color=0
     return color
-#carga de modelo
-with custom_object_scope({'KerasLayer': hub.KerasLayer}):
-    model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetJetson.h5")
-#imiciar camara
-cam=cv2.VideoCapture(0)
-# #verificar camara
-if not cam.isOpened():
-    print("error al iniciar camara")
-    exit()
-intervalCam=0.5
-while True:
-    # #capturar imagen
-    ret,image=cam.read()
-    image_original=image
-    colors=["white","green","yellow","red"]
-    image=cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
-    image = cv2.resize(image, (224,224))
-    color=getColor(image)
-    # #normalizar imagen
-    image=cv2.cvtColor(image,cv2.COLOR_HSV2BGR)
-    image = np.array(image).astype(float)/255
-    # #mostrar cam
-    cv2.imshow("Imagen", image.squeeze())
-    cv2.waitKey(1)
-    if color>0:
-        print(colors[color])
-    else:
-        #realizar prediccion
-        result = model.predict(image.reshape(-1, 224, 224, 3))
-        result=np.argmax(result)
-        if result==0:
-            detection="H"
-        elif result==1:
-            detection="S"
-        elif result==2:
-            detection="U"
-        elif result==3:
-            detection="none"
-        print(detection)
-    time.sleep(intervalCam)
-    cv2.destroyAllWindows()
+# #carga de modelo
+# with custom_object_scope({'KerasLayer': hub.KerasLayer}):
+#     model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\mobilenetModel\\HSU_detection_mobilenetJetson.h5")
+# #imiciar camara
+# cam=cv2.VideoCapture(0)
+# # #verificar camara
+# if not cam.isOpened():
+#     print("error al iniciar camara")
+#     exit()
+# intervalCam=0.5
+# while True:
+#     # #capturar imagen
+#     ret,image=cam.read()
+    # image_original=image
+    # colors=["white","green","yellow","red"]
+    # image=cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+    # image = cv2.resize(image, (224,224))
+    # color=getColor(image)
+    # # #normalizar imagen
+    # image=cv2.cvtColor(image,cv2.COLOR_HSV2BGR)
+    # image = np.array(image).astype(float)/255
+    # # #mostrar cam
+    # cv2.imshow("Imagen", image.squeeze())
+    # cv2.waitKey(1)
+    # if color>0:
+    #     print(colors[color])
+    # else:
+#         #realizar prediccion
+#         result = model.predict(image.reshape(-1, 224, 224, 3))
+#         result=np.argmax(result)
+#         if result==0:
+#             detection="H"
+#         elif result==1:
+#             detection="S"
+#         elif result==2:
+#             detection="U"
+#         elif result==3:
+#             detection="none"
+#         print(detection)
+#     time.sleep(intervalCam)
+#     cv2.destroyAllWindows()
+
+image_path="C:\\Users\\ferna\\Downloads\\frame_cam0.jpg"
+image = cv2.imread(image_path)
+colors=["white","green","yellow","red"]
+image=cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+image = cv2.resize(image, (224,224))
+color=getColor(image)
+# #normalizar imagen
+image=cv2.cvtColor(image,cv2.COLOR_HSV2BGR)
+image = np.array(image).astype(float)/255
+# #mostrar cam
+cv2.imshow("Imagen", image.squeeze())
+time.sleep(10)
+cv2.waitKey(10)
+cv2.imwrite("temp_cam1.jpg", image) 
+if color>0:
+    print(colors[color])

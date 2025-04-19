@@ -98,3 +98,8 @@ class Model():
         self.cap0.release()
         self.cap1.release()
         cv2.destroyAllWindows()
+
+
+
+
+
