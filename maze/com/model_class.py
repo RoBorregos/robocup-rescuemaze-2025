@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 import time as t
 from collections import Counter
+import json
 
 class Model():
     def __init__(self):
@@ -37,32 +38,48 @@ class Model():
         print(f"✅ WARMUP FINISHED: {passed_times} veces predicho en {t.time() - start:.2f} segundos")
 
     def getColor(self, imageHSV):
-        redLow1 = np.array([0, 100, 102], np.uint8)
-        redHigh1 = np.array([10, 255, 255], np.uint8)
-        redLow2 = np.array([170, 100, 102], np.uint8)
-        redHigh2 = np.array([180, 255, 255], np.uint8)
-        yellowLow = np.array([20, 110, 102], np.uint8)
-        yellowHigh = np.array([35, 255, 255], np.uint8)
-        greenLow = np.array([36, 80, 102], np.uint8)
-        greenHigh = np.array([85, 255, 255], np.uint8)
-
-        redPixels = cv2.inRange(imageHSV, redLow1, redHigh1) + cv2.inRange(imageHSV, redLow2, redHigh2)
-        yellowPixels = cv2.inRange(imageHSV, yellowLow, yellowHigh)
-        greenPixels = cv2.inRange(imageHSV, greenLow, greenHigh)
-
-        numRed = cv2.countNonZero(redPixels)
-        numYellow = cv2.countNonZero(yellowPixels)
-        numGreen = cv2.countNonZero(greenPixels)
-
-        threshold = 0.1 * (224 * 224)
-        if numRed > threshold:
-            return 0xA  # H
-        elif numYellow > threshold:
-            return 0xB  # S
-        elif numGreen > threshold:
-            return 0xC  # U
-        else:
-            return None
+        with open("calibration_hsv.json", "r") as f:
+            hsv_ranges = json.load(f)
+        # Combinar rojo
+        red1 = cv2.inRange(imageHSV, np.array(hsv_ranges["RED1"]["lower"]), np.array(hsv_ranges["RED1"]["upper"]))
+        red2 = cv2.inRange(imageHSV, np.array(hsv_ranges["RED2"]["lower"]), np.array(hsv_ranges["RED2"]["upper"]))
+        red_mask = cv2.bitwise_or(red1, red2)
+        yellow_mask = cv2.inRange(imageHSV, np.array(hsv_ranges["YELLOW"]["lower"]), np.array(hsv_ranges["YELLOW"]["upper"]))
+        green_mask = cv2.inRange(imageHSV, np.array(hsv_ranges["GREEN"]["lower"]), np.array(hsv_ranges["GREEN"]["upper"]))
+        masks = {
+            "RED": red_mask,
+            "YELLOW": yellow_mask,
+            "GREEN": green_mask
+        }
+        color_codes = {
+            "RED": 0xA,      # H
+            "YELLOW": 0xB,   # S
+            "GREEN": 0xC     # U
+        }
+        # draw_colors = {
+        #     "RED": (0, 0, 255),
+        #     "YELLOW": (0, 255, 255),
+        #     "GREEN": (0, 255, 0)
+        # }
+        detected_color = None
+        max_area = 0
+        for color, mask in masks.items():
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if not contours:
+                continue
+            largest = max(contours, key=cv2.contourArea)
+            area = cv2.contourArea(largest)
+            if area > 300 and area > max_area:  # solo guarda el mayor área # 3000
+                detected_color = color
+                max_area = area
+                # selected_bbox = cv2.boundingRect(largest)
+        # if detected_color and frame is not None:
+        #     x, y, w, h = selected_bbox
+        #     cv2.rectangle(frame, (x, y), (x + w, y + h), draw_colors[detected_color], 2)
+        #     cv2.putText(frame, detected_color, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, draw_colors[detected_color], 2)
+        #     cv2.imshow("Detección", frame)
+        #     cv2.waitKey(1)
+        return color_codes.get(detected_color, None)
 
     def detection(self, frame, attempts=3, min_repeats=3):
         results = []
