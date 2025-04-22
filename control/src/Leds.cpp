@@ -81,4 +81,3 @@ void Leds::sequency(){
         delay(500);                           //  Pause for a moment
       }
 }
-

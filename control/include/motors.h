@@ -65,7 +65,10 @@ private:
     static constexpr float kMinRampOrientation=15.0;
     static constexpr float minDisToLateralWall=6;
     static constexpr float impactDisToLateralWall=2;
-    static constexpr uint8_t maxChangeAngle=5;
+    float changeAngle=0;
+
+    //control Walls
+    static constexpr uint8_t maxChangeAngle=3;
     //ramp up constants
     static constexpr float kP_RampDown=0.08;
     static constexpr float kI_RampDown=0.00;
@@ -101,7 +104,6 @@ private:
         {85, 150, 80, 200, 120, 220}
     };
     //movement
-    bool inMotion=false;
     bool limitColition=false;
     //servo
     float servoPos=90;
@@ -118,6 +120,7 @@ public:
     Motor motor[4];
     Leds leds;
     //public variables
+    bool inMotion=false;
     bool blackTile=false;
     bool blueTile=false;
     bool checkpoint=false;

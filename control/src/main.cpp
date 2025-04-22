@@ -6,7 +6,17 @@
 #include "Jetson.h"
 maze m;
 Jetson jeetson;
-
+TaskHandle_t Task0;
+// void loop0(void *parameter){
+//   // Serial.println("hola");
+//   while(true){
+//     // if(robot.inMotion==true){
+//       robot.checkTileColor();
+//     // }
+//     // Serial.println(time);
+//   }
+//   // vTaskDelay(10 / portTICK_PERIOD_MS);
+// }
 void setup() {
   // put your setup code here, to run once:
   pinMode(2,OUTPUT);
@@ -18,13 +28,14 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Interrups::backLeftEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackRight]), Interrups::backRightEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::checkpointPin),Interrups::lackOfProgress, RISING);
-
+  // xTaskCreatePinnedToCore(loop0,"Task_0",4096,NULL,2,&Task0,1);
 }
 
 void loop() {
-  // m.getDetectionJetson();
+
   // // robot.leds.sequency();
   m.run_algs();
+
   // robot.kitLeft(2);
   // testPIDWheel();
 

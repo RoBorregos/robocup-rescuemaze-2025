@@ -21,17 +21,18 @@ void maze::followPath(Stack& path){
         path.pop();
         if (next.x > robotCoord.x) {
             robot.rotate(90);
-            jetson.getDetection();
+            // jetson.getDetection();
         } else if (next.x < robotCoord.x) {
             robot.rotate(270);
-            jetson.getDetection();
+            // jetson.getDetection();
         } else if (next.y > robotCoord.y) {
             robot.rotate(0);
+            // jetson.getDetection();
         } else if (next.y < robotCoord.y) {
+            // jetson.getDetection();
             robot.rotate(180);
         }
         robot.ahead();
-        jetson.getDetection();
         if(robot.blackTile){
             continue;
         }
