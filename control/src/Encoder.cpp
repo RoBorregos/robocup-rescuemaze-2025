@@ -15,10 +15,6 @@ void Interrups::frontLeftEncoder() {
     robot.motor[MotorID::kFrontLeft].updateTics();
 }
 void Interrups::lackOfProgress(){
-    if(robot.buttonPressed == false){
-        robot.buttonPressed = true;
-    }else{
-        robot.buttonPressed = false;
-    }
+    robot.buttonPressed = !robot.buttonPressed;
 }
 
