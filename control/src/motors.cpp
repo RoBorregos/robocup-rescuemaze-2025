@@ -537,6 +537,7 @@ void motors::ramp(){
     }
     moveDistance(kTileLength/2,true);
     stop();
+    wait(200);
 }
 void motors::moveDistance(uint8_t targetDistance,bool ahead){
     ahead ? setahead():setback();

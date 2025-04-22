@@ -19,15 +19,6 @@ void maze::followPath(Stack& path){
         path.pop();
         if (next.x > robotCoord.x) {
             robot.rotate(90);
-<<<<<<< HEAD
-            // jetson.getDetection();
-        } else if (next.x < robotCoord.x) {
-            robot.rotate(270);
-            // jetson.getDetection();
-        } else if (next.y > robotCoord.y) {
-            robot.rotate(0);
-            // jetson.getDetection();
-=======
             if(robot.buttonPressed == true) break;
             jetson.getDetection();
             if(robot.buttonPressed == true) break;
@@ -39,21 +30,14 @@ void maze::followPath(Stack& path){
         } else if (next.y > robotCoord.y) {
             robot.rotate(0);
             if(robot.buttonPressed == true) break;
->>>>>>> a6b2be4871712d47df3f6188eb71b9fbb4e1b3d8
         } else if (next.y < robotCoord.y) {
             // jetson.getDetection();
             robot.rotate(180);
             if(robot.buttonPressed == true) break;
         }
         robot.ahead();
-<<<<<<< HEAD
-        if(robot.blackTile){
-            continue;
-        }
-=======
         if(robot.buttonPressed == true) break;
         if(robot.blackTile) continue;
->>>>>>> a6b2be4871712d47df3f6188eb71b9fbb4e1b3d8
         robotCoord = next;
     }
 }
@@ -138,10 +122,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             currentTile -> setCheckpoint();
             checkpointCoord = current;
             robot.checkpoint = false;
-            // set the recovery map in the checkpoint position
-            for(uint8_t i = 0; i < kMaxSize; i++){
-                visitedMapRecover.set(i, visitedMap.getValue(i));
-            }
+
         }
         if(robot.victim == true){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));

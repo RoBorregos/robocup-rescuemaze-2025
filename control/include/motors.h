@@ -69,14 +69,14 @@ private:
 
     //control Walls
     static constexpr uint8_t maxChangeAngle=3;
-    //ramp up constants
+    //ramp down constants
     static constexpr float kP_RampDown=0.08;
     static constexpr float kI_RampDown=0.00;
     static constexpr float kD_RampDown=0.03;
     static constexpr uint8_t rampTime=20;
-    //ramp down constants
-    static constexpr float kP_RampUp=1;
-    static constexpr float kI_RampUp=0.1;
+    //ramp Up constants
+    static constexpr float kP_RampUp=0.15;
+    static constexpr float kI_RampUp=0.01;
     static constexpr float kD_RampUp=0.01;
     //TCS
     char tileColor;
