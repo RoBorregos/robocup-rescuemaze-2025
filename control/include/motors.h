@@ -124,7 +124,7 @@ public:
     bool blackTile=false;
     bool blueTile=false;
     bool checkpoint=false;
-    bool victim=false;
+    uint8_t victim=0;
     uint8_t kitState=kitID::kNone;
     bool buttonPressed=false;
     uint8_t rampState=rampID::kNone;

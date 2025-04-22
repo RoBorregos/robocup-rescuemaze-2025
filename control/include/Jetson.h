@@ -14,7 +14,7 @@ class Jetson{
     void getDetection();
     void getWall();
     void connect();
-
+    uint8_t detection;
     String flag;
     uint8_t cube_offset;
     String state();

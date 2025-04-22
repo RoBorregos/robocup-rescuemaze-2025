@@ -10,12 +10,9 @@ class maze{
     public:
         void run_algs();
         maze();
-        void getDetectionJetson();
+        // void getDetectionJetson();
         // Jetson jetson;
     private:
-        uint8_t level; 
-        uint8_t getLevel();
-        void setLevel(uint8_t level);
         void followPath(Stack& path);
         void dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCustom<Tile>& tiles);
         void dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap);  

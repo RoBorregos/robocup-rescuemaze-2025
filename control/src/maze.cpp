@@ -11,6 +11,11 @@ uint8_t level = kBaseCoord;
 maze::maze(){}
 // logic ---------------------------------------------------------
 void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); robot.rampState = 0; }
+void detection(int det){
+    if(det == 1) robot.harmedVictim();
+    else if(det == 2) robot.stableVictim();
+    else if(det == 3) robot.unharmedVictim();
+}
 void maze::followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
@@ -28,13 +33,19 @@ void maze::followPath(Stack& path){
             jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.y > robotCoord.y) {
+            if(robot.buttonPressed == true) break;
             robot.rotate(0);
             if(robot.buttonPressed == true) break;
+            jetson.getDetection();
         } else if (next.y < robotCoord.y) {
-            // jetson.getDetection();
+            if(robot.buttonPressed == true) break;
             robot.rotate(180);
             if(robot.buttonPressed == true) break;
+            jetson.getDetection();
+            
         }
+        detection(robot.victim);
+        robot.victim = 0;
         robot.ahead();
         if(robot.buttonPressed == true) break;
         if(robot.blackTile) continue;
@@ -124,11 +135,11 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.checkpoint = false;
 
         }
-        if(robot.victim == true){
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            currentTile -> setVictim();
-            robot.victim = false;
-        }
+        // if(robot.victim == true){
+        //     currentTile = &tiles.getValue(tilesMap.getIndex(current));
+        //     currentTile -> setVictim();
+        //     robot.victim = false;
+        // }
         changeLevel();
         robotCoord = current;
         
