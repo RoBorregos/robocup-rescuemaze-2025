@@ -496,14 +496,19 @@ bool motors::isRamp() {
     // screenPrint("isRamp");
     if (currentOrientationY >= kMinRampOrientation || currentOrientationY <= -kMinRampOrientation) {
         // screenPrint("Ramp detected");
-        ramp();
+        
         if (currentOrientationY <= -kMinRampOrientation) {
-            rampState = rampID::kDown;
+            // rampState = rampID::kDown;
+            // screenPrint("Ramp detected");
+            ramp();
             return true;
         }else if (currentOrientationY > kMinRampOrientation) {
-            rampState = rampID::kUp;
+            // rampState = rampID::kUp;
+            // screenPrint("Ramp detected");
+            ramp();
             return true;
         }
+        
     }
     return false;
 }
@@ -524,6 +529,7 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampUp,true);
         }
+        rampState = 1; 
         screenPrint("rampUp");
     }
     while(bno.getOrientationY() < -kMinRampOrientation){
@@ -544,6 +550,7 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampDown,true);
         }
+        rampState = 2;
         screenPrint("rampDown");
     }
     stop();

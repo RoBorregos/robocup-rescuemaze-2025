@@ -6,11 +6,16 @@ coord inicio = {kBaseCoord, kBaseCoord, kBaseCoord};
 coord robotCoord = {kBaseCoord, kBaseCoord, kBaseCoord};
 TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileDirection::kRight, TileDirection::kUp};
 coord checkpointCoord = {kBaseCoord, kBaseCoord, kBaseCoord};
-uint8_t robotOrientation = 0;
+int robotOrientation = 0;
 uint8_t level = kBaseCoord;
 maze::maze(){}
 // logic ---------------------------------------------------------
-void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); robot.rampState = 0; }
+void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); robot.rampState = 0;  }
+void detection(int det){
+    if(det == 1) robot.harmedVictim();
+    else if(det == 2) robot.stableVictim();
+    else if(det == 3) robot.unharmedVictim();
+}
 void maze::followPath(Stack& path){
     while(!path.empty()){
         const coord& next = path.top();
@@ -28,13 +33,19 @@ void maze::followPath(Stack& path){
             // jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.y > robotCoord.y) {
+            if(robot.buttonPressed == true) break;
             robot.rotate(0);
             if(robot.buttonPressed == true) break;
+            jetson.getDetection();
         } else if (next.y < robotCoord.y) {
-            // jetson.getDetection();
+            if(robot.buttonPressed == true) break;
             robot.rotate(180);
             if(robot.buttonPressed == true) break;
+            jetson.getDetection();
+            
         }
+        detection(robot.victim);
+        robot.victim = 0;
         robot.ahead();
         if(robot.buttonPressed == true) break;
         if(robot.blackTile) continue;
@@ -100,6 +111,16 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         robot.wifiPrint("coord x",current.x);
         robot.wifiPrint("coord y",current.y);
         robot.wifiPrint("coord z",current.z);
+        
+        // if(robot.rampState != 0){
+        //     if(robot.rampState == 1)current.z++;
+        //     else if(robot.rampState == 2)current.z--;
+        //     robot.rampState = 0;
+        // }
+
+        
+
+
         visitedFlag = false;
         for(int i = 0; i < visitedMap.getSize(); ++i){
             if(visitedMap.getValue(i) == current){
@@ -110,6 +131,12 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         if (visitedFlag) continue;
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
+
+        jetson.getDetection();
+        if(robot.victim == 1) robot.harmedVictim();
+        else if(robot.victim == 2) robot.stableVictim();
+        else if(robot.victim == 3) robot.unharmedVictim();
+        robot.victim = 0;
 
         if(robot.blackTile){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
@@ -124,14 +151,17 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.checkpoint = false;
 
         }
-        if(robot.victim == true){
-            currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            currentTile -> setVictim();
-            robot.victim = false;
-        }
-        changeLevel();
-        robotCoord = current;
+        // if(robot.victim == true){
+        //     currentTile = &tiles.getValue(tilesMap.getIndex(current));
+        //     currentTile -> setVictim();
+        //     robot.victim = false;
+        // }
+        // changeLevel();
         
+        // String print=static_cast<String>(current.z);
+        // robot.screenPrint(print);
+        // delay(1000);
+        robotCoord = current;
         //button checkpoint logic
         if(robot.buttonPressed){
             float orientation = robot.getAngleOrientation();
@@ -144,66 +174,207 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }else if(orientation == 270){
                 orientation = 3;
             }
+            
+            // ------- Code for retrying the same path -------
+            // robot.screenPrint("LoP");      
+            // // robotCoord = current;
+            // while(robot.buttonPressed) robot.screenPrint("Esperando");
+            // robot.screenPrint("Dale");
+            // robotCoord = inicio;
+            // robot.screenPrint("Inicio");
+            // dijkstra(robotCoord, current, tilesMap, tiles);
+            // robotCoord = current;
+            // --------- Code for reinitializing the robot with new priority -----------
+            // robot.screenPrint("LoP");      
+            // robotCoord = inicio;
+            // robot.screenPrint("Inicio");
+            // while(robot.buttonPressed) robot.screenPrint("Esperando");
+            // robot.screenPrint("Dale");
+            // Serial.println("resetting visitedMap");
+            // visitedMap.reset();
+            // Serial.println("resetting tilesMap");
+            // tilesMap.reset();
+            // Serial.println("resetting tiles");
+            // tiles.reset();
+            // current = robotCoord;
+            // unvisited.~Stack();
+            // unvisited.push(robotCoord);
+            // tilesMap.push_back(robotCoord);
+            // tiles.push_back(Tile(robotCoord));
+            // Serial.println("good");
+            // robot.bno.resetOrientation();
+            // for(int i = 0; i < orientation; i++){
+            //     TileDirection temp = directions[3];
+            //     for(int i = 3; i > 0; i--){
+            //         directions[i] = directions[i-1];
+            //     }
+            //     directions[0] = temp;
+            // }
+            // continue;
 
-            if(orientation == 0){
-                robot.screenPrint("LoP");      
-                // robotCoord = current;
-                while(robot.buttonPressed) robot.screenPrint("Esperando");
-                robot.screenPrint("Dale");
-                robotCoord = inicio;
-                robot.screenPrint("Inicio");
-                dijkstra(robotCoord, current, tilesMap, tiles);
-                robotCoord = inicio;
-            }else{
-                robot.screenPrint("LoP");      
-                robotCoord = inicio;
-                robot.screenPrint("Inicio");
-                while(robot.buttonPressed) robot.screenPrint("Esperando");
-                robot.screenPrint("Dale");
-                Serial.println("resetting visitedMap");
-                visitedMap.reset();
-                Serial.println("resetting tilesMap");
-                tilesMap.reset();
-                Serial.println("resetting tiles");
-                tiles.reset();
-                current = robotCoord;
-                unvisited.~Stack();
-                unvisited.push(robotCoord);
-                tilesMap.push_back(robotCoord);
-                tiles.push_back(Tile(robotCoord));
-                Serial.println("good");
-                for(int i = 0; i < orientation; i++){
-                    TileDirection temp = directions[3];
-                    for(int i = 3; i > 0; i--){
-                        directions[i] = directions[i-1];
-                    }
-                    directions[0] = temp;
+            // if(orientation == 0){
+            //     robot.screenPrint("LoP");      
+            //     while(robot.buttonPressed) robot.screenPrint("Esperando");
+            //     robot.screenPrint("Dale");
+            //     robotCoord = inicio;
+            //     robot.screenPrint("Inicio");
+            //     dijkstra(robotCoord, current, tilesMap, tiles);
+            //     robotCoord = current;
+            // }else{
+            //     robot.screenPrint("LoP");      
+            //     robotCoord = inicio;
+            //     robot.screenPrint("Inicio");
+            //     while(robot.buttonPressed) robot.screenPrint("Esperando");
+            //     robot.screenPrint("Dale");
+            //     Serial.println("resetting visitedMap");
+            //     visitedMap.reset();
+            //     Serial.println("resetting tilesMap");
+            //     tilesMap.reset();
+            //     Serial.println("resetting tiles");
+            //     tiles.reset();
+            //     current = robotCoord;
+            //     unvisited.~Stack();
+            //     unvisited.push(robotCoord);
+            //     tilesMap.push_back(robotCoord);
+            //     tiles.push_back(Tile(robotCoord));
+            //     Serial.println("good");
+            //     robot.bno.resetOrientation();
+            //     for(int i = 0; i < orientation; i++){
+            //         TileDirection temp = directions[3];
+            //         for(int i = 3; i > 0; i--){
+            //             directions[i] = directions[i-1];
+            //         }
+            //         directions[0] = temp;
+            //     }
+            //     continue;
+            // }
+            robot.screenPrint("LoP");      
+            robotCoord = inicio;
+            robot.screenPrint("Inicio");
+            while(robot.buttonPressed) robot.screenPrint("Esperando");
+            robot.screenPrint("Dale");
+            Serial.println("resetting visitedMap");
+            visitedMap.reset();
+            Serial.println("resetting tilesMap");
+            tilesMap.reset();
+            Serial.println("resetting tiles");
+            tiles.reset();
+            current = robotCoord;
+            unvisited.~Stack();
+            unvisited.push(robotCoord);
+            tilesMap.push_back(robotCoord);
+            tiles.push_back(Tile(robotCoord));
+            Serial.println("good");
+            robot.bno.resetOrientation();
+            for(int i = 0; i < orientation; i++){
+                TileDirection temp = directions[3];
+                for(int i = 3; i > 0; i--){
+                    directions[i] = directions[i-1];
                 }
+                directions[0] = temp;
             }
-            //option4 (setting new priority, recovering the map and applying angle setup)
+            continue;
+        
         }
-
+        
+        if(robot.rampState != 0){
+            currentTile = &tiles.getValue(tilesMap.getIndex(current));
+            for(int i = 0; i < 4; i++){
+                currentTile->weights_[i] = kRampWeight;
+            }
+            int rampDirection = robot.rampState == 1 ? 1 : -1;
+            robot.rampState = 0;
+            robotOrientation = robot.getAngleOrientation();
+            if(robotOrientation == 0) robotOrientation = 0;
+            else if(robotOrientation == 90) robotOrientation = 1;
+            else if(robotOrientation == 180) robotOrientation = 2;
+            else if(robotOrientation == 270) robotOrientation = 3;
+            for(const TileDirection direction: directions){
+                wall = false; 
+                if(robot.isWall(static_cast<int>(direction))){
+                    wall = true;
+                    switch(direction) {
+                        case TileDirection::kRight:
+                            next = coord{static_cast<uint8_t>(current.x + 1), current.y, static_cast<uint8_t>(current.z + rampDirection)};
+                            // if(wall) robot.screenPrint("Wall right");
+                            // else robot.screenPrint("No wall right");
+                            // delay(1000);
+                            oppositeDirection = TileDirection::kLeft;
+                            break;
+                        case TileDirection::kUp:
+                            next = coord{current.x, static_cast<uint8_t>(current.y + 1), static_cast<uint8_t>(current.z + rampDirection)};
+                            // if(wall) robot.screenPrint("Wall up");
+                            // else robot.screenPrint("No wall up");
+                            // delay(1000);
+                            oppositeDirection = TileDirection::kDown;
+                            break;
+                        case TileDirection::kLeft:
+                            next = coord{static_cast<uint8_t>(current.x - 1), current.y, static_cast<uint8_t>(current.z + rampDirection)};
+                            // if(wall) robot.screenPrint("Wall left");
+                            // else robot.screenPrint("No wall left");
+                            // delay(1000);
+                            oppositeDirection = TileDirection::kRight;
+                            break;
+                        case TileDirection::kDown:
+                            next = coord{current.x, static_cast<uint8_t>(current.y - 1), static_cast<uint8_t>(current.z + rampDirection)};
+                            // if(wall) robot.screenPrint("Wall down");
+                            // else robot.screenPrint("No wall down");
+                            // delay(1000);
+                            oppositeDirection = TileDirection::kUp;
+                            break;
+                    }
+                    if (tilesMap.getIndex(next) == 255) {
+                        tilesMap.push_back(next);
+                        tiles.getValue(tilesMap.getIndex(next)) = Tile(next);
+                    }
+                    // Create a pointer to the next tile and asign its coordenate if it's a new Tile.
+                    Tile* nextTile = &tiles.getValue(tilesMap.getIndex(next));
+                    if (nextTile->position_ == kInvalidPosition) { // maybe can be moved to the if statement above.
+                        nextTile->setPosition(next);
+                    }
+                    // Link the two adjacent Tiles.
+                    currentTile->addAdjacentTile(direction, nextTile, wall, false);
+                    nextTile->addAdjacentTile(oppositeDirection, currentTile, wall, false);
+                    if (visitedMap.getIndex(next) != 255) {
+                        continue;
+                    }
+                    unvisited.push(next);
+                } 
+            }
+        }else{
         for(const TileDirection direction: directions){
             wall = false; 
             if(robot.isWall(static_cast<int>(direction))) wall = true;
             switch(direction) {
                 case TileDirection::kRight:
-                    next = coord{static_cast<uint8_t>(current.x + 1), current.y, level};
+                    next = coord{static_cast<uint8_t>(current.x + 1), current.y, current.z};
+                    // if(wall) robot.screenPrint("Wall right");
+                    // else robot.screenPrint("No wall right");
+                    // delay(1000);
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kLeft;
                     break;
                 case TileDirection::kUp:
-                    next = coord{current.x, static_cast<uint8_t>(current.y + 1), level};
+                    next = coord{current.x, static_cast<uint8_t>(current.y + 1), current.z};
+                    // if(wall) robot.screenPrint("Wall up");
+                    // else robot.screenPrint("No wall up");
+                    // delay(1000);
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kDown;
                     break;
                 case TileDirection::kLeft:
-                    next = coord{static_cast<uint8_t>(current.x - 1), current.y, level};
+                    next = coord{static_cast<uint8_t>(current.x - 1), current.y, current.z};
+                    // if(wall) robot.screenPrint("Wall left");
+                    // else robot.screenPrint("No wall left");
+                    // delay(1000);
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kRight;
                     break;
                 case TileDirection::kDown:
-                    next = coord{current.x, static_cast<uint8_t>(current.y - 1), level};
+                    next = coord{current.x, static_cast<uint8_t>(current.y - 1), current.z};
+                    // if(wall) robot.screenPrint("Wall down");
+                    // else robot.screenPrint("No wall down");
+                    // delay(1000);
                     currentTile = &tiles.getValue(tilesMap.getIndex(current));
                     oppositeDirection = TileDirection::kUp;
                     break;
@@ -237,11 +408,19 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                             break;
                         }
                     }
-                    if(!visitedFlag) unvisited.push(next);
+                    if(!visitedFlag){ 
+                        // robot.screenPrint("entre"); 
+                        // delay(1000); 
+                        unvisited.push(next);
+                    }
                 }
+                
             }
         }
+        }
     }
+
+    if(unvisited.empty()){ robot.screenPrint("Unvisited empty"); delay(5000);}
     if(robot.buttonPressed==false) dijkstra(robotCoord, inicio, tilesMap, tiles); 
 }
 void maze::run_algs(){

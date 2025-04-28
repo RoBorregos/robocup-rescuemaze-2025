@@ -69,7 +69,7 @@ void testMotors(){
     int dt=1000;
     robot.setahead();
     Serial.println("FrontLeft");
-    robot.motor[MotorID::kFrontLeft].setSpeed(30);
+    robot.motor[MotorID::kBackLeft].setSpeed(50);
     // delay(dt);
     // Serial.println("FrontRight");
     // robot.motor[MotorID::kFrontRight].setSpeed(200);

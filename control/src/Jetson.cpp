@@ -4,6 +4,7 @@ Jetson::Jetson(){
   // Serial.begin(baud);
 }
 void Jetson::getDetection(){
+    Serial.flush();
     float current=millis();
     if(robot.vlx[vlxID::right].isWall()){
         robot.kitState=kitID::kRight;
@@ -108,6 +109,7 @@ bool Jetson::readSerial() {
             packet_size = 0;
             return true;
         }
+        
     }
     return false;
     // if serial is not available, start a counter to stop the robot if nothing is received in a time frame
@@ -130,9 +132,10 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
             break;
         case 0x0A: // harmed victim 
             if (packet_size == 1) { // Check packet size
-                robot.victim=true;
+                // robot.victim=true;
                 robot.screenPrint("harmed");
-                robot.harmedVictim();
+                robot.victim = 1;
+                // robot.harmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
@@ -140,9 +143,10 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
             break;
         case 0x0B: // stable victim 
             if (packet_size == 1) { // Check packet size
-                robot.victim=true;
+                // robot.victim=true;
                 robot.screenPrint("stable");
-                robot.stableVictim();
+                robot.victim = 2;
+                // robot.stableVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
@@ -150,9 +154,10 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         break;
         case 0x0C: // unharmed victim 
             if (packet_size == 1) { // Check packet size
-                robot.victim=true;
+                // robot.victim=true;
                 robot.screenPrint("unharm");
-                robot.unharmedVictim();
+                robot.victim = 3;
+                // robot.unharmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
