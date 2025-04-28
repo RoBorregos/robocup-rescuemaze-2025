@@ -3,6 +3,11 @@
     "files.associations": {
         "array": "cpp",
         "*.tcc": "cpp",
-        "condition_variable": "cpp"
+        "condition_variable": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp"
     }
 }

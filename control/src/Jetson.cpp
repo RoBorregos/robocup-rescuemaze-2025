@@ -4,6 +4,7 @@ Jetson::Jetson(){
   // Serial.begin(baud);
 }
 void Jetson::getDetection(){
+    Serial.flush();
     float current=millis();
     if(robot.vlx[vlxID::right].isWall()){
         robot.kitState=kitID::kRight;
@@ -108,6 +109,7 @@ bool Jetson::readSerial() {
             packet_size = 0;
             return true;
         }
+        
     }
     return false;
     // if serial is not available, start a counter to stop the robot if nothing is received in a time frame

@@ -54,13 +54,13 @@ namespace LimitSwitchID {
     constexpr uint8_t kRight = 1;
 }
 namespace vlxID{
-    constexpr uint8_t right=5;//si
-    constexpr uint8_t left=3;//si
-    constexpr uint8_t frontRight=0;//no
-    constexpr uint8_t frontLeft=2;//si
-    constexpr uint8_t front=1;//no
-    constexpr uint8_t back=4;//si
-    constexpr uint8_t frontCenter=7;//no
+    constexpr uint8_t right=2;//si
+    constexpr uint8_t left=1;//si
+    constexpr uint8_t frontRight=5;//no
+    constexpr uint8_t frontLeft=3;//si
+    constexpr uint8_t front=4;//no
+    constexpr uint8_t back=0;//si
+    constexpr uint8_t frontCenter=7;//no aun no
 
 }
 namespace MotorID{
