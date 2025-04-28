@@ -80,9 +80,12 @@ void motors::pidEncoders(int speedReference,bool ahead){
     PID_Wheel(speedReference-error,MotorID::kBackRight);
 }
 void motors::ahead(){
+    String print=static_cast<String>(robot.bno.getOrientationX());
+    robot.screenPrint(print);
+    Serial.println(print);
     passObstacle();
     nearWall();
-    screenPrint("Ahead");
+    // screenPrint("Ahead");
     resetTics();
     int edgeVlx;
     float distance;
@@ -108,6 +111,10 @@ void motors::ahead(){
         float targetDistance=findNearest(distance,frontVlx ? targetDistances:targetDistancesB,2,frontVlx);
         targetDistance=targetDistance+edgeVlx;
         while(frontVlx ? (distance>targetDistance):(distance<targetDistance)){//poner rango
+            String print=static_cast<String>(robot.bno.getOrientationX());
+            robot.screenPrint(print);
+            Serial.println(print);
+
             setahead();
             limitCrash();
             if(blackTile) break;
@@ -501,6 +508,7 @@ bool motors::isRamp() {
     return false;
 }
 void motors::ramp(){
+
     setahead();
     while(bno.getOrientationY()>kMinRampOrientation){
         float error;
@@ -517,10 +525,13 @@ void motors::ramp(){
             pidEncoders(kSpeedRampUp,true);
         }
         screenPrint("rampUp");
-        
     }
     while(bno.getOrientationY() < -kMinRampOrientation){
+        String print=static_cast<String>(robot.bno.getOrientationX());
+        robot.screenPrint(print);
+        Serial.println(print);
         float error;
+
         vlx[vlxID::right].getDistance();
         vlx[vlxID::left].getDistance();
         if(vlx[vlxID::right].distance<vlx[vlxID::right].kDistanceToWall && vlx[vlxID::left].distance<vlx[vlxID::left].kDistanceToWall){
@@ -535,6 +546,9 @@ void motors::ramp(){
         }
         screenPrint("rampDown");
     }
+    stop();
+    // bno.setupBNO();
+    bno.setPhaseCorrection(targetAngle-bno.getOrientationX());
     moveDistance(kTileLength/2,true);
     stop();
     wait(200);
@@ -665,7 +679,10 @@ void motors::wifiPrint(String message, float i){
     // Serial.println("Enviado: ");
 }
 void motors::screenBegin(){
+    // for(uint8_t i=0;i<3;i++){
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    Serial.println("Pantalla inicializada");
+    // }
 }
 void motors::screenPrint(String output){
     display.clearDisplay();

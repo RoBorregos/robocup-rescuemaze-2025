@@ -104,7 +104,7 @@ void testButton(){
     Serial.println(robot.buttonPressed);
 }
 void testBnoY(){
-    String print=static_cast<String>(robot.bno.getOrientationY());
+    String print=static_cast<String>(robot.bno.getOrientationX());
     robot.screenPrint(print);
     Serial.println(print);
 }

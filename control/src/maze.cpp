@@ -20,12 +20,12 @@ void maze::followPath(Stack& path){
         if (next.x > robotCoord.x) {
             robot.rotate(90);
             if(robot.buttonPressed == true) break;
-            jetson.getDetection();
+            // jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.x < robotCoord.x) {
             robot.rotate(270);
             if(robot.buttonPressed == true) break;
-            jetson.getDetection();
+            // jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.y > robotCoord.y) {
             robot.rotate(0);

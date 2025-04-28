@@ -62,7 +62,7 @@ private:
     //ramp
     PID rampUpPID;
     PID rampDownPID;
-    static constexpr float kMinRampOrientation=15.0;
+    static constexpr float kMinRampOrientation=18.0;
     static constexpr float minDisToLateralWall=6;
     static constexpr float impactDisToLateralWall=2;
     float changeAngle=0;
