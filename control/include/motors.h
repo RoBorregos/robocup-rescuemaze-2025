@@ -21,11 +21,13 @@
 #define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
 
-constexpr uint8_t edgeTileDistance=5;
+constexpr uint8_t edgeTileDistance=6;
 constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
-constexpr uint8_t targetDistances[]={edgeTileDistance+5,kTileLength+edgeTileDistance+4};
-constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance-4,};
+constexpr uint8_t targetDistances[]={edgeTileDistance,kTileLength+edgeTileDistance};
+// constexpr uint8_t targetDistances[]={edgeTileDistance+5,kTileLength+edgeTileDistance+4};
+constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance};
+// constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance-4,};
 
 
 struct Advanced{
@@ -55,7 +57,7 @@ private:
     //Speeds constants
     static constexpr uint16_t kMinSpeedRotate=7;////////////////
     static constexpr uint16_t kMaxSpeedRotate=30;
-    static constexpr uint16_t kMinSpeedFormard=10;//36
+    static constexpr uint16_t kMinSpeedFormard=5;//36
     static constexpr uint16_t kMaxSpeedFormard=30;//70
     static constexpr uint16_t kSpeedRampUp=20;//70
     static constexpr uint16_t kSpeedRampDown=9;//70
@@ -69,6 +71,11 @@ private:
 
     //control Walls
     static constexpr uint8_t maxChangeAngle=3;
+    //PID movement constants
+    static constexpr float kP_mov=1;
+    static constexpr float kI_mov=0.00;
+    static constexpr float kD_mov=1.35;
+    static constexpr uint8_t movTime=20;
     //ramp down constants
     static constexpr float kP_RampDown=0.08;
     static constexpr float kI_RampDown=0.00;

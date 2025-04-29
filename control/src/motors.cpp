@@ -10,7 +10,7 @@ void motors::setupMotors(){
     for(uint8_t i=0;i<4;i++){
         motor[i].initialize(Pins::digitalOne[i],Pins::digitalTwo[i],Pins::pwmPin[i],i);
         Serial.println(Pins::pwmPin[i]);
-        myPID[i].changeConstants(3.5,0.1,0.005,50);
+        myPID[i].changeConstants(kP_mov,kI_mov,kD_mov,movTime);
     }
     rampUpPID.changeConstants(kP_RampUp,kI_RampUp,kD_RampUp,rampTime);
     rampDownPID.changeConstants(kP_RampDown,kI_RampDown,kD_RampDown,rampTime);
@@ -114,7 +114,6 @@ void motors::ahead(){
             String print=static_cast<String>(robot.bno.getOrientationX());
             robot.screenPrint(print);
             Serial.println(print);
-
             setahead();
             limitCrash();
             if(blackTile) break;
@@ -165,6 +164,7 @@ void motors::checkTileColor(){
         blackTile=true;
         while(getAvergeTics()<kTicsPerTile/2){
             setback();
+            if(buttonPressed) break;
             int speed=map(getAvergeTics(),0,kTicsPerTile/2,kMaxSpeedFormard,kMinSpeedFormard);
             pidEncoders(speed,false);
             screenPrint("Black Tile");
@@ -563,6 +563,7 @@ void motors::moveDistance(uint8_t targetDistance,bool ahead){
     ahead ? setahead():setback();
     resetTics();
     while(getCurrentDistanceCm()<targetDistance){
+        if(buttonPressed) break;
         pidEncoders((kMinSpeedFormard+kMaxSpeedFormard)/2,ahead);
     }
     stop(); 
@@ -591,7 +592,7 @@ Advanced motors::checkpointElection(){
     uint8_t angleThreshold=10;
     float currentAngle = (angleOrientation == 0) ? z_rotation : angle;
     Advanced advanced;
-    rotate(angleOrientation);
+    if(angleOrientation != 0) rotate(angleOrientation);
     
     int turn;
     if((currentAngle-angleOrientation) < -angleThreshold){
@@ -679,7 +680,7 @@ void motors::setupTCS() {
 void motors::wait(unsigned long targetTime){
     unsigned long initialTime=millis();
     while((millis()-initialTime)<targetTime){
-
+        if(buttonPressed) break;
     }
 }
 void motors::wifiPrint(String message, float i){
@@ -739,6 +740,7 @@ void motors::calibrateColors(){
     float blueInWhite=tcs_.blue_;
 
     while(true){
+        if(buttonPressed) break;
         String print;
         dt=2000;
         screenPrint("RGB Blue");
