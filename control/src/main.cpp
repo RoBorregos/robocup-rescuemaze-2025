@@ -21,9 +21,11 @@ void setup() {
 }
 
 void loop() {
-
+  // robot.moveDistance(kTileLength/2,true);
   // // robot.leds.sequency();
   m.run_algs();
+  Serial.println(robot.getAngleOrientation());
+  // robot.ahead();
   // testMotors();
   // robot.kitLeft(2);
   // testPIDWheel();

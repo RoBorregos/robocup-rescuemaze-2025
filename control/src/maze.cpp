@@ -25,12 +25,12 @@ void maze::followPath(Stack& path){
         if (next.x > robotCoord.x) {
             robot.rotate(90);
             if(robot.buttonPressed == true) break;
-            // jetson.getDetection();
+            jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.x < robotCoord.x) {
             robot.rotate(270);
             if(robot.buttonPressed == true) break;
-            // jetson.getDetection();
+            jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.y > robotCoord.y) {
             if(robot.buttonPressed == true) break;
@@ -132,11 +132,11 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
 
-        jetson.getDetection();
-        if(robot.victim == 1) robot.harmedVictim();
-        else if(robot.victim == 2) robot.stableVictim();
-        else if(robot.victim == 3) robot.unharmedVictim();
-        robot.victim = 0;
+        // jetson.getDetection();
+        // if(robot.victim == 1) robot.harmedVictim();
+        // else if(robot.victim == 2) robot.stableVictim();
+        // else if(robot.victim == 3) robot.unharmedVictim();
+        // robot.victim = 0;
 
         if(robot.blackTile){
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
@@ -265,6 +265,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             tilesMap.push_back(robotCoord);
             tiles.push_back(Tile(robotCoord));
             Serial.println("good");
+            robot.checkpointElection();
             robot.bno.resetOrientation();
             for(int i = 0; i < orientation; i++){
                 TileDirection temp = directions[3];
@@ -290,6 +291,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             else if(robotOrientation == 180) robotOrientation = 2;
             else if(robotOrientation == 270) robotOrientation = 3;
             for(const TileDirection direction: directions){
+                
                 wall = false; 
                 if(robot.isWall(static_cast<int>(direction))){
                     wall = true;

@@ -103,7 +103,9 @@ bool Jetson::readSerial() {
             }
             // Execute the command
             executeCommand(packet_size, command, &buffer[4]);
-            
+            while (Serial.available() > 0) {
+                Serial.read();  // Lee y descarta cada byte
+              }              
             // Reset index and packet_size
             index = 0;
             packet_size = 0;

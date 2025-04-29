@@ -490,8 +490,7 @@ bool motors::rampInFront(){
     }else{
         return false;
     }
-}
-bool motors::isRamp() {
+}bool motors::isRamp() {
     float currentOrientationY = bno.getOrientationY();
     // screenPrint("isRamp");
     if (currentOrientationY >= kMinRampOrientation || currentOrientationY <= -kMinRampOrientation) {
@@ -513,9 +512,11 @@ bool motors::isRamp() {
     return false;
 }
 void motors::ramp(){
-
     setahead();
-    while(bno.getOrientationY()>kMinRampOrientation){
+    while(bno.getOrientationY()>7){
+        if(buttonPressed==true){
+            break;
+        }
         float error;
         vlx[vlxID::right].getDistance();
         vlx[vlxID::left].getDistance();
@@ -529,15 +530,15 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampUp,true);
         }
-        rampState = 1; 
+        // rampState = 1; 
         screenPrint("rampUp");
+        
     }
-    while(bno.getOrientationY() < -kMinRampOrientation){
-        String print=static_cast<String>(robot.bno.getOrientationX());
-        robot.screenPrint(print);
-        Serial.println(print);
+    while(bno.getOrientationY() < -7){
+        if(buttonPressed==true){
+            break;
+        }
         float error;
-
         vlx[vlxID::right].getDistance();
         vlx[vlxID::left].getDistance();
         if(vlx[vlxID::right].distance<vlx[vlxID::right].kDistanceToWall && vlx[vlxID::left].distance<vlx[vlxID::left].kDistanceToWall){
@@ -550,17 +551,15 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampDown,true);
         }
-        rampState = 2;
+        // rampState = 2;
         screenPrint("rampDown");
     }
-    stop();
-    // bno.setupBNO();
-    bno.setPhaseCorrection(targetAngle-bno.getOrientationX());
-    moveDistance(kTileLength/2,true);
+    // moveDistance(kTileLength/2,true);
     stop();
     wait(200);
 }
 void motors::moveDistance(uint8_t targetDistance,bool ahead){
+    screenPrint("leaving");
     ahead ? setahead():setback();
     resetTics();
     while(getCurrentDistanceCm()<targetDistance){
@@ -585,6 +584,9 @@ void motors::resetOrientation(){
 Advanced motors::checkpointElection(){
     float angleOrientation=getAngleOrientation();
     Serial.println("angule");
+    String print;
+    print=static_cast<String>(angleOrientation);
+    screenPrint(print);
     Serial.println(angleOrientation);
     uint8_t angleThreshold=10;
     float currentAngle = (angleOrientation == 0) ? z_rotation : angle;
@@ -595,14 +597,14 @@ Advanced motors::checkpointElection(){
     if((currentAngle-angleOrientation) < -angleThreshold){
         turn=-1; 
         ahead();
-        bno.resetOrientation();
+        // bno.resetOrientation();
         left();
         ahead();
     } 
-    else if((currentAngle-angleOrientation)<angleThreshold){
+    else if((currentAngle-angleOrientation)>angleThreshold){
         turn=1; 
         ahead();
-        bno.resetOrientation();
+        // bno.resetOrientation();
         right();
         ahead(); 
     } 
