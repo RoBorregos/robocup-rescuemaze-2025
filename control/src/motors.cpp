@@ -530,7 +530,7 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampUp,true);
         }
-        // rampState = 1; 
+        rampState = 1; 
         screenPrint("rampUp");
         
     }
@@ -551,7 +551,7 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampDown,true);
         }
-        // rampState = 2;
+        rampState = 2;
         screenPrint("rampDown");
     }
     // moveDistance(kTileLength/2,true);
