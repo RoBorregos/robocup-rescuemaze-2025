@@ -23,32 +23,49 @@ void maze::followPath(Stack& path){
         Serial.println(next.y);
         path.pop();
         if (next.x > robotCoord.x) {
+            if(robotOrientation != 90) jetson.getDetection();detection(robot.victim); robot.victim = 0;
+            if(robot.buttonPressed == true) break;
             robot.rotate(90);
+            robotOrientation = 90;
             if(robot.buttonPressed == true) break;
             jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.x < robotCoord.x) {
+            if(robotOrientation != 270) jetson.getDetection(); detection(robot.victim); robot.victim = 0;
+            if(robot.buttonPressed == true) break;
             robot.rotate(270);
+            robotOrientation = 270;
             if(robot.buttonPressed == true) break;
             jetson.getDetection();
             if(robot.buttonPressed == true) break;
         } else if (next.y > robotCoord.y) {
+            if(robotOrientation != 0) jetson.getDetection(); detection(robot.victim); robot.victim = 0;
             if(robot.buttonPressed == true) break;
             robot.rotate(0);
+            robotOrientation = 0;
             if(robot.buttonPressed == true) break;
             jetson.getDetection();
         } else if (next.y < robotCoord.y) {
+            if(robotOrientation != 180) jetson.getDetection(); detection(robot.victim); robot.victim = 0;
             if(robot.buttonPressed == true) break;
             robot.rotate(180);
+            robotOrientation = 180;
             if(robot.buttonPressed == true) break;
             jetson.getDetection();
             
         }
         detection(robot.victim);
         robot.victim = 0;
-        robot.ahead();
+        // robot.ahead();
         if(robot.buttonPressed == true) break;
-        if(robot.blackTile) continue;
+        robot.ahead();
+        // if(robot.blackTile) continue;
+        // if(robot.buttonPressed == true) break;
+        // jetson.getDetection();
+        // if(robot.buttonPressed == true) break;
+        // detection(robot.victim);
+        // robot.victim = 0;
+        
         robotCoord = next;
     }
 }

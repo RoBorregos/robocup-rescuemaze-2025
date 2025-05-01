@@ -561,6 +561,8 @@ void motors::ramp(){
     }
     if(getAvergeTics()>kTicsPerTile){
         moveDistance(kTileLength/2,true);
+    }else{
+        rampState=0;
     }
     resetTics();
     stop();
