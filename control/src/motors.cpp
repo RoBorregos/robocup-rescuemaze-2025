@@ -7,6 +7,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 motors::motors(){
 }
 void motors::setupMotors(){
+    buttonPressed=false;
     for(uint8_t i=0;i<4;i++){
         motor[i].initialize(Pins::digitalOne[i],Pins::digitalTwo[i],Pins::pwmPin[i],i);
         Serial.println(Pins::pwmPin[i]);
@@ -110,7 +111,7 @@ void motors::ahead(){
     if(!encoder){
         float targetDistance=findNearest(distance,frontVlx ? targetDistances:targetDistancesB,2,frontVlx);
         targetDistance=targetDistance+edgeVlx;
-        while(frontVlx ? (distance>targetDistance):(distance<targetDistance)){//poner rango
+        while(frontVlx ? (distance>=targetDistance):(distance<=targetDistance)){//poner rango
             String print=static_cast<String>(robot.bno.getOrientationX());
             robot.screenPrint(print);
             Serial.println(print);
@@ -187,6 +188,8 @@ float motors::nearWall(){
         changeAngle=maxChangeAngle;
     }else if(vlx[vlxID::right].distance<minDisToLateralWall){
         changeAngle=-maxChangeAngle;
+    }else{
+        changeAngle=0;
     }
     return changeAngle;
 }
@@ -512,6 +515,7 @@ bool motors::rampInFront(){
     return false;
 }
 void motors::ramp(){
+    resetTics();
     setahead();
     while(bno.getOrientationY()>7){
         if(buttonPressed==true){
@@ -522,6 +526,7 @@ void motors::ramp(){
         vlx[vlxID::left].getDistance();
         if(vlx[vlxID::right].distance<vlx[vlxID::right].kDistanceToWall && vlx[vlxID::left].distance<vlx[vlxID::left].kDistanceToWall){
             error=rampUpPID.calculate_PID(0,(vlx[vlxID::right].distance-vlx[vlxID::left].distance));
+            // error=rampUpPID.calculate_PID(7,vlx[vlxID::left].distance);
             error=constrain(error,-15,15);
             PID_Wheel(kSpeedRampUp-error,MotorID::kFrontLeft);
             PID_Wheel(kSpeedRampUp-error,MotorID::kBackLeft);
@@ -530,7 +535,7 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampUp,true);
         }
-        rampState = 1; 
+        // rampState = 1; 
         screenPrint("rampUp");
         
     }
@@ -551,10 +556,13 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampDown,true);
         }
-        rampState = 2;
+        // rampState = 2;
         screenPrint("rampDown");
     }
-    // moveDistance(kTileLength/2,true);
+    if(getAvergeTics()>kTicsPerTile){
+        moveDistance(kTileLength/2,true);
+    }
+    resetTics();
     stop();
     wait(200);
 }
@@ -581,6 +589,7 @@ float motors::getAngleOrientation(){
 }
 void motors::resetOrientation(){
     bno.resetOrientation();
+    targetAngle=0;
 }
 Advanced motors::checkpointElection(){
     float angleOrientation=getAngleOrientation();
@@ -592,33 +601,20 @@ Advanced motors::checkpointElection(){
     uint8_t angleThreshold=10;
     float currentAngle = (angleOrientation == 0) ? z_rotation : angle;
     Advanced advanced;
-    if(angleOrientation != 0) rotate(angleOrientation);
-    
+    rotate(angleOrientation);
     int turn;
     if((currentAngle-angleOrientation) < -angleThreshold){
         turn=-1; 
         ahead();
-        // bno.resetOrientation();
         left();
         ahead();
     } 
     else if((currentAngle-angleOrientation)>angleThreshold){
         turn=1; 
         ahead();
-        // bno.resetOrientation();
         right();
         ahead(); 
     } 
-    // else turn=0;
-    // if(angleOrientation==0 && turn==-1) advanced={-1,1};
-    // else if(angleOrientation==0 && turn==1) advanced={1,1};
-    // else if(angleOrientation==90 && turn==-1) advanced={1,1};
-    // else if(angleOrientation==90 && turn==1) advanced={1,-1};
-    // else if(angleOrientation==180 && turn==-1) advanced={1,-1};
-    // else if(angleOrientation==180 && turn==1) advanced={-1,-1};
-    // else if(angleOrientation==270 && turn==-1) advanced={-1,-1};
-    // else if(angleOrientation==270 && turn==1) advanced={-1,1};
-    advanced={0,0};
     return advanced;
 }
 void motors::harmedVictim(){

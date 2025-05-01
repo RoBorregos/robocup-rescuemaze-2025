@@ -13,6 +13,7 @@ void setup() {
   digitalWrite(2,1);
   Serial.begin(115200);
   robot.setupMotors();
+  pinMode(Pins::checkpointPin,INPUT_PULLDOWN);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontLeft]), Interrups::frontLeftEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kFrontRight]), Interrups::frontRightEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Interrups::backLeftEncoder, RISING);
@@ -23,8 +24,11 @@ void setup() {
 void loop() {
   // robot.moveDistance(kTileLength/2,true);
   // // robot.leds.sequency();
+  // robot.kitLeft(1);
+  // robot.kitRight(1);
+  // robot.servo.write(90);
   m.run_algs();
-  Serial.println(robot.getAngleOrientation());
+  // testButton();
   // robot.ahead();
   // testMotors();
   // robot.kitLeft(2);

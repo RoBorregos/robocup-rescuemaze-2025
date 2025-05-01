@@ -24,9 +24,9 @@
 constexpr uint8_t edgeTileDistance=6;
 constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
-constexpr uint8_t targetDistances[]={edgeTileDistance,kTileLength+edgeTileDistance};
+constexpr uint8_t targetDistances[]={edgeTileDistance+2,kTileLength+edgeTileDistance+2};
 // constexpr uint8_t targetDistances[]={edgeTileDistance+5,kTileLength+edgeTileDistance+4};
-constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance};
+constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance-2,2*kTileLength+edgeTileDistance-2};
 // constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance-4,};
 
 
@@ -77,14 +77,14 @@ private:
     static constexpr float kD_mov=1.35;
     static constexpr uint8_t movTime=20;
     //ramp down constants
-    static constexpr float kP_RampDown=0.08;
+    static constexpr float kP_RampDown=0.15;
     static constexpr float kI_RampDown=0.00;
     static constexpr float kD_RampDown=0.03;
     static constexpr uint8_t rampTime=20;
     //ramp Up constants
-    static constexpr float kP_RampUp=0.15;
+    static constexpr float kP_RampUp=0.2;
     static constexpr float kI_RampUp=0.01;
-    static constexpr float kD_RampUp=0.01;
+    static constexpr float kD_RampUp=0.1;
     //TCS
     char tileColor;
     static constexpr int kPrecision = 100;
@@ -127,6 +127,7 @@ public:
     Motor motor[4];
     Leds leds;
     //public variables
+    unsigned long buttonTime=millis();
     bool inMotion=false;
     bool blackTile=false;
     bool blueTile=false;

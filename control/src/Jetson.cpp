@@ -22,6 +22,7 @@ void Jetson::getDetectionRight(){
     writeSerial(0x02, (uint8_t*)t, sizeof(t));
     int currentTime=millis();
     while((millis()-currentTime)<waitingTime){
+        if(robot.buttonPressed==true) break;
         if(readSerial()){
             break;
         }
@@ -32,6 +33,7 @@ void Jetson::getDetectionLeft(){
     writeSerial(0x03, (uint8_t*)t, sizeof(t));
     int currentTime=millis();
     while((millis()-currentTime)<waitingTime){
+        if(robot.buttonPressed==true) break;
         if(readSerial()){
             break;
         }
@@ -71,6 +73,7 @@ bool Jetson::readSerial() {
     static uint8_t check_sum = 0;
     
     while (Serial.available()) {
+        if(robot.buttonPressed==true) break;
         buffer[index++] = Serial.read();
 
         // Check packet header
@@ -104,6 +107,7 @@ bool Jetson::readSerial() {
             // Execute the command
             executeCommand(packet_size, command, &buffer[4]);
             while (Serial.available() > 0) {
+                if(robot.buttonPressed==true) break;
                 Serial.read();  // Lee y descarta cada byte
               }              
             // Reset index and packet_size

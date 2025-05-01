@@ -15,6 +15,12 @@ void testEncoders(){
     Serial.println(robot.motor[MotorID::kBackRight].tics);
     delay(1000);
 }
+void testButton(){
+
+    String print=static_cast<String>(robot.buttonPressed);
+    robot.screenPrint(print);
+    Serial.println(print);
+}
 void testVlx(uint8_t id){
     Serial.println(robot.vlx[id].getDistance());
 }
@@ -100,9 +106,7 @@ void testLimits(){
     Serial.println(robot.limitSwitch_[LimitSwitchID::kLeft].getState());
     Serial.println(robot.limitSwitch_[LimitSwitchID::kRight].getState());
 }
-void testButton(){
-    Serial.println(robot.buttonPressed);
-}
+
 void testBnoY(){
     String print=static_cast<String>(robot.bno.getOrientationY());
     robot.screenPrint(print);

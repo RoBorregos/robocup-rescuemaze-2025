@@ -202,7 +202,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             // tilesMap.push_back(robotCoord);
             // tiles.push_back(Tile(robotCoord));
             // Serial.println("good");
-            // robot.bno.resetOrientation();
+            // robot.resetOrientation();
             // for(int i = 0; i < orientation; i++){
             //     TileDirection temp = directions[3];
             //     for(int i = 3; i > 0; i--){
@@ -238,7 +238,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             //     tilesMap.push_back(robotCoord);
             //     tiles.push_back(Tile(robotCoord));
             //     Serial.println("good");
-            //     robot.bno.resetOrientation();
+            //     robot.resetOrientation();
             //     for(int i = 0; i < orientation; i++){
             //         TileDirection temp = directions[3];
             //         for(int i = 3; i > 0; i--){
@@ -251,7 +251,19 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.screenPrint("LoP");      
             robotCoord = inicio;
             robot.screenPrint("Inicio");
-            while(robot.buttonPressed) robot.screenPrint("Esperando");
+            float time=millis();
+            Serial.println("mm");
+            bool breaker=true;
+            while(robot.buttonPressed){
+                Serial.println("wat");
+                robot.screenPrint("Esperando");
+                while(digitalRead(Pins::checkpointPin)==1 && breaker==true){
+                    if((millis()-time)>500){
+                        ESP.restart();                       
+                    }
+                }
+                breaker=false;
+            }
             robot.screenPrint("Dale");
             Serial.println("resetting visitedMap");
             visitedMap.reset();
@@ -266,14 +278,14 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             tiles.push_back(Tile(robotCoord));
             Serial.println("good");
             robot.checkpointElection();
-            robot.bno.resetOrientation();
-            for(int i = 0; i < orientation; i++){
-                TileDirection temp = directions[3];
-                for(int i = 3; i > 0; i--){
-                    directions[i] = directions[i-1];
-                }
-                directions[0] = temp;
-            }
+            robot.resetOrientation();
+            // for(int i = 0; i < orientation; i++){
+            //     TileDirection temp = directions[3];
+            //     for(int i = 3; i > 0; i--){
+            //         directions[i] = directions[i-1];
+            //     }
+            //     directions[0] = temp;
+            // }
             continue;
         
         }
@@ -371,7 +383,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             tiles.push_back(Tile(robotCoord));
             Serial.println("good");
             // robot.checkpointElection();
-            robot.bno.resetOrientation();
+            robot.resetOrientation();
             // for(int i = 0; i < orientation; i++){
             //     TileDirection temp = directions[3];
             //     for(int i = 3; i > 0; i--){
