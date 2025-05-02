@@ -70,8 +70,8 @@ namespace MotorID{
     constexpr uint8_t kFrontLeft=0;//////
 }
 namespace kitID{
-    constexpr uint8_t kRight=1;
-    constexpr uint8_t kLeft=2;
+    constexpr uint8_t kRight=2;
+    constexpr uint8_t kLeft=1;
     constexpr uint8_t kNone=0;//3
 }
 namespace rampID{

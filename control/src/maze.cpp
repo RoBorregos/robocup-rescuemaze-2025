@@ -15,6 +15,7 @@ void detection(int det){
     if(det == 1) robot.harmedVictim();
     else if(det == 2) robot.stableVictim();
     else if(det == 3) robot.unharmedVictim();
+    robot.kitState=kitID::kNone;
 }
 void maze::followPath(Stack& path){
     while(!path.empty()){
@@ -59,7 +60,7 @@ void maze::followPath(Stack& path){
         // robot.ahead();
         if(robot.buttonPressed == true) break;
         robot.ahead();
-        // if(robot.blackTile) continue;
+        if(robot.blackTile) continue;
         // if(robot.buttonPressed == true) break;
         // jetson.getDetection();
         // if(robot.buttonPressed == true) break;
@@ -122,6 +123,7 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
     bool wall = false;
 
     while(!unvisited.empty()){
+        robot.screenPrint("iter");
         //constants for the directions
         coord current = unvisited.top();
         unvisited.pop();
@@ -146,7 +148,11 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
         }
         if (visitedFlag) continue;
+        robot.screenPrint("llegue0");
+
         dijkstra(robotCoord, current, tilesMap, tiles);
+        robot.screenPrint("llegue");
+
         visitedMap.push_back(current);
 
         // jetson.getDetection();
@@ -154,8 +160,9 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         // else if(robot.victim == 2) robot.stableVictim();
         // else if(robot.victim == 3) robot.unharmedVictim();
         // robot.victim = 0;
-
+        Serial.println(robot.blackTile);
         if(robot.blackTile){
+            robot.screenPrint("blackk");
             currentTile = &tiles.getValue(tilesMap.getIndex(current));
             currentTile -> setBlackTile();
             robot.blackTile = false;

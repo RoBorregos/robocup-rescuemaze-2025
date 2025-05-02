@@ -535,7 +535,7 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampUp,true);
         }
-        // rampState = 1; 
+        rampState = 1; 
         screenPrint("rampUp");
         
     }
@@ -556,10 +556,10 @@ void motors::ramp(){
         }else{
             pidEncoders(kSpeedRampDown,true);
         }
-        // rampState = 2;
+        rampState = 2;
         screenPrint("rampDown");
     }
-    if(getAvergeTics()>kTicsPerTile){
+    if(nmb mnb()>2*kTicsPerTile){
         moveDistance(kTileLength/2,true);
     }else{
         rampState=0;
@@ -622,15 +622,27 @@ Advanced motors::checkpointElection(){
 void motors::harmedVictim(){
     screenPrint("Harmed");
     leds.harmedVictim(); 
-    if(kitState==kitID::kRight) kitRight(2);
-    else if(kitState==kitID::kLeft) kitLeft(2);
+    if(kitState==kitID::kRight){
+        screenPrint("Right");
+        kitRight(2);     } 
+    else if(kitState==kitID::kLeft){
+        screenPrint("Left");
+        kitLeft(2); 
+    } 
     screenPrint("");
 }
 void motors::stableVictim(){
     screenPrint("Stable");
     leds.stableVictim();
-    if(kitState==kitID::kRight) kitRight(1);
-    else if(kitState==kitID::kLeft) kitLeft(1);
+    if(kitState==kitID::kRight){
+        screenPrint("Right");
+        kitRight(1); 
+        
+    } 
+    else if(kitState==kitID::kLeft){
+        screenPrint("Left");
+        kitLeft(1); 
+    } 
     screenPrint("");
 }
 void motors::unharmedVictim(){

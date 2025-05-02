@@ -24,10 +24,15 @@ void setup() {
 void loop() {
   // robot.moveDistance(kTileLength/2,true);
   // // robot.leds.sequency();
+  // robot.kitState=kitID::kLeft;
+  // robot.stableVictim();
   // robot.kitLeft(1);
+  // delay(1000);
   // robot.kitRight(1);
-  // robot.servo.write(90);
+  // delay(1000);
+  // robot.servo.write(0);
   m.run_algs();
+  
   // testButton();
   // robot.ahead();
   // testMotors();
@@ -49,7 +54,7 @@ void loop() {
   // testBnoY();
 
   // testMotors();
-  // testEncoders();
+  testEncoders();
   // testVlxFrontDistance();
   // testVlxFrontLeft();
   // testVlxFrontRigth();

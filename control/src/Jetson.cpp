@@ -7,14 +7,15 @@ void Jetson::getDetection(){
     Serial.flush();
     float current=millis();
     if(robot.vlx[vlxID::right].isWall()){
-        robot.kitState=kitID::kRight;
+        robot.screenPrint("rig");
         getDetectionRight();
-        robot.kitState=kitID::kNone;
+        if(robot.victim!=0) robot.kitState=kitID::kRight;
     }
     if(robot.vlx[vlxID::left].isWall()){
-        robot.kitState=kitID::kLeft;
+        robot.screenPrint("lef");
         getDetectionLeft();
-        robot.kitState=kitID::kNone;
+        if(robot.victim!=0) robot.kitState=kitID::kLeft;
+
     }
 }
 void Jetson::getDetectionRight(){
