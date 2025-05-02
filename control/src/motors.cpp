@@ -559,7 +559,7 @@ void motors::ramp(){
         rampState = 2;
         screenPrint("rampDown");
     }
-    if(nmb mnb()>2*kTicsPerTile){
+    if(getAvergeTics()>2*kTicsPerTile){
         moveDistance(kTileLength/2,true);
     }else{
         rampState=0;

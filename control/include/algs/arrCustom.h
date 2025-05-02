@@ -29,9 +29,9 @@ public:
         }
     }
     uint8_t getIndex(T value){
-        for(uint8_t i = 0; i < size; i++){
-            if(positions[i] == value){
-                return i;
+        for(uint8_t j = 0; j < i; j++){ // ← usa i en lugar de size
+            if(positions[j] == value){
+                return j;
             }
         }
         return 255;
@@ -43,6 +43,7 @@ public:
         }
         else{
             Serial.println("Index out of bounds");
+            return positions[size-1]; // o maneja el error de otra manera
         }
         
     }
