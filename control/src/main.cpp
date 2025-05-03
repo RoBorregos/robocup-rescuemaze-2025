@@ -26,10 +26,10 @@ void loop() {
   // // robot.leds.sequency();
   // robot.kitState=kitID::kLeft;
   // robot.stableVictim();
-  // robot.kitLeft(1);
-  // delay(1000);
-  // robot.kitRight(1);
-  // delay(1000);
+  robot.kitLeft(1);
+  delay(1000);
+  robot.kitRight(1);
+  delay(1000);
   // robot.servo.write(0);
   m.run_algs();
   

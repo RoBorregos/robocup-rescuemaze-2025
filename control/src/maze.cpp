@@ -8,50 +8,6 @@ TileDirection directions[4] = {TileDirection::kLeft, TileDirection::kDown, TileD
 coord checkpointCoord = {kBaseCoord, kBaseCoord, kBaseCoord};
 int robotOrientation = 0;
 uint8_t level = kBaseCoord;
-bool det =false;
-void createNeighborsOnNewLevel(
-    const coord& currentCoord,
-    arrCustom<coord>& tilesMap,
-    arrCustom<Tile>& tiles,
-    arrCustom<coord>& visitedMap,
-    Stack& unvisited
-) {
-    const TileDirection dirs[4] = {TileDirection::kLeft, TileDirection::kRight, TileDirection::kUp, TileDirection::kDown};
-    const int dx[4] = {-1, 1, 0, 0};
-    const int dy[4] = {0, 0, 1, -1};
-
-    Tile* centerTile = &tiles.getValue(tilesMap.getIndex(currentCoord));
-
-    for (int i = 0; i < 4; ++i) {
-        coord neighbor = {
-            static_cast<uint8_t>(currentCoord.x + dx[i]),
-            static_cast<uint8_t>(currentCoord.y + dy[i]),
-            currentCoord.z
-        };
-
-        if (tilesMap.getIndex(neighbor) == 255) {
-            tilesMap.push_back(neighbor);
-            tiles.push_back(Tile(neighbor));
-        }
-
-        Tile* neighborTile = &tiles.getValue(tilesMap.getIndex(neighbor));
-
-        // Conexión bidireccional
-        centerTile->addAdjacentTile(dirs[i], neighborTile, false, false);
-        TileDirection opposite =
-            dirs[i] == TileDirection::kLeft ? TileDirection::kRight :
-            dirs[i] == TileDirection::kRight ? TileDirection::kLeft :
-            dirs[i] == TileDirection::kUp ? TileDirection::kDown :
-                                            TileDirection::kUp;
-        neighborTile->addAdjacentTile(opposite, centerTile, false, false);
-
-        if (visitedMap.getIndex(neighbor) == 255) {
-            unvisited.push(neighbor);
-        }
-    }
-}
-
-
 maze::maze(){}
 // logic ---------------------------------------------------------
 void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); robot.rampState = 0;  }
@@ -62,9 +18,10 @@ void detection(Tile* curr){
         if(robot.victim == 1) robot.harmedVictim();
         else if(robot.victim == 2) robot.stableVictim();
         else if(robot.victim == 3) robot.unharmedVictim();
+        if(robot.victim != 0) curr->setVictim();
         robot.victim = 0;
         robot.kitState=kitID::kNone;
-        curr->setVictim();
+        
     }
 }
 void maze::followPath(Stack& path, arrCustom<Tile>& tiles, arrCustom<coord>& tilesMap){
@@ -174,9 +131,6 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             }
         }
         if (visitedFlag) continue;
-        String cos = "next: " + String(current.x) + " " + String(current.y) + " " + String(current.z);
-        robot.screenPrint(cos);
-        delay(2000);
         dijkstra(robotCoord, current, tilesMap, tiles);
         visitedMap.push_back(current);
         if(robot.blackTile){
@@ -320,20 +274,20 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
 
             // solución previamente implementada
             int rampDirection = robot.rampState == 1 ? 1 : -1;
-            robot.rampState = 0;
+            
 
             current = robotCoord;
             // reiniciar la coordenada del robot y de donde viene, y cambiar tiles map, 
-            size_t nextIndex = tilesMap.getIndex(next);
-            coord* temp = &tilesMap.getValue(nextIndex);
-            Tile* tempTile = &tiles.getValue(nextIndex);
-            temp->z = temp->z + rampDirection;
-            tempTile->position_.z = tempTile->position_.z + rampDirection;
-            // robotCoord = current;
-            // currentTile = &tiles.getValue(tilesMap.getIndex(current));
-            for(int i = 0; i < 4; i++){
-                tempTile->weights_[i] = kRampWeight;
-            }
+            // size_t nextIndex = tilesMap.getIndex(next);
+            // coord* temp = &tilesMap.getValue(nextIndex);
+            // Tile* tempTile = &tiles.getValue(nextIndex);
+            // temp->z = temp->z + rampDirection;
+            // tempTile->position_.z = tempTile->position_.z + rampDirection;
+            // // robotCoord = current;
+            // // currentTile = &tiles.getValue(tilesMap.getIndex(current));
+            // for(int i = 0; i < 4; i++){
+            //     tempTile->weights_[i] = kRampWeight;
+            // }
             for(const TileDirection direction: directions){
                 wall = false; 
                 if(robot.isWall(static_cast<int>(direction))){
@@ -392,7 +346,8 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             Stack tempStack;
             tempStack.push(currentCoord);
             
-            followPath(tempStack, tiles, tilesMap);
+            // followPath(tempStack, tiles, tilesMap);
+            robot.rampState = 0;
             Serial.println("resetting visitedMap");
             visitedMap.reset();
             Serial.println("resetting tilesMap");

@@ -108,6 +108,7 @@ void motors::ahead(){
     }else{
         encoder=true;
     }
+    if(abs(bno.getOrientationY())>10 ) encoder=true;
     if(!encoder){
         float targetDistance=findNearest(distance,frontVlx ? targetDistances:targetDistancesB,2,frontVlx);
         targetDistance=targetDistance+edgeVlx;
@@ -153,7 +154,7 @@ void motors::ahead(){
         }
     }
     resetTics();
-    stop();resetTics();delay(100);checkTileColor();
+    stop();resetTics();checkTileColor();
 }
 void motors::checkTileColor(){
     tileColor=tcs_.getColor();
@@ -338,8 +339,7 @@ void motors::rotate(float deltaAngle){
         if(buttonPressed) break;
         // Serial.println(angle);
     }
-    stop();wait(200);
-    // if(targetAngle!=0 && targetAngle!=180) jettson.getDetection();
+    stop();/*wait(200);*/
 }
 float motors::changeSpeedMove(bool encoders,bool rotate,int targetDistance,bool frontVlx){
     float speed;
@@ -471,12 +471,14 @@ bool motors::isWall(uint8_t direction){
         bool wall1,wall2,wall3,wall4;
         case 0:
             // wall1=vlx[vlxID::frontLeft].isWall() && vlx[vlxID::frontRight].isWall();
+            // ya que jale weyyyy, ponte a chambearrr
             wall1=vlx[vlxID::front].isWall();
             return wall1;
         case 1:
             wall2=vlx[vlxID::right].isWall();
             return wall2;
         case 2:
+            if(rampState != 0) return true;
             wall3=vlx[vlxID::back].isWall();
             return wall3;
         case 3:
@@ -561,20 +563,27 @@ void motors::ramp(){
         rampState = 2;
         screenPrint("rampDown");
     }
-<<<<<<< HEAD
     if(getAvergeTics()>1.5*kTicsPerTile){
         screenPrint("ifff");
-=======
-    if(getAvergeTics()>2*kTicsPerTile){
->>>>>>> 39786808826eb1598c77617e7f2f22d6b4df2f2c
         moveDistance(kTileLength/2,true);
         rotate(targetAngle);
     }else{
         rampState=0;
     }
+    if(rampState!=0){
+        if(!vlx[vlxID::front].isWall()){
+            ahead(); left();
+        } 
+        else if(!vlx[vlxID::right].isWall()){
+            right(); ahead(); left();
+        } 
+        else if(!vlx[vlxID::left].isWall()){
+            left(); ahead(); left();
+        }
+    }
     resetTics();
     stop();
-    wait(200);
+    wait(100);
 }
 void motors::moveDistance(uint8_t targetDistance,bool ahead){
     screenPrint("leaving");
