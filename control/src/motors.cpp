@@ -524,7 +524,8 @@ void motors::ramp(){
         float error;
         vlx[vlxID::right].getDistance();
         vlx[vlxID::left].getDistance();
-        if(vlx[vlxID::right].distance<vlx[vlxID::right].kDistanceToWall && vlx[vlxID::left].distance<vlx[vlxID::left].kDistanceToWall){
+        if((vlx[vlxID::right].distance<vlx[vlxID::right].kDistanceToWall && vlx[vlxID::left].distance<vlx[vlxID::left].kDistanceToWall) &&
+        (vlx[vlxID::right].distance<6 || vlx[vlxID::left].distance<6)){
             error=rampUpPID.calculate_PID(0,(vlx[vlxID::right].distance-vlx[vlxID::left].distance));
             // error=rampUpPID.calculate_PID(7,vlx[vlxID::left].distance);
             error=constrain(error,-15,15);
@@ -546,7 +547,8 @@ void motors::ramp(){
         float error;
         vlx[vlxID::right].getDistance();
         vlx[vlxID::left].getDistance();
-        if(vlx[vlxID::right].distance<vlx[vlxID::right].kDistanceToWall && vlx[vlxID::left].distance<vlx[vlxID::left].kDistanceToWall){
+        if((vlx[vlxID::right].distance<vlx[vlxID::right].kDistanceToWall && vlx[vlxID::left].distance<vlx[vlxID::left].kDistanceToWall) &&
+        (vlx[vlxID::right].distance<6 || vlx[vlxID::left].distance<6)){
             error=rampDownPID.calculate_PID(0,(vlx[vlxID::right].distance-vlx[vlxID::left].distance));
             error=constrain(error,-6,6);
             PID_Wheel(kSpeedRampDown-error,MotorID::kFrontLeft);
@@ -559,8 +561,10 @@ void motors::ramp(){
         rampState = 2;
         screenPrint("rampDown");
     }
-    if(nmb mnb()>2*kTicsPerTile){
+    if(getAvergeTics()>1.5*kTicsPerTile){
+        screenPrint("ifff");
         moveDistance(kTileLength/2,true);
+        rotate(targetAngle);
     }else{
         rampState=0;
     }
