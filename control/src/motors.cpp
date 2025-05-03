@@ -561,8 +561,12 @@ void motors::ramp(){
         rampState = 2;
         screenPrint("rampDown");
     }
+<<<<<<< HEAD
     if(getAvergeTics()>1.5*kTicsPerTile){
         screenPrint("ifff");
+=======
+    if(getAvergeTics()>2*kTicsPerTile){
+>>>>>>> 39786808826eb1598c77617e7f2f22d6b4df2f2c
         moveDistance(kTileLength/2,true);
         rotate(targetAngle);
     }else{
