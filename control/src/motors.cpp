@@ -470,7 +470,7 @@ bool motors::isWall(uint8_t direction){
             wall2=vlx[vlxID::right].isWall();
             return wall2;
         case 2:
-            if(rampState != 0) return true;
+            // if(rampState != 0) return true;
             wall3=vlx[vlxID::back].isWall();
             return wall3;
         case 3:
@@ -567,9 +567,9 @@ void motors::ramp(){
     }else{
         rampState=0;
     }
-    if(rampState!=0){
-        left();
-    }
+    // if(rampState!=0){
+    //     left();
+    // }
     limitColition=false;
     resetTics();stop();wait(100);
 }
@@ -656,7 +656,7 @@ void motors::unharmedVictim(){
     // screenPrint("");
 }
 void motors::kitRight(uint8_t n){
-    uint16_t dt=300;
+    uint16_t dt=600;
     for(uint8_t i=0;i<n;i++){ 
         servo.write(servoPosRight);
         delay(dt);
