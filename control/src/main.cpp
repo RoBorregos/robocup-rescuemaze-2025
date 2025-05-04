@@ -6,7 +6,7 @@
 #include "Jetson.h"
 maze m;
 Jetson jeetson;
-
+int servopos=0;
 void setup() {
   // put your setup code here, to run once:
   pinMode(2,OUTPUT);
@@ -30,9 +30,16 @@ void loop() {
   // delay(1000);
   // robot.kitRight(1);
   // delay(1000);
-  // robot.servo.write(0);
+
+  if(Serial.available()){
+    String input = Serial.readStringUntil('\n'); // Leer hasta Enter
+    int valor = input.toInt();
+    robot.servo.write(valor);
+  }
   
-  m.run_algs();
+  
+  
+  // m.run_algs();
 
 
   // jeetson.getDetection();

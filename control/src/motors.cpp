@@ -608,6 +608,10 @@ Advanced motors::checkpointElection(){
     uint8_t angleThreshold=10;
     float currentAngle = (angleOrientation == 0) ? z_rotation : angle;
     Advanced advanced;
+    if(abs(currentAngle-angleOrientation) < angleThreshold){
+        resetOrientation();
+        return;
+    } 
     rotate(angleOrientation);
     int turn;
     if((currentAngle-angleOrientation) < -angleThreshold){
@@ -656,7 +660,7 @@ void motors::unharmedVictim(){
     // screenPrint("");
 }
 void motors::kitRight(uint8_t n){
-    uint16_t dt=300;
+    uint16_t dt=800;
     for(uint8_t i=0;i<n;i++){ 
         servo.write(servoPosRight);
         delay(dt);
@@ -671,7 +675,7 @@ void motors::kitRight(uint8_t n){
     }
 }
 void motors::kitLeft(uint8_t n){
-    uint16_t dt=300;
+    uint16_t dt=800;
     for(uint8_t i=0;i<n;i++){ 
         servo.write(servoPosLeft);
         delay(dt);

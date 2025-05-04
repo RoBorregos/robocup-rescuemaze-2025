@@ -115,8 +115,8 @@ private:
     bool limitColition=false;
     //servo
     float servoPos=90;
-    static constexpr uint16_t servoPosRight=136;
-    static constexpr uint16_t servoPosLeft=47;
+    static constexpr uint16_t servoPosRight=128;
+    static constexpr uint16_t servoPosLeft=53;
 public:
     //objets
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();
