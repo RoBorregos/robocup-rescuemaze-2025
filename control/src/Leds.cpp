@@ -13,6 +13,7 @@ void Leds::setupLeds(){
     strip.setBrightness(bright);
     strip.fill(strip.Color(255, 255, 255)); // White color
     strip.show();
+    // turnOff();
 }
 void Leds::setBrightness(uint8_t brightness){
     bright=brightness;
@@ -50,6 +51,7 @@ void Leds::harmedVictim(){
         delay(500);
     }
     setWhite(); 
+    // turnOff();
 }
 void Leds::stableVictim(){
     float current=millis();
@@ -60,6 +62,7 @@ void Leds::stableVictim(){
         delay(500);
     }
     setWhite();
+    // turnOff();
 }
 void Leds::unharmedVictim(){
     float current=millis();
@@ -70,6 +73,7 @@ void Leds::unharmedVictim(){
         delay(500);
     }
     setWhite();
+    // turnOff();
 }
 
 void Leds::sequency(){

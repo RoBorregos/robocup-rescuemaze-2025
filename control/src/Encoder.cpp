@@ -18,7 +18,6 @@ void Interrups::lackOfProgress(){
     if((millis()-robot.buttonTime)>300){
         robot.buttonPressed = !robot.buttonPressed;
         robot.buttonTime=millis();
-    }
-    
+    } 
 }
 

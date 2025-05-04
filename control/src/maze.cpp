@@ -99,6 +99,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
             }
         }
         explored.set(tilesMap.getIndex(current),true);
+        if(robot.buttonPressed) break;
     }
     current = end;
     while(current != start){
@@ -106,7 +107,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
     path.push(start); //para acceder la tile de inicio en el path. 
-    robot.screenPrint("Path found");
+    // robot.screenPrint("Path found");
     followPath(path, tiles, tilesMap);
 }
 
@@ -200,18 +201,17 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robotCoord = inicio;
             robotOrientation = 0;
             robot.screenPrint("Inicio");
-            float time=millis();
-            Serial.println("mm");
-            bool breaker=true;
-            while(robot.buttonPressed){
+            while(true){
                 Serial.println("wat");
                 robot.screenPrint("Esperando");
-                while(digitalRead(Pins::checkpointPin)==1 && breaker==true){
-                    if((millis()-time)>500){
-                        ESP.restart();                       
-                    }
+                if(!robot.buttonPressed){
+                    unsigned long time=millis();
+                    while(digitalRead(Pins::checkpointPin)==1){
+                        if((millis()-time)>500){
+                            ESP.restart();                       
+                        }
+                    }break;
                 }
-                breaker=false;
             }
             robot.screenPrint("Dale");
             Serial.println("resetting visitedMap");

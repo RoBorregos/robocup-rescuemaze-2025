@@ -118,44 +118,6 @@ void TCS::setPrecision(const uint8_t precision) {
     this->precision_ = precision;
 }
 
-// char TCS::getColor(){
-//     double nuanceT, saturationT, valueT;
-//     updateRGBC();
-//     float scaleRedT = red_;
-//     float scaleGreenT = green_;
-//     float scaleBlueT = blue_;
-//     if(clear_>0){
-//         scaleRedT = (scaleRedT / clear_ ) * 255;
-//         scaleGreenT = (scaleGreenT / clear_ ) * 255;
-//         scaleBlueT = (scaleBlueT / clear_ ) * 255;
-//     }
-
-//     // ColorConverter::RgbToHsv(static_cast<uint16_t>(scaleRedT), static_cast<uint16_t>(scaleGreenT),
-//     //                         static_cast<uint16_t>(scaleBlueT), nuanceT, saturationT, valueT);
-//     ColorConverter::RgbToHsv(static_cast<uint16_t>(red_), static_cast<uint16_t>(green_),
-//                             static_cast<uint16_t>(blue_), nuanceT, saturationT, valueT);
-//     nuanceT *= 180;
-//     saturationT *= 255;
-//     valueT *= 255;
-//     Serial.println("HSU");
-//     Serial.println(nuanceT);
-//     Serial.println(saturationT);
-//     Serial.println(valueT);
-
-//     Serial.println("RGB");
-//     Serial.println(red_);
-//     Serial.println(green_);
-//     Serial.println(blue_); 
-//     Serial.println(clear_); 
-
-
-//     if(nuanceT>80 && nuanceT<145) return kBlueColor_;
-//     else if(valueT<120 && nuanceT<45) return kBlackColor_;
-//     else if(nuanceT<10 || nuanceT>170) return kRedColor_;
-//     else return kUndefinedColor_;
-
-  
-// }
 char TCS::getColor() {
     updateRGBC();
     char colorLetter = kUndefinedColor_;
@@ -164,7 +126,7 @@ char TCS::getColor() {
     customPrintln(String(kMinPhotoresistorValue_) + " " + String(kMaxPhotoresistorValue_) + " " + String(adc));
     #endif
     // TODO: check each color
-    Serial.println("red: " + String(red_) + " green: " + String(green_) + " blue: " + String(blue_) + "clear" + String(clear_));
+    //Serial.println("red: " + String(red_) + " green: " + String(green_) + " blue: " + String(blue_) + "clear" + String(clear_));
     // Serial.println("for BLUE: max red: " + String(kMaxRedValueInBlue_) + " min green: " + String(kMinGreenValueInBlue_) + " min blue: " + String(kMinBlueValueInBlue_));
     // Serial.println("for RED: min red: " + String(kMinRedValueInRed_) + " max green: " + String(kMaxGreenValueInRed_) + " max blue: " + String(kMaxBlueValueInRed_));
     // Serial.println("for BLACK: max red: " + String(kMaxRedValueInBlack_) + " max green: " + String(kMaxGreenValueInBlack_) + " max blue: " + String(kMaxBlueValueInBlack_));

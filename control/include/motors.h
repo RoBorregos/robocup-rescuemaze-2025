@@ -58,12 +58,13 @@ private:
     static constexpr uint16_t kMinSpeedRotate=7;////////////////
     static constexpr uint16_t kMaxSpeedRotate=30;
     static constexpr uint16_t kMinSpeedFormard=5;//36
-    static constexpr uint16_t kMaxSpeedFormard=30;//70
+    static constexpr uint16_t kMaxSpeedFormard=40;//70
     static constexpr uint16_t kSpeedRampUp=20;//70
     static constexpr uint16_t kSpeedRampDown=9;//70
     //ramp
     PID rampUpPID;
     PID rampDownPID;
+    bool slope=false;
     static constexpr float kMinRampOrientation=18.0;
     static constexpr float minDisToLateralWall=6;
     static constexpr float impactDisToLateralWall=2;
@@ -127,6 +128,7 @@ public:
     Motor motor[4];
     Leds leds;
     //public variables
+    bool sameOrientation=false;
     unsigned long buttonTime=millis();
     bool inMotion=false;
     bool blackTile=false;

@@ -7,12 +7,10 @@ void Jetson::getDetection(){
     Serial.flush();
     float current=millis();
     if(robot.vlx[vlxID::right].isWall()){
-        robot.screenPrint("rig");
         getDetectionRight();
         if(robot.victim!=0) robot.kitState=kitID::kRight;
     }
     if(robot.vlx[vlxID::left].isWall()){
-        robot.screenPrint("lef");
         getDetectionLeft();
         if(robot.victim!=0) robot.kitState=kitID::kLeft;
 
@@ -137,10 +135,10 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 writeSerial(0x00, (uint8_t*)baud, sizeof(baud));
             }
             break;
-        case 0x0A: // harmed victim 
+        case 0x0A: // harmed victim color
             if (packet_size == 1) { // Check packet size
                 // robot.victim=true;
-                robot.screenPrint("harmed");
+                robot.screenPrint("harmed Model");
                 robot.victim = 1;
                 // robot.harmedVictim();
                 uint32_t t[] = {200};
@@ -148,10 +146,10 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
             break;
-        case 0x0B: // stable victim 
+        case 0x0B: // stable victim color
             if (packet_size == 1) { // Check packet size
                 // robot.victim=true;
-                robot.screenPrint("stable");
+                robot.screenPrint("stable Model");
                 robot.victim = 2;
                 // robot.stableVictim();
                 uint32_t t[] = {200};
@@ -159,47 +157,57 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
         break;
-        case 0x0C: // unharmed victim 
+        case 0x0C: // unharmed victim color
             if (packet_size == 1) { // Check packet size
                 // robot.victim=true;
-                robot.screenPrint("unharm");
+                robot.screenPrint("unharm Model");
                 robot.victim = 3;
                 // robot.unharmedVictim();
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
-
         break;
         case 0x0D: // none
             if (packet_size == 1) { // Check packet size
-                robot.screenPrint("none");
+                // robot.screenPrint("none");
                 uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
 
         break;
-    //     case 0x0E: // RIGHTWALL
-    //         if (packet_size == 1) { // Check packet size
-    //             robot.victim=true;
-    //             robot.unharmedVictim();
-    //             uint32_t t[] = {200};
-    //             // memcpy(&t, buffer, sizeof(t));
-    //             writeSerial(0x00, (uint8_t*)t, sizeof(t));
-    //         }
-
-
-    //     break;
-    //     case 0x0F: // LEFTWALL
-    //         if (packet_size == 1) { // Check packet size
-    //             robot.victim=true;
-    //             robot.unharmedVictim();
-    //             uint32_t t[] = {200};
-    //             // memcpy(&t, buffer, sizeof(t));
-    //             writeSerial(0x00, (uint8_t*)t, sizeof(t));
-    //         }
-
-    //     break;
+        case 0x07: // harm MODEL
+        if (packet_size == 1) { // Check packet size
+            // robot.victim=true;
+            robot.screenPrint("harmed Color");
+            robot.victim = 1;
+            // robot.harmedVictim();
+            uint32_t t[] = {200};
+            // memcpy(&t, buffer, sizeof(t));
+            writeSerial(0x00, (uint8_t*)t, sizeof(t));
+        }
+        break;
+        case 0x08: // stable Model
+        if (packet_size == 1) { // Check packet size
+            // robot.victim=true;
+            robot.screenPrint("stable Color");
+            robot.victim = 2;
+            // robot.stableVictim();
+            uint32_t t[] = {200};
+            // memcpy(&t, buffer, sizeof(t));
+            writeSerial(0x00, (uint8_t*)t, sizeof(t));
+        }
+        break;
+        case 0x09: // unharmed victim Model
+        if (packet_size == 1) { // Check packet size
+            // robot.victim=true;
+            robot.screenPrint("unharm Color");
+            robot.victim = 3;
+            // robot.unharmedVictim();
+            uint32_t t[] = {200};
+            // memcpy(&t, buffer, sizeof(t));
+            writeSerial(0x00, (uint8_t*)t, sizeof(t));
+        }
     }
 }

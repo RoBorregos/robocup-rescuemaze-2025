@@ -26,13 +26,17 @@ void loop() {
   // // robot.leds.sequency();
   // robot.kitState=kitID::kLeft;
   // robot.stableVictim();
-  robot.kitLeft(1);
-  delay(1000);
-  robot.kitRight(1);
-  delay(1000);
+  // robot.kitLeft(1);
+  // delay(1000);
+  // robot.kitRight(1);
+  // delay(1000);
   // robot.servo.write(0);
-  m.run_algs();
   
+  m.run_algs();
+
+
+  // jeetson.getDetection();
+  // delay(300);
   // testButton();
   // robot.ahead();
   // testMotors();
@@ -54,7 +58,7 @@ void loop() {
   // testBnoY();
 
   // testMotors();
-  testEncoders();
+  // testEncoders();
   // testVlxFrontDistance();
   // testVlxFrontLeft();
   // testVlxFrontRigth();

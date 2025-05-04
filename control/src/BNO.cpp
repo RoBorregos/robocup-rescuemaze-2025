@@ -22,7 +22,7 @@ void BNO::setupBNO() {
         // while(1);
     }
     // customPrintln("BNO055 detected");
-    delay(1000);
+    delay(100);
     bno_.setExtCrystalUse(true);
     // angle_initial=getOrientationX();
     // Serial.println(angle_initial);
