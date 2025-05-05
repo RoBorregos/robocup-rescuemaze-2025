@@ -22,7 +22,7 @@ void BNO::setupBNO() {
         // while(1);
     }
     // customPrintln("BNO055 detected");
-    delay(100);
+    delay(1000);
     bno_.setExtCrystalUse(true);
     // angle_initial=getOrientationX();
     // Serial.println(angle_initial);
@@ -65,11 +65,11 @@ void BNO::setPhaseCorrectionY(float phaseCorrectionY) {
 
 // Reiniciar valores a 0
 void BNO::resetOrientation() {
-    // updateBNO(event_);
-    // setPhaseCorrection(event_.orientation.x); // Reinicia el eje X
-    // setPhaseCorrectionY(event_.orientation.y); // Reinicia el eje Y
-    // Serial.println("Valores del BNO055 reiniciados a 0.");
-    bno_.begin();
-    delay(10);bno_.setExtCrystalUse(true);
+    updateBNO(event_);
+    setPhaseCorrection(event_.orientation.x); // Reinicia el eje X
+    setPhaseCorrectionY(event_.orientation.y); // Reinicia el eje Y
     Serial.println("Valores del BNO055 reiniciados a 0.");
+    // bno_.begin();
+    // delay(10);bno_.setExtCrystalUse(true);
+    // Serial.println("Valores del BNO055 reiniciados a 0.");
 }

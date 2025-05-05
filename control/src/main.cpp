@@ -31,15 +31,15 @@ void loop() {
   // robot.kitRight(1);
   // delay(1000);
 
-  if(Serial.available()){
-    String input = Serial.readStringUntil('\n'); // Leer hasta Enter
-    int valor = input.toInt();
-    robot.servo.write(valor);
-  }
+  // if(Serial.available()){
+  //   String input = Serial.readStringUntil('\n'); // Leer hasta Enter
+  //   int valor = input.toInt();
+  //   robot.servo.write(valor);
+  // }
   
   
   
-  // m.run_algs();
+  m.run_algs();
 
 
   // jeetson.getDetection();
