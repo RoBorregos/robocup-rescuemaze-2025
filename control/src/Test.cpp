@@ -99,7 +99,13 @@ void testTCS(){
 }
 void testPIDWheel(){
     robot.setahead();
-    robot.PID_Wheel(4,MotorID::kFrontLeft);
+    robot.PID_Wheel(40,MotorID::kBackLeft);
+    // robot.PID_Wheel(4,MotorID::kFrontLeft);
+    robot.PID_Wheel(40,MotorID::kBackRight);
+
+    // robot.motor[MotorID::kFrontLeft].setSpeed(0);
+    // robot.PID_Wheel(15,MotorID::kFrontLeft);
+
 }
 
 void testLimits(){

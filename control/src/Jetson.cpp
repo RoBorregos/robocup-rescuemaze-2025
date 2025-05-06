@@ -7,11 +7,11 @@ void Jetson::getDetection(){
     Serial.flush();
     float current=millis();
     if(robot.vlx[vlxID::right].isWall()){
-        // getDetectionRight();
+        getDetectionRight();
         if(robot.victim!=0) robot.kitState=kitID::kRight;
     }
     if(robot.vlx[vlxID::left].isWall()){
-        // getDetectionLeft();
+        getDetectionLeft();
         if(robot.victim!=0) robot.kitState=kitID::kLeft;
 
     }

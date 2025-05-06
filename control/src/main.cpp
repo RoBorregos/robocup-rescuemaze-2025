@@ -37,9 +37,13 @@ void loop() {
   //   robot.servo.write(valor);
   // }
   
-  
-  
+  // testPIDWheel(); 
+  // delay(50);
   m.run_algs();
+  // robot.ahead();
+  // testTCS();
+  // robot.setahead();
+  // robot.setSpeed(50);
 
 
   // jeetson.getDetection();

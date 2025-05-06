@@ -9,6 +9,7 @@ void Motor::initialize(uint8_t in_1,uint8_t in_2,uint8_t en,uint8_t numMotor){
     pinMode(in2,OUTPUT);
     pinMode(enable,OUTPUT);
     pinMode(Pins::encoder[numMotor],INPUT);
+    digitalWrite(enable,0);
 }
 
 Motor::Motor(){

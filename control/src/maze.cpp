@@ -535,6 +535,9 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
     if(robot.buttonPressed==false) dijkstra(robotCoord, inicio, tilesMap, tiles); 
 }
 void maze::run_algs(){
+    while(!robot.buttonPressed) robot.screenPrint("W Inicio"); 
+    robot.buttonPressed = !robot.buttonPressed;
+    robot.resetOrientation();
     arrCustom<coord> visitedMap(kMaxSize, kInvalidPosition);
     arrCustom<coord> tilesMap(kMaxSize, kInvalidPosition);
     arrCustom<Tile> tiles(kMaxSize, Tile(kInvalidPosition));

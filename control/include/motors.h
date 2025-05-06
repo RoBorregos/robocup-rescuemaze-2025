@@ -115,8 +115,8 @@ private:
     bool limitColition=false;
     //servo
     float servoPos=90;
-    static constexpr uint16_t servoPosRight=128;
-    static constexpr uint16_t servoPosLeft=53;
+    static constexpr uint16_t servoPosRight=133;
+    static constexpr uint16_t servoPosLeft=50;
 public:
     //objets
     Adafruit_VL53L0X lox = Adafruit_VL53L0X();
@@ -163,6 +163,7 @@ public:
     void right();  
     void rotate(float);  
     void moveDistance(uint8_t targetDistance,bool);
+    void writeServo(uint16_t servoAngle);
     //setups
     void setupTCS();
     void setupVlx(const uint8_t);

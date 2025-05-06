@@ -17,16 +17,16 @@ namespace Pins{
     };
 
     constexpr uint8_t digitalOne[4] = {
-        4, // BACK_RIGHT 4    2
+        15, // BACK_RIGHT 4    2
         16, // BACK_LEFT 17   17
         27,  // FRONT_RIGHT 14
-        33 // FRONT_LEFT 33   
+        25 // FRONT_LEFT 33   
     };  
     constexpr uint8_t digitalTwo[4] = {
-        15, // BACK_RIGHT 2   4
+        4, // BACK_RIGHT 2   4
         17, // BACK_LEFT 5  16
         14,  // FRONT_RIGHT 27
-        25// FRONT_LEFT 25 
+        33// FRONT_LEFT 25 
     };
     constexpr uint8_t vlxPins[5] = {//MUX
         // Defined Pins on 20th of March

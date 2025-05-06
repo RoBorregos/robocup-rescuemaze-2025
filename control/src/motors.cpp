@@ -53,7 +53,11 @@ void motors::PID_Wheel(int targetSpeed,int i){
     int speed_setpoint=targetSpeed;
     int reference_pwm;
     reference_pwm=motor[i].getSpeed();
+    Serial.println("reference_pwm");
+    Serial.println(reference_pwm);
     int speedTics=motor[i].getTicsSpeed();
+    Serial.println("speedTics");
+    Serial.println(speedTics);
     float error=myPID[i].calculate_PID(speed_setpoint,speedTics);
     int speed=reference_pwm+error;
     speed=constrain(speed,0,255);
@@ -150,7 +154,7 @@ void motors::ahead(){
         }
     }
     slope=false;
-    stop();resetTics();checkTileColor();resetTics();
+    stop();resetTics();checkTileColor();resetTics();kitRight(1);
 }
 void motors::checkTileColor(){
     tileColor=tcs_.getColor();
@@ -664,34 +668,62 @@ void motors::unharmedVictim(){
     leds.unharmedVictim();
     // screenPrint("");
 }
+void motors::kitLeft(uint8_t n){
+    uint16_t dt=0;
+    for(uint8_t i=0;i<n;i++){ 
+        writeServo(servoPosRight);
+        // delay(dt);
+        writeServo(servoPosLeft);
+        // delay(dt);
+        writeServo(10);
+        // delay(dt);
+        writeServo(servoPosLeft);
+        // delay(dt);
+        writeServo(90);
+        // delay(dt);
+    }
+    // for(uint8_t i=0;i<n;i++){ 
+    //     servo.write(servoPosRight);
+
+    //     delay(dt);
+    //     servo.write(servoPosLeft);
+    //     delay(dt);
+    //     servo.write(0);
+    //     delay(dt);
+    //     servo.write(servoPosLeft);
+    //     delay(dt);
+    //     servo.write(90);
+    //     delay(dt);
+    // }
+    
+}
+void motors::writeServo(uint16_t servoAngle){
+    // unsigned long time=millis();
+    servo.write(servoAngle);
+    delay(400);
+    if((servoAngle!=10 && servoAngle!=90) && servoAngle!=170){
+        for(uint8_t i;i<4;i++){
+        servo.write(servoAngle-6);
+        delay(50);
+        servo.write(servoAngle+6);
+        delay(50);
+        }
+    }  
+    delay(400);
+}
 void motors::kitRight(uint8_t n){
     uint16_t dt=600;
     for(uint8_t i=0;i<n;i++){ 
-        servo.write(servoPosRight);
-        delay(dt);
-        servo.write(servoPosLeft);
-        delay(dt);
-        servo.write(0);
-        delay(dt);
-        servo.write(servoPosLeft);
-        delay(dt);
-        servo.write(90);
-        delay(dt);
-    }
-}
-void motors::kitLeft(uint8_t n){
-    uint16_t dt=800;
-    for(uint8_t i=0;i<n;i++){ 
-        servo.write(servoPosLeft);
-        delay(dt);
-        servo.write(servoPosRight);
-        delay(dt);
-        servo.write(180);
-        delay(dt);
-        servo.write(servoPosRight);
-        delay(dt);
-        servo.write(90);
-        delay(dt);
+        writeServo(servoPosLeft);
+        // delay(dt);
+        writeServo(servoPosRight);
+        // delay(dt);
+        writeServo(170);
+        // delay(dt);
+        writeServo(servoPosRight);
+        // delay(dt);
+        writeServo(90);
+        // delay(dt);
     }
 }
 void motors::setupTCS() {
