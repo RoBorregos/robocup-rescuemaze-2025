@@ -9,7 +9,7 @@ import time
 import struct
 import _thread
 import binascii
-from model_class import Model
+from model_class2 import Model
 
 """"
 #the protocol use 8 bytes
@@ -49,6 +49,7 @@ class Esp32():
         self.payload_len = 0
         self.byte_count_ = 0
         self.receive_message_length_ = 0
+        #self.log_file = open("logs.txt", "a")
     
         # Keep things thread safe
         self.mutex = _thread.allocate_lock()
@@ -73,26 +74,20 @@ class Esp32():
                 print("Serial Exception:")
     def reconnect(self):
         self.port.close()
-        try:
-            print("Reconnecting to Microcontroller on port", self.port, "...")
-            self.port = Serial(port=self.port_name, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.writeTimeout)
-            state_, val = self.get_baud()
-            if val != self.baudrate:
-                state_, val  = self.get_baud()
-                if val != self.baudrate:
-                    raise SerialException
-            
-            print("Connected at", self.baudrate)
-            print("Microcontroller is ready.")
-        
-        except SerialException:
-            print("Serial Exception:")
-            print(sys.exc_info())
-            print("Traceback follows:")
-            traceback.print_exc(file=sys.stdout)
-            print("Cannot connect to Microcontroller!")
-
-
+        while True:
+            try:
+                print("Reconnecting to Microcontroller on port", self.port, "...")
+                self.port = Serial(port=self.port_name, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.writeTimeout)
+                # The next line is necessary to give the firmware time to wake up.
+                time.sleep(1)
+                print("conectado")
+                break
+            except:
+                print("Serial Exception:")
+                # print(sys.exc_info())
+                # print("Traceback follows:")
+                # traceback.print_exc(file=sys.stdout)
+                # print("Cannot connect to Microcontroller!")
     def open(self): 
         ''' Open the serial port.
         '''
@@ -102,6 +97,7 @@ class Esp32():
         ''' Close the serial port.
         '''
         self.port.close() 
+        #self.log_file.close()
     
     def send(self, cmd):
         ''' This command should not be used on its own: it is called by the execute commands
@@ -127,9 +123,11 @@ class Esp32():
                     return 0
             return 1
         except:
-            self.connect()
+            self.reconnect()
     def receiveFiniteStates(self, rx_data):
         try:
+            #self.log_file.write(f"Received byte: {bynascii.hexlify(rx_data).decode()}\n")
+            #self.log_file.flush()
             if self.receive_state_ == self.WAITING_FF:
                 #print str(binascii.b2a_hex(rx_data))
                 if rx_data == b'\xff':
@@ -171,7 +169,7 @@ class Esp32():
                 self.receive_state_ = self.WAITING_FF
             return 0
         except:
-            self.connect()
+            self.reconnect()
     def recv(self, timeout=0.5):
         try:
             timeout = min(timeout, self.timeout)
@@ -190,7 +188,7 @@ class Esp32():
                     return 0
             return 1
         except SerialException:
-            self.connect()            
+            self.reconnect()            
     def recv_ack(self):
         ''' This command should not be used on its own: it is called by the execute commands
             below in a thread safe manner.

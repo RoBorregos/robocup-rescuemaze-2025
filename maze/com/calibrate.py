@@ -3,7 +3,7 @@ import numpy as np
 import json
 import copy
 
-image = cv2.imread("foto_003.jpg")
+image = cv2.imread("frame_cam0.jpg")
 if image is None:
     raise FileNotFoundError("No se encontró la imagen.")
 
@@ -25,8 +25,8 @@ for color_key in hsv_ranges:
     for i, ch in enumerate(["H", "S", "V"]):
         l_key = f"{color_key}_LOW_{ch}"
         u_key = f"{color_key}_HIGH_{ch}"
-        cv2.createTrackbar(l_key, "Sliders", hsv_ranges[color_key]["lower"][i], 255, nothing)
-        cv2.createTrackbar(u_key, "Sliders", hsv_ranges[color_key]["upper"][i], 255, nothing)
+        #cv2.createTrackbar(l_key, "Sliders", hsv_ranges[color_key]["lower"][i], 255, nothing)
+        #cv2.createTrackbar(u_key, "Sliders", hsv_ranges[color_key]["upper"][i], 255, nothing)
 
 while True:
     masks = []
@@ -52,7 +52,7 @@ while True:
         combined_mask = cv2.bitwise_or(combined_mask, mask)
 
     # Mostrar imagen y máscara
-    cv2.imshow("Original", image)
+   # cv2.imshow("Original", image)
     cv2.imshow("Máscara combinada", combined_mask)
 
     key = cv2.waitKey(1) & 0xFF

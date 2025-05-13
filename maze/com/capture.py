@@ -12,7 +12,7 @@ def gstreamer_pipeline(sensor_id=0):
     )
 
 # Crear carpeta de salida
-output_dir = "U2"
+output_dir = "y1"
 os.makedirs(output_dir, exist_ok=True)
 
 # Inicializa la cámara
@@ -32,10 +32,10 @@ try:
             print("⚠️ No se pudo leer el frame.")
             continue
 
-        frame_rotated = cv2.rotate(frame, cv2.ROTATE_180)
+        #frame_rotated = cv2.rotate(frame, cv2.ROTATE_180)
 
         filename = os.path.join(output_dir, f"foto_{counter:03d}.jpg")
-        cv2.imwrite(filename, frame_rotated)
+        #cv2.imwrite(filename, frame)
         print(f"✅ Foto {counter} guardada como: {filename}")
         counter += 1
 

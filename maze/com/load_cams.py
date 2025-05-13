@@ -1,3 +1,4 @@
+
 import cv2
 import time
 import os
@@ -26,12 +27,13 @@ try:
         ret1, frame1 = cap1.read()
 
         if ret0:
-            frame0 = cv2.rotate(frame0, cv2.ROTATE_180)
+            #recorte_cuadrado = frame0[0:300, 80:640]
+            #frame0 = cv2.rotate(frame0,cv.ROTATE_180)
             cv2.imwrite("temp_cam0.jpg", frame0)  # Guarda imagen de la cámara 0
             os.rename("temp_cam0.jpg","frame_cam0.jpg")
 
         if ret1:
-            frame1 = cv2.rotate(frame1, cv2.ROTATE_180)
+            #frame1 = cv2.rotate(frame1, cv2.ROTATE_180)
             cv2.imwrite("temp_cam1.jpg", frame1)  # Guarda imagen de la cámara 1
             os.rename("temp_cam1.jpg","frame_cam1.jpg")
             print("foto tomada")

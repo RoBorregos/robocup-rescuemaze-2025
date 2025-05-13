@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Cargar imagen
-frame = cv2.imread("frame_cam1.jpg")
+frame = cv2.imread("frame_cam0.jpg")
 
 # Verificar si se cargó correctamente
 if frame is None:
@@ -19,7 +19,7 @@ redLow2 = np.array([170, 100, 102], np.uint8)
 redHigh2 = np.array([179, 255, 255], np.uint8)
 yellowLow = np.array([20, 110, 102], np.uint8)
 yellowHigh = np.array([35, 255, 255], np.uint8)
-greenLow = np.array([36, 80, 102], np.uint8)
+greenLow = np.array([36, 60, 30], np.uint8)
 greenHigh = np.array([85, 255, 255], np.uint8)
 
 # Crear máscaras para rojo
@@ -29,7 +29,7 @@ mask_red = cv2.bitwise_or(mask1, mask2)
 mask_green = cv2.inRange(hsv, greenLow, greenHigh)
 mask_yellow = cv2.inRange(hsv, yellowLow, yellowHigh)
 # Mostrar máscara
-cv2.imshow("Mascara amarilla", mask_yellow)
+cv2.imshow("Mascara amarilla", mask_green)
 
 # Esperar hasta que se presione una tecla
 cv2.waitKey(0)

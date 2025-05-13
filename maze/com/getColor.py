@@ -6,13 +6,13 @@ from collections import Counter
 labels = {0: 0xA, 1: 0xB, 2: 0xC, 3: 0xD} 
 
 def getColor( imageHSV):
-    redLow1 = np.array([0, 100, 102], np.uint8)
+    redLow1 = np.array([0, 70, 102], np.uint8)
     redHigh1 = np.array([10, 255, 255], np.uint8)
-    redLow2 = np.array([170, 100, 102], np.uint8)
+    redLow2 = np.array([170, 70, 102], np.uint8)
     redHigh2 = np.array([180, 255, 255], np.uint8)
-    yellowLow = np.array([20, 110, 102], np.uint8)
+    yellowLow = np.array([20, 100, 102], np.uint8)
     yellowHigh = np.array([35, 255, 255], np.uint8)
-    greenLow = np.array([36, 80, 102], np.uint8)
+    greenLow = np.array([36, 70, 90], np.uint8)
     greenHigh = np.array([85, 255, 255], np.uint8)
     redPixels = cv2.inRange(imageHSV, redLow1, redHigh1) + cv2.inRange(imageHSV, redLow2, redHigh2)
     yellowPixels = cv2.inRange(imageHSV, yellowLow, yellowHigh)
@@ -40,5 +40,5 @@ def detection(frame):
     print(color)
     
 while True:
-    cap0 = cv2.imread("frame_cam1.jpg")
+    cap0 = cv2.imread("frame_cam0.jpg")
     detection(cap0)
