@@ -7,8 +7,10 @@ import tensorflow_datasets as tfd
 from tensorflow.keras.utils import custom_object_scope
 import tensorflow_hub as hub
 import numpy as np
-model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\HSU_detection_Jetson8.h5")
-folder_path="C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\trackFotos\\none"
+model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\HSU_FinalP.h5")
+# folder_path="C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\fotos\\test1\\H2"
+folder_path="C:\\Users\\ferna\\Downloads\\none5"
+
 image_list=os.listdir(folder_path)
 no_images=0
 counter=0
@@ -19,8 +21,11 @@ for i in image_list:
 for image_name in image_list:
     #carga de imagen
     image_path=os.path.join(folder_path,image_name)
-    image=cv2.imread(image_path)
-    if image is None:
+    try:
+        image=cv2.imread(image_path)
+        # if image is None:
+        #     print("error al cargar la imagen")
+    except:
         print("error al cargar la imagen")
     #normalizar imagen
     # image=cv2.cvtColor(image,cv2.COLOR_RGB2GRAY)
@@ -28,21 +33,40 @@ for image_name in image_list:
     image = numpy.array(image).astype(float)/255
     image = cv2.resize(image, (224,224))
     #realizar prediccion
-    result = model.predict(image.reshape(1, 224, 224, 3))
+    try:
+        result = model.predict(image.reshape(1, 224, 224, 3))
+    except:
+        print("error")
     print(result)
     max_prob = np.max(result)
-    if max_prob < 0.6:
+    if max_prob < 0.75:
         result = 3
     else:
         result = np.argmax(result)
     if result==3:
         counter+=1
-    # else:
-    #     plt.imshow(image)
-    #     plt.axis("off")  # Hide axis
-    #     plt.show()
+    else:
+        plt.imshow(image)
+        plt.axis("off")  # Hide axis
+        plt.show()
 acurancy=counter/no_images
 print(acurancy)
+
+
+# 95 94 NONE
+# 75  90  S
+# 65  84  U
+# 73  84  H
+
+
+
+
+
+# H 86
+# S 96
+# U 95
+# none 1 
+
 # TEST2 trackfotos
 # Jetson 9
 # H 0.946
@@ -55,7 +79,7 @@ print(acurancy)
 # H 0.99  0.96
 # S 1      1
 # U 0.961  0.72
-
+# none     1
 
 
 # Jetson 7 
