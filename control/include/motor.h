@@ -2,7 +2,6 @@
 #define MOTOR_H
 #include <Arduino.h>
 #include "Pins_ID.h"
-// #include "Encoder.h"
 
 class Motor{
 private:

@@ -88,6 +88,7 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
                     previousPositions.set(tilesMap.getIndex(adjacent), current);
                 }
             }
+            if(robot.buttonPressed) break;
         }
         minDist = kMaxInt;
         robot.screenPrint("minDist: ");
@@ -99,12 +100,15 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
                 minDist = currentDistance;
                 current = currentCoord;
             }
+            if(robot.buttonPressed) break;
         }
         explored.set(tilesMap.getIndex(current),true);
         if(robot.buttonPressed) break;
     }
     current = end;
     while(current != start){
+        if(robot.buttonPressed) break;
+        robot.screenPrint("minDist2: ");
         path.push(current);
         current = previousPositions.getValue(tilesMap.getIndex(current));
     }
@@ -151,6 +155,10 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
         robotCoord = current;
         //button checkpoint logic
         if(robot.buttonPressed){
+            delay(50);
+            if(digitalRead(Pins::checkpointPin)==1){
+
+
             robot.screenPrint("LoP");      
             robotCoord = inicio;
             robotOrientation = 0;
@@ -163,11 +171,13 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                     unsigned long time=millis();
                     while(digitalRead(Pins::checkpointPin)==1){
                         if((millis()-time)>500){
-                            // ESP.restart();  
+                            ESP.restart();  
                             robot.screenPrint("r");
                             delay(500);
                             // delay(2000);                     
                             // robot.resetOrientation();
+                            robot.resetVlx();
+                            robot.bno.setupBNO();
                             braker=true;
                             break;
                         }
@@ -191,6 +201,9 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             robot.resetOrientation();
             robot.buttonPressed=false;
             continue;
+        }else{
+            robot.buttonPressed=false;
+        }
         }
         currentTile = &tiles.getValue(tilesMap.getIndex(current));
         if(robot.rampState != 0){
@@ -350,12 +363,9 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
     if(robot.buttonPressed==false) dijkstra(robotCoord, inicio, tilesMap, tiles); 
 }
 void maze::run_algs(){
-    while(!robot.buttonPressed) robot.screenPrint("W Inicio"); 
-    robot.buttonPressed = !robot.buttonPressed;
-<<<<<<< HEAD
-    robot.resetOrientation();
-=======
->>>>>>> 887b7dd9c38b377cffc01cb03c24999a87f748d0
+    // while(!robot.buttonPressed) robot.screenPrint("W Inicio"); 
+    // robot.buttonPressed = !robot.buttonPressed;
+    // robot.resetOrientation();
     arrCustom<coord> visitedMap(kMaxSize, kInvalidPosition);
     arrCustom<coord> tilesMap(kMaxSize, kInvalidPosition);
     arrCustom<Tile> tiles(kMaxSize, Tile(kInvalidPosition));

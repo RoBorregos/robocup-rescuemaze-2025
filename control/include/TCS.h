@@ -3,7 +3,6 @@
 #include <FastLED.h>
 #include "Adafruit_TCS34725.h"
 #include "MUX.h"
-// #include "CustomSerial.h"
 #include <Adafruit_ADS1X15.h>
 #include <Wire.h>
 #include "ColorConverterLib.h"
@@ -39,13 +38,13 @@ class TCS {
 
         static constexpr int8_t millisToWait_ = 5;
         //BLUE TILE
-        static constexpr float kRedValueInBlue_ = 161.00;
-        static constexpr float kGreenValueInBlue_ = 232.00;
-        static constexpr float kBlueValueInBlue_ = 340.00;
+        static constexpr float kRedValueInBlue_ = 185.00;
+        static constexpr float kGreenValueInBlue_ = 349.00;
+        static constexpr float kBlueValueInBlue_ = 439.00;
         //BLACK TILE
-        static constexpr float kRedValueInBlack_ = 94.00;
-        static constexpr float kGreenValueInBlack_ = 56.00;
-        static constexpr float kBlueValueInBlack_ = 45.00;
+        static constexpr float kRedValueInBlack_ = 87.00;
+        static constexpr float kGreenValueInBlack_ = 53.00;
+        static constexpr float kBlueValueInBlack_ = 44.00;
         //CHECKPOINT TILE
         static constexpr float kRedValueInCheckpoint_ = 1540.00;
         static constexpr float kGreenValueInCheckpoint_ = 1354.00;
@@ -104,7 +103,7 @@ class TCS {
 
         void setDefaultValues();
 
-        float kRangeTolerance_ = 50;
+        float kRangeTolerance_ = 70;
 
     public:
         float red_;

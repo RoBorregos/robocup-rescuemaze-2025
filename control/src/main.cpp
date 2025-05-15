@@ -19,51 +19,34 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackLeft]), Interrups::backLeftEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::encoder[MotorID::kBackRight]), Interrups::backRightEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(Pins::checkpointPin),Interrups::lackOfProgress, RISING);
+  // robot.reloadKits();
 }
 
 void loop() {
-  // robot.moveDistance(kTileLength/2,true);
   // // robot.leds.sequency();
-  // robot.kitState=kitID::kLeft;
-  // robot.stableVictim();
+
   // robot.kitLeft(1);
   // delay(1000);
   // robot.kitRight(1);
   // delay(1000);
 
-  // if(Serial.available()){
-  //   String input = Serial.readStringUntil('\n'); // Leer hasta Enter
-  //   int valor = input.toInt();
-  //   robot.servo.write(valor);
-  // }
-  
-  // testPIDWheel(); 
-  // delay(50);
   m.run_algs();
   // robot.ahead();
   // testTCS();
   // robot.setahead();
   // robot.setSpeed(50);
 
-
   // jeetson.getDetection();
   // delay(300);
   // testButton();
   // robot.ahead();
   // testMotors();
-  // robot.kitLeft(2);
   // testPIDWheel();
 
-  // robot.ahead();
-  // robot.ahead();
-  // delay(100000000);
   // pidTest();
   // calibrateColors();
   // robot.checkpointElection(); 
   // robot.buttonPressed=false;
-  // Serial.println(robot.limitSwitch_[LimitSwitchID::kLeft].getState());
-  // Serial.println(robot.limitSwitch_[LimitSwitchID::kRight].getState());
-  // jeetson.getDetection();
   // testTCS();
   // testLimits();
   // testBnoY();

@@ -7,7 +7,7 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 #include <SPI.h>
-extern float z_rotation;//angulo de rotacion
+extern float z_rotation;
 extern float angle;
 class BNO {
     private:
@@ -16,7 +16,6 @@ class BNO {
         float phaseCorrection_ = 0.0;
         float phaseCorrectionY_=0.0;
     public:
-        // TODO: Add more comments on how it works
         float angle_initial;
         BNO();
         void setupBNO();
@@ -26,6 +25,7 @@ class BNO {
         void setPhaseCorrection(float phaseCorrection);
         void setPhaseCorrectionY(float phaseCorrectionY);
         void resetOrientation();
+        void resetOrientationX();
 };
 
 #endif

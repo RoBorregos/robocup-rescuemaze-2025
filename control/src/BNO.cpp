@@ -1,13 +1,10 @@
 #include "BNO.h"
-// #include "CustomSerial.h"
 float z_rotation;//angulo de rotacion
 float angle;
 #define SDA_PIN 23
 #define SCL_PIN 13
 BNO::BNO() {
     this->event_ = {0};
-    // Wire.begin(SDA_PIN, SCL_PIN);
-    // Wire.setClock(50000); // Reduce a 50 kHz
     this->bno_ = Adafruit_BNO055(55, 0x28, &Wire);
 }
 void BNO::setupBNO() {
@@ -21,7 +18,6 @@ void BNO::setupBNO() {
         Serial.println("error al iniciar BNO");
         // while(1);
     }
-    // customPrintln("BNO055 detected");
     delay(1000);
     bno_.setExtCrystalUse(true);
     // angle_initial=getOrientationX();
@@ -69,6 +65,16 @@ void BNO::resetOrientation() {
     setPhaseCorrection(event_.orientation.x); // Reinicia el eje X
     setPhaseCorrectionY(event_.orientation.y); // Reinicia el eje Y
     Serial.println("Valores del BNO055 reiniciados a 0.");
+    // bno_.begin();
+    // delay(10);bno_.setExtCrystalUse(true);
+    // Serial.println("Valores del BNO055 reiniciados a 0.");
+}
+
+void BNO::resetOrientationX() {
+    updateBNO(event_);
+    setPhaseCorrection(event_.orientation.x); // Reinicia el eje X
+    Serial.println("Valores del BNO055 reiniciados de X a 0.");
+    //restar sensor
     // bno_.begin();
     // delay(10);bno_.setExtCrystalUse(true);
     // Serial.println("Valores del BNO055 reiniciados a 0.");

@@ -18,24 +18,18 @@
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define USING_SCREEN 1
 
-#define PCA9548A_ADDR 0x70   // Dirección del PCA9548A
+#define PCA9548A_ADDR 0x70   // PCA9548A Direction
 #define PCA9548A_CHANNEL_4 0x20  // Canal 4 (SDA4/SCL4)
 
 constexpr uint8_t edgeTileDistance=6;
 constexpr uint8_t kTileLength=30;
 constexpr uint8_t rulet[4][4]={{0,1,2,3},{3,0,1,2},{2,3,0,1},{1,2,3,0}};
 constexpr uint8_t targetDistances[]={edgeTileDistance+2,kTileLength+edgeTileDistance+2};
-// constexpr uint8_t targetDistances[]={edgeTileDistance+5,kTileLength+edgeTileDistance+4};
 constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance-2,2*kTileLength+edgeTileDistance-2};
-// constexpr uint8_t targetDistancesB[]={kTileLength+edgeTileDistance,2*kTileLength+edgeTileDistance-4,};
 
 
-struct Advanced{
-    int x,y;
-};
 class motors{
 private:
-    // static constexpr uint8_t edgeTileDistance=8;
     float targetAngle=0;
     static constexpr unsigned long delayTime=350;
     PID myPID[4];
@@ -55,22 +49,20 @@ private:
     uint16_t kMinPwmFormard=70;
     uint16_t kMaxPwmFormard=180;
     //Speeds constants
-    static constexpr uint16_t kMinSpeedRotate=7;////////////////
+    static constexpr uint16_t kMinSpeedRotate=7;
     static constexpr uint16_t kMaxSpeedRotate=30;
-    static constexpr uint16_t kMinSpeedFormard=5;//36
-    static constexpr uint16_t kMaxSpeedFormard=40;//70
-    static constexpr uint16_t kSpeedRampUp=20;//70
-    static constexpr uint16_t kSpeedRampDown=9;//70
+    static constexpr uint16_t kMinSpeedFormard=5;
+    static constexpr uint16_t kMaxSpeedFormard=40;
+    static constexpr uint16_t kSpeedRampUp=20;
+    static constexpr uint16_t kSpeedRampDown=9;
     //ramp
     PID rampUpPID;
     PID rampDownPID;
     bool slope=false;
-    static constexpr float kMinRampOrientation=18.0;
-    static constexpr float minDisToLateralWall=6;
-    static constexpr float impactDisToLateralWall=2;
-    float changeAngle=0;
-
+    static constexpr float kMinRampOrientation=18.0; 
     //control Walls
+    static constexpr float minDisToLateralWall=6;
+    float changeAngle=0;
     static constexpr uint8_t maxChangeAngle=3;
     //PID movement constants
     static constexpr float kP_mov=1;
@@ -156,6 +148,7 @@ public:
     void setrightTraslation();
     void stop();
     void calibrateColors();
+    void victimSequency();
     //movements
     void ahead();    
     void back();
@@ -168,6 +161,7 @@ public:
     void setupTCS();
     void setupVlx(const uint8_t);
     void resetOrientation();
+    void resetVlx();
     //sensors
     void checkTileColor();
     void limitCrash();
@@ -180,13 +174,14 @@ public:
     void unharmedVictim();
     void kitRight(uint8_t);
     void kitLeft(uint8_t);
+    void reloadKits();
     //gets
     float getCurrentDistanceCm();
     float getAngleOrientation();
     double getAvergeTics();
     double getTicsSpeed();
     //logic
-    Advanced checkpointElection();
+    void checkpointElection();
     uint8_t findNearest(float,const uint8_t[],uint8_t,bool);
     float calculateAngularDistance();
     void resetTics();

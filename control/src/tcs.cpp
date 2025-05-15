@@ -79,26 +79,7 @@ void TCS::printRGB() {
     Serial.println(green_);
     Serial.println(blue_);
 }
-// void TCS::HSV(){
-//     updateRGB();
-//     //  CRGB colorRGB = CRGB(205, 183, 155);//blanco
-//     CRGB colorRGB = CRGB(red_, green_, blue_);//blue
-//     // Convertir a HSV
-//     CHSV colorHSV = rgb2hsv_approximate(colorRGB);
 
-//     if(colorHSV.h>=blueLow[0] && colorHSV.h<=blueHigh[0] && colorHSV.s>=blueLow[1] && colorHSV.s<=blueHigh[1] && colorHSV.v>=blueLow[2] && colorHSV.v<=blueHigh[2]){
-//         Serial.println("blue");
-//     }else if(colorHSV.h>=blackLow[0] && colorHSV.h<=blackHigh[0] && colorHSV.s>=blackLow[1] && colorHSV.s<=blackHigh[1] && colorHSV.v>=blackLow[2] && colorHSV.v<=blackHigh[2]){
-//         Serial.println("black");
-//     }else if(colorHSV.h>=greyLow[0] && colorHSV.h<=greyHigh[0] && colorHSV.s>=greyLow[1] && colorHSV.s<=greyHigh[1] && colorHSV.v>=greyLow[2] && colorHSV.v<=greyHigh[2]){
-//         Serial.println("grey");
-//     }else{
-//         Serial.println("undef");
-//     }
-//     Serial.print("H: "); Serial.print(colorHSV.h);
-//     Serial.print(" S: "); Serial.print(colorHSV.s);
-//     Serial.print(" V: "); Serial.println(colorHSV.v);
-// }
 void TCS::printRGBC() {
     const unsigned long t = millis();
     updateRGBC();
@@ -121,10 +102,7 @@ void TCS::setPrecision(const uint8_t precision) {
 char TCS::getColor() {
     updateRGBC();
     char colorLetter = kUndefinedColor_;
-    // float adc = photoresistor.readADC_SingleEnded(0);
-    #if DEBUG_TCS
-    customPrintln(String(kMinPhotoresistorValue_) + " " + String(kMaxPhotoresistorValue_) + " " + String(adc));
-    #endif
+
     // TODO: check each color
     //Serial.println("red: " + String(red_) + " green: " + String(green_) + " blue: " + String(blue_) + "clear" + String(clear_));
     // Serial.println("for BLUE: max red: " + String(kMaxRedValueInBlue_) + " min green: " + String(kMinGreenValueInBlue_) + " min blue: " + String(kMinBlueValueInBlue_));

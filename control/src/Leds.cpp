@@ -21,7 +21,7 @@ void Leds::setBrightness(uint8_t brightness){
 }
 void Leds::setColor(uint32_t color){
     strip.setBrightness(bright);
-    strip.fill(color); // White color
+    strip.fill(color); 
     strip.show();
 }
 void Leds::setRed(){
@@ -33,12 +33,15 @@ void Leds::setYellow(){
 void Leds::setGreen(){
     setColor(kGreenBite);
 }
+void Leds::setBlue(){
+    setColor(kBlueBite);
+}
 void Leds::setWhite(){
     setColor(kWhiteBite);
 }
 void Leds::turnOff(){
     strip.setBrightness(0);
-    strip.fill(strip.Color(0, 0, 0)); // White color
+    strip.fill(strip.Color(0, 0, 0)); 
     strip.show();
 }
 

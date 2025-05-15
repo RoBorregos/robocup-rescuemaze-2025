@@ -75,18 +75,18 @@ void testMotors(){
     int dt=1000;
     robot.setahead();
     Serial.println("FrontLeft");
-    robot.motor[MotorID::kBackLeft].setSpeed(50);
-    // delay(dt);
-    // Serial.println("FrontRight");
-    // robot.motor[MotorID::kFrontRight].setSpeed(200);
-    // delay(dt);
-    // Serial.println("BackLeft");
-    // robot.motor[MotorID::kBackLeft].setSpeed(200);
-    // delay(dt);
-    // Serial.println("BackRight");
-    // robot.motor[MotorID::kBackRight].setSpeed(200);
-    // delay(dt);
-    // robot.setSpeed(0);
+    robot.motor[MotorID::kFrontLeft].setSpeed(50);
+    delay(dt);
+    Serial.println("FrontRight");
+    robot.motor[MotorID::kFrontRight].setSpeed(200);
+    delay(dt);
+    Serial.println("BackLeft");
+    robot.motor[MotorID::kBackLeft].setSpeed(200);
+    delay(dt);
+    Serial.println("BackRight");
+    robot.motor[MotorID::kBackRight].setSpeed(200);
+    delay(dt);
+    robot.setSpeed(0);
 }
 void testTCS(){
     String print=static_cast<String>(robot.tcs_.getColor());

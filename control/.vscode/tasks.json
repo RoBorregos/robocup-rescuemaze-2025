@@ -9,8 +9,8 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "-I${fileDirname}",
-                "${fileDirname}\\motors.cpp",    // Asegúrate de que miObjeto.cpp está incluido aquí
-                "${fileDirname}\\motor.cpp",       // Aquí incluimos Carro.cpp
+                "${fileDirname}\\motors.cpp",    
+                "${fileDirname}\\motor.cpp",   
                 "${fileDirname}\\main.ino",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"

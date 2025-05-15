@@ -4,7 +4,6 @@ void Motor::initialize(uint8_t in_1,uint8_t in_2,uint8_t en,uint8_t numMotor){
     in1=in_1;
     in2=in_2;
     enable=en;
-    // attachInterrupt(digitalPinToInterrupt(encoderPins[numMotor]),frontLeftEncoder,RISING);
     pinMode(in1,OUTPUT);
     pinMode(in2,OUTPUT);
     pinMode(enable,OUTPUT);
@@ -37,7 +36,7 @@ void Motor::setSpeed(uint16_t velocity){
     speed=velocity;
     speed=constrain(speed,0,255);
     analogWrite(enable,speed);
-    delay(1);//no quitar(no se porque pero si lo quitas no jala :|..)
+    delay(1);//wait one milli (dont delate)
 }
 void Motor::ahead(){
     digitalWrite(in1,1);

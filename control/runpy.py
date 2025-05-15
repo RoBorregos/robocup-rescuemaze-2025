@@ -1,3 +1,4 @@
+#code for run ESP32 wifi conection
 import socket
 import time
 # Configura la IP del ESP32 y el puerto
