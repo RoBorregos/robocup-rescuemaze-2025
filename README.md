@@ -14,11 +14,11 @@ This repository contains the code and documentation for Team RoboRescue's autono
 ## Team Members
 - **Barbara** - Mechanic
 - **Samuel** - Electronic
-- **Fernando** - Programming(Control)
+- **Fernando** - Programming(Control/Vision)
 - **Luis** - Programming(Algorithms)
 
 ## Robot Design
-Our robot is designed to ...
+Our robot is designed to Navigate a maze, detect victims, and dispense aid kits autonomously
 
 ## Code Structure
 - `src/` - Source code for robot control and navigation
@@ -33,6 +33,6 @@ Our robot is designed to ...
 
 ## Contact
 For any questions or further information, please contact us at:
-- **Email:** ...@gmail.com
+- Email: RoBorregos@tecmx.onmicrosoft.com
 
 Good luck to all teams participating in RoboCup Rescue Maze 2025!
