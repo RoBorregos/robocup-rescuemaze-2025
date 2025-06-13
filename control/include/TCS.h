@@ -14,26 +14,6 @@ class TCS {
     private:
         Adafruit_TCS34725 tcs_ = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
         MUX mux_;
-        Adafruit_ADS1115 photoresistor;
-
-        static constexpr int kColorAmount_ = 3;
-
-
-        int8_t colorAmount_ = 3;
-        int8_t precision_;
-        const char *colorList_;
-        // float red_;
-        // float green_;
-        // float blue_;
-        const int16_t (*colors_)[kColorAmount_];
-
-        static constexpr int8_t kColorThresholdsAmount_ = 6;
-        const int16_t (*colorThresholds_)[kColorThresholdsAmount_];
-
-        static constexpr int8_t kColumnAmount_ = 3;
-
-
-        static constexpr int8_t kPrecision_ = 10;
 
         static constexpr int8_t millisToWait_ = 5;
         //BLUE TILE
@@ -92,17 +72,7 @@ class TCS {
         static constexpr char kCheckpointColor_ = 'C';
         static constexpr char kUndefinedColor_ = 'U';
 
-        float kMinPhotoresistorValue_ = 11544;
-        float kMaxPhotoresistorValue_ = 12544;
-        static constexpr float kPhotoresistorThreshold_ = 500;
-
-        bool inRange(const uint8_t color, const uint8_t colorRegistered);
-
-        bool inRangeThreshold(const double lowerBound, const double colorDetection, const double upperBound);
-
         void setDefaultValues();
-
-        float kRangeTolerance_ = 70;
 
     public:
         float red_;
@@ -112,19 +82,13 @@ class TCS {
         TCS();
 
         TCS(const uint8_t posMux);
-
-        TCS(const uint8_t posMux, const int precision);
         
         void init();
 
-        void init(const int16_t colors[][kColumnAmount_], const int8_t colorAmount, const char colorList[], const int16_t colorThresholds[][kColorThresholdsAmount_]);
-
         void setMux(const uint8_t posMux);
 
-        void setPrecision(const uint8_t precision);
-
         void printRGB();
-        void HSV();
+
         void printRGBC();
 
         void printColor();
@@ -135,25 +99,6 @@ class TCS {
 
         char getColor();
 
-        char getColorClear(){return 'r';};
-
-        char getColorWithPrecision();
-        
-        char getColorWithThresholds();
-
-        char getColorMode(const int sampleSize, const double certainity = 0);
-
-        char getColorKReps(const int reps);
-
-        void printColorMatrix();
-
-        void printColorList();
-
-        void getBlueRanges();
-
-        void getBlackRanges();
-
-        void getCheckpointRanges();
 };
 
 #endif

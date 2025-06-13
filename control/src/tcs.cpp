@@ -10,12 +10,6 @@ TCS::TCS(const uint8_t posMux) {
     setDefaultValues();
 }
 
-TCS::TCS(const uint8_t posMux, const int precision) {
-    mux_.setNewChannel(posMux);
-    setDefaultValues();
-    this->precision_ = precision;
-}
-
 void TCS::init() {
     mux_.selectChannel();
     if (!tcs_.begin()) {
@@ -26,27 +20,12 @@ void TCS::init() {
         }
         
     }Serial.println("TCS inicializado");
-    photoresistor.begin();
-}
-
-void TCS::init(const int16_t colors[][3], const int8_t colorAmount, const char colorList[], const int16_t colorThresholds[][6]) {
-    this->colorThresholds_ = colorThresholds;
-    this->colorList_ = colorList;
-    this->colors_ = colors;
-    this->colorAmount_ = colorAmount;
-    init();
 }
 
 void TCS::setDefaultValues() {
     red_ = 0;
     green_ = 0;
     blue_ = 0;
-
-    const char tempColorList[4] = {"rnb"};
-    colorList_ = tempColorList;
-    colors_ = nullptr;
-    colorThresholds_ = nullptr;
-    precision_ = kPrecision_;
 }
 
 void TCS::updateRGB() {
@@ -95,9 +74,6 @@ void TCS::setMux(const uint8_t posMux) {
     mux_.setNewChannel(posMux);
 }
 
-void TCS::setPrecision(const uint8_t precision) {
-    this->precision_ = precision;
-}
 
 char TCS::getColor() {
     updateRGBC();
@@ -138,152 +114,4 @@ char TCS::getColor() {
     #endif
     return colorLetter;
 }
-bool TCS::inRange(uint8_t colorInput, uint8_t colorRegistered) {
-    return (((colorRegistered - precision_) <= colorInput) && (colorInput <= (colorRegistered + precision_)));
-}
 
-bool TCS::inRangeThreshold(double lowerBound, double colorDetection, double upperBound) {
-    if (lowerBound > upperBound) {
-        const double temp = lowerBound;
-        lowerBound = upperBound;
-        upperBound = temp;
-    }
-
-    return (lowerBound <= colorDetection) && (colorDetection <= upperBound);
-}
-
-char TCS::getColorWithPrecision() {
-    if (colors_ == nullptr) {
-        return getColor();
-    }
-
-    updateRGBC();
-    #if DEBUG_TCS
-    customPrint("R:\t"); customPrintln(red_);
-    customPrint("G:\t"); customPrintln(green_);
-    customPrint("B:\t"); customPrintln(blue_);
-    customPrint("Precision:\t"); customPrintln(precision_);
-    #endif
-
-    for (uint8_t i = 0; i < colorAmount_; ++i) {
-        if (inRange(red_, colors_[i][0]) &&
-            inRange(green_, colors_[i][1]) &&
-            inRange(blue_, colors_[i][2])) {
-
-            return colorList_[i];
-        }
-    }
-
-    return kUndefinedColor_;
-}
-
-char TCS::getColorWithThresholds() {
-    if (colorThresholds_ == nullptr) {
-        return getColorWithPrecision();
-    }
-    updateRGBC();
-    // customPrint("R:\t"); customPrintln(red_);
-    // customPrint("G:\t"); customPrintln(green_);
-    // customPrint("B:\t"); customPrintln(blue_);
-
-    for (uint8_t i = 0; i < colorAmount_; ++i) {
-        if (inRangeThreshold(colorThresholds_[i][0], red_, colorThresholds_[i][1]) &&
-            inRangeThreshold(colorThresholds_[i][2], green_, colorThresholds_[i][3]) &&
-            inRangeThreshold(colorThresholds_[i][4], blue_, colorThresholds_[i][5])) {
-
-            return colorList_[i];
-        }
-    }
-
-
-    return kUndefinedColor_;
-}
-
-char TCS::getColorKReps(const int reps) {
-    const char start = getColorWithPrecision();
-
-    if (start == kUndefinedColor_) {
-        return start;
-    }
-
-    for (uint8_t i = 0; i < reps; ++i) {
-        const char current = getColorWithPrecision();
-        if (current != start) {
-            return kUndefinedColor_;
-        }
-    }
-
-    return start;
-}
-
-char TCS::getColorMode(const int sampleSize, const double certainity) {
-    uint8_t mode = 0;
-    uint16_t unknown = sampleSize;
-    uint8_t repetitions[colorAmount_];
-
-    for (uint8_t i = 0; i < colorAmount_; ++i) {
-        repetitions[i] = 0;
-    }
-
-    for (uint8_t i = 0; i < sampleSize; ++i) {
-        const char current = getColorWithPrecision();
-        if (current == kUndefinedColor_) {
-            return kUndefinedColor_;
-        }
-
-        for (uint8_t j = 0; j < colorAmount_; ++j) {
-            if (current == colorList_[j]) {
-                repetitions[j]++;
-                break;
-            }
-        }
-    }
-
-    for (uint8_t i = 0; i < colorAmount_; ++i) {
-        if (repetitions[mode] < repetitions[i]) {
-            mode = i;
-        }
-        unknown -= repetitions[i];
-    }
-    const double probability = (repetitions[mode]) / (double)sampleSize;
-
-    if (repetitions[mode] > unknown && probability > certainity) {
-        return colorList_[mode];
-    }
-    return kUndefinedColor_;
-}
-
-void TCS::printColorMatrix() {
-    #if DEBUG_TCS
-    if (colors_ == nullptr) {
-        customPrintln("No colors registered");
-        return;
-    }
-
-    for (uint8_t i = 0; i < colorAmount_; ++i) {
-        customPrint(colorList_[i]);
-        customPrint(":\t");
-        customPrint(colors_[i][0]);
-        customPrint("\t");
-        customPrint(colors_[i][1]);
-        customPrint("\t");
-        customPrintln(colors_[i][2]);
-    }
-    #endif
-}
-
-void TCS::printColorList() {
-#if DEBUG_TCS
-    if (colorList_ == nullptr) {
-        customPrintln("No colors registered");
-        return;
-    }
-
-    for (uint8_t i = 0; i < colorAmount_; ++i) {
-        customPrint(colorList_[i]);
-        customPrint("\t");
-    }
-
-    customPrintln("");
-#endif
-}

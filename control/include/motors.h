@@ -80,29 +80,10 @@ private:
     static constexpr float kD_RampUp=0.1;
     //TCS
     char tileColor;
-    static constexpr int kPrecision = 100;
-    static constexpr uint8_t kColorAmount = 3;
-    static constexpr uint8_t kColorThresholdsAmount = 6;
-    const char kColorList[kColorAmount + 1] = {"RNB"};
     static constexpr char kBlueColor = 'B';
     static constexpr char kBlackColor = 'N';
     static constexpr char kRedColor = 'R';
     static constexpr char kCheckpointColor = 'C';
-    static constexpr double kHorizontalAngleError = 10;
-    const int16_t kColors[kColorAmount][kColorAmount] = {
-        // RED
-        {257, 75, 71},
-        // BLACK
-        {80, 44, 34},
-        // BLUE
-        {97,99,141}
-    };
-    
-    const int16_t kColorThresholds[kColorAmount][kColorThresholdsAmount] {
-        {220, 270, 60, 80, 50, 75},
-        {20, 120, 30, 90, 20, 79},
-        {85, 150, 80, 200, 120, 220}
-    };
     //movement
     bool limitColition=false;
     //servo
