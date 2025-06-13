@@ -17,7 +17,6 @@ void Jetson::getDetection(){
     }
 }
 void Jetson::getDetectionRight(){
-    uint32_t t[] = {200};
     writeSerial(0x02, (uint8_t*)t, sizeof(t));
     int currentTime=millis();
     while((millis()-currentTime)<waitingTime){
@@ -28,7 +27,6 @@ void Jetson::getDetectionRight(){
     }
 }
 void Jetson::getDetectionLeft(){
-    uint32_t t[] = {200};
     writeSerial(0x03, (uint8_t*)t, sizeof(t));
     int currentTime=millis();
     while((millis()-currentTime)<waitingTime){
@@ -41,7 +39,6 @@ void Jetson::getDetectionLeft(){
 
 void Jetson::connect(){
     while(true){
-        // uint32_t t[] = {200};
         // writeSerial(0x00, (uint8_t*)t, sizeof(t));
         if(readSerial()){
             break;
@@ -141,7 +138,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 robot.screenPrint("harmed Model");
                 robot.victim = 1;
                 // robot.harmedVictim();
-                uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
@@ -152,7 +148,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 robot.screenPrint("stable Model");
                 robot.victim = 2;
                 // robot.stableVictim();
-                uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
@@ -163,7 +158,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
                 robot.screenPrint("unharm Model");
                 robot.victim = 3;
                 // robot.unharmedVictim();
-                uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
@@ -171,7 +165,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
         case 0x0D: // none
             if (packet_size == 1) { // Check packet size
                 // robot.screenPrint("none");
-                uint32_t t[] = {200};
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(0x00, (uint8_t*)t, sizeof(t));
             }
@@ -183,7 +176,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
             robot.screenPrint("harmed Color");
             robot.victim = 1;
             // robot.harmedVictim();
-            uint32_t t[] = {200};
             // memcpy(&t, buffer, sizeof(t));
             writeSerial(0x00, (uint8_t*)t, sizeof(t));
         }
@@ -194,7 +186,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
             robot.screenPrint("stable Color");
             robot.victim = 2;
             // robot.stableVictim();
-            uint32_t t[] = {200};
             // memcpy(&t, buffer, sizeof(t));
             writeSerial(0x00, (uint8_t*)t, sizeof(t));
         }
@@ -205,7 +196,6 @@ void Jetson::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffe
             robot.screenPrint("unharm Color");
             robot.victim = 3;
             // robot.unharmedVictim();
-            uint32_t t[] = {200};
             // memcpy(&t, buffer, sizeof(t));
             writeSerial(0x00, (uint8_t*)t, sizeof(t));
         }

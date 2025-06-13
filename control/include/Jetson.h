@@ -20,6 +20,7 @@ class Jetson{
     String state();
 
   private:
+  uint32_t t[1] = {200};
   int waitingTime=2000;
 };
 
