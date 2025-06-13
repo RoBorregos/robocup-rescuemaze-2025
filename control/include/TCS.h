@@ -7,7 +7,6 @@
 #include <Wire.h>
 #include "ColorConverterLib.h"
 
-// TODO: check which address is the correct one
 #define TCS_ADDR 0x30 
 constexpr uint8_t blackThreshold=40;
 
