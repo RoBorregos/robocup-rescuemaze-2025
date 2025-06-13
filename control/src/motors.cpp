@@ -715,8 +715,7 @@ void motors::reloadKits(){
 
 void motors::setupTCS() {
     tcs_.setMux(Pins::tcsPins[0]);
-    tcs_.setPrecision(kPrecision);
-    tcs_.init(kColors, kColorAmount, kColorList, kColorThresholds);
+    tcs_.init();
     bno.setPhaseCorrection(bno.getOrientationX());
     bno.setPhaseCorrectionY(bno.getOrientationY());
 }
