@@ -1,8 +1,3 @@
-
-//#include "coord.h"
-//#include "Tile.h"
-// #include <iostream>
-
 struct Item {
     coord data;
     Item* next;

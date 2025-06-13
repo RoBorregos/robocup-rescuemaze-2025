@@ -11,15 +11,14 @@ uint8_t level = kBaseCoord;
 coord past;
 maze::maze(){}
 // logic ---------------------------------------------------------
-void changeLevel() { level += (robot.rampState == 1) - (robot.rampState == 2); robot.rampState = 0;  }
 void detection(Tile* curr){
-    if(!curr->hasVictim()){
+    if(!curr -> hasVictim()){
         jetson.getDetection();
         if(robot.buttonPressed) return;
         if(robot.victim == 1) robot.harmedVictim();
         else if(robot.victim == 2) robot.stableVictim();
         else if(robot.victim == 3) robot.unharmedVictim();
-        if(robot.victim != 0) curr->setVictim();
+        if(robot.victim != 0) curr -> setVictim();
         robot.victim = 0;
         robot.kitState=kitID::kNone;
         
@@ -79,12 +78,12 @@ void maze::dijkstra(coord& start, coord& end, arrCustom<coord>& tilesMap, arrCus
     while(!explored.getValue(tilesMap.getIndex(end))){ 
         for(const TileDirection& direction : directions){
             const Tile& currentTile = tiles.getValue(tilesMap.getIndex(current));
-            const coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)]->position_;
+            const coord& adjacent = currentTile.adjacentTiles_[static_cast<int>(direction)] -> position_;
             if(currentTile.adjacentTiles_[static_cast<int>(direction)] != nullptr && !currentTile.hasWall(direction) && !currentTile.hasBlackTile()){
-                const int weight = currentTile.weights_[static_cast<int>(direction)] +distance.getValue(tilesMap.getIndex(current));
+                const int weight = currentTile.weights_[static_cast<int>(direction)] + distance.getValue(tilesMap.getIndex(current));
                 int index = distance.getValue(tilesMap.getIndex(adjacent));
                 if(weight < distance.getValue(tilesMap.getIndex(adjacent))){
-                    distance.set(tilesMap.getIndex(adjacent),weight);
+                    distance.set(tilesMap.getIndex(adjacent), weight);
                     previousPositions.set(tilesMap.getIndex(adjacent), current);
                 }
             }
@@ -213,8 +212,8 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
             Tile* currTile = &tiles.getValue(tilesMap.getIndex(robotCoord));
 
             for(int i = 0;i < kNumberOfDirections; i++){
-                if(currTile->adjacentTiles_[i] != nullptr && currTile->adjacentTiles_[i]->position_ == past){
-                    Tile* pastTile = currTile->adjacentTiles_[i];
+                if(currTilem -> adjacentTiles_[i] != nullptr && currTile -> adjacentTiles_[i] -> position_ == past){
+                    Tile* pastTile = currTile -> adjacentTiles_[i];
 
                     current.z += rampDirection;
                     visitedMap.push_back(current);
@@ -228,9 +227,9 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                         else if(dir == TileDirection::kDown) opposite = TileDirection::kUp;
                         else if(dir == TileDirection::kRight) opposite = TileDirection::kLeft;
                         else if(dir == TileDirection::kLeft) opposite = TileDirection::kRight;
-                        if(pastTile->adjacentTiles_[static_cast<int>(dir)]->position_ == robotCoord){
-                            pastTile->addAdjacentTile(dir, newTile, false, false);
-                            newTile->addAdjacentTile(opposite, pastTile, false, false);
+                        if(pastTile -> adjacentTiles_[static_cast<int>(dir)] -> position_ == robotCoord){
+                            pastTile -> addAdjacentTile(dir, newTile, false, false);
+                            newTile -> addAdjacentTile(opposite, pastTile, false, false);
                             break;
                         }
                     }
@@ -277,10 +276,10 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                         nextTile = &tiles.getValue(index);
                     }
                 
-                    if (nextTile->position_ == kInvalidPosition) nextTile->setPosition(next);
+                    if (nextTile -> position_ == kInvalidPosition) nextTile -> setPosition(next);
                     // join the tiles and if there is no wall between them
                     currentTile -> addAdjacentTile(direction, nextTile, wall,false);
-                    nextTile->addAdjacentTile(oppositeDirection, currentTile, wall, false);
+                    nextTile -> addAdjacentTile(oppositeDirection, currentTile, wall, false);
                     if(!wall){
                         visitedFlag = false;
                         for(uint8_t i = 0; i < visitedMap.getSize(); ++i){
@@ -332,14 +331,14 @@ void maze::dfs(arrCustom<coord>& visitedMap, arrCustom<Tile>& tiles, arrCustom<c
                     nextTile = &tiles.getValue(index);
                 }
             
-                if (nextTile->position_ == kInvalidPosition) nextTile->setPosition(next);
+                if (nextTile -> position_ == kInvalidPosition) nextTile -> setPosition(next);
                 // join the tiles and if there is no wall between them
                 currentTile -> addAdjacentTile(direction, nextTile, wall,false);
                 if(robot.blueTile){
-                    nextTile->addAdjacentTile(oppositeDirection, nextTile, wall, true);
+                    nextTile -> addAdjacentTile(oppositeDirection, nextTile, wall, true);
                     robot.blueTile = false;
                 }else{
-                    nextTile->addAdjacentTile(oppositeDirection, currentTile, wall, false);
+                    nextTile -> addAdjacentTile(oppositeDirection, currentTile, wall, false);
                 }
                 if(!wall){
                     visitedFlag = false;

@@ -1,4 +1,3 @@
-// CustomArray.h
 template <typename T>
 class arrCustom {
 private:
