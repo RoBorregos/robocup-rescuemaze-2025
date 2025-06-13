@@ -151,8 +151,12 @@ void motors::ahead(){
             pidEncoders(speed,true);
         }
     }
+    count+=1;
     slope=false;
     stop();resetTics();checkTileColor();resetTics();
+    if(count==1) harmedVictim();
+    if(count==8) unharmedVictim();
+   
 }
 void motors::checkTileColor(){
     tileColor=tcs_.getColor();
@@ -647,15 +651,25 @@ void motors::victimSequency(){
     leds.setWhite(); 
 }
 void motors::harmedVictim(){
-    victimSequency();
-    if(kitState==kitID::kRight){
-        // screenPrint("Right");
-        kitRight(2);     } 
-    else if(kitState==kitID::kLeft){
-        // screenPrint("Left");
-        kitLeft(2); 
-    } 
-    // screenPrint("");
+    // victimSequency();
+    // if(kitState==kitID::kRight){
+    //     // screenPrint("Right");
+    //     kitRight(2);     } 
+    // else if(kitState==kitID::kLeft){
+    //     // screenPrint("Left");
+    //     kitLeft(2); 
+    // } 
+    // // screenPrint("");
+    float current=millis();
+    while((millis()-current)<5100){
+        screenPrint("Victim");
+        leds.setRed();
+        delay(500);
+        screenPrint(" ");
+        leds.turnOff();
+        delay(500);
+    }
+    leds.setWhite(); 
 }
 void motors::stableVictim(){
     // screenPrint("Stable");
@@ -669,9 +683,16 @@ void motors::stableVictim(){
     // screenPrint("");
 }
 void motors::unharmedVictim(){
-    // screenPrint("Unharmed");
-    victimSequency();
-    // screenPrint("");
+    float current=millis();
+    while((millis()-current)<5100){
+        screenPrint("Victim");
+        leds.setGreen();
+        delay(500);
+        screenPrint(" ");
+        leds.turnOff();
+        delay(500);
+    }
+    leds.setWhite(); 
 }
 void motors::kitLeft(uint8_t n){
     uint16_t dt=0;

@@ -55,6 +55,7 @@ private:
     static constexpr uint16_t kMaxSpeedFormard=40;
     static constexpr uint16_t kSpeedRampUp=20;
     static constexpr uint16_t kSpeedRampDown=9;
+    int count=0;
     //ramp
     PID rampUpPID;
     PID rampDownPID;

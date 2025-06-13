@@ -38,9 +38,9 @@ class TCS {
 
         static constexpr int8_t millisToWait_ = 5;
         //BLUE TILE
-        static constexpr float kRedValueInBlue_ = 185.00;
-        static constexpr float kGreenValueInBlue_ = 349.00;
-        static constexpr float kBlueValueInBlue_ = 439.00;
+        static constexpr float kRedValueInBlue_ = 142;
+        static constexpr float kGreenValueInBlue_ = 214;
+        static constexpr float kBlueValueInBlue_ = 313;
         //BLACK TILE
         static constexpr float kRedValueInBlack_ = 87.00;
         static constexpr float kGreenValueInBlack_ = 53.00;
