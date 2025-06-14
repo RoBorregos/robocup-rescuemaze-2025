@@ -1,16 +1,11 @@
-
-#include "coord.h"
-#include "Tile.h"
-// #include <iostream>
-
-struct Node {
+struct Item {
     coord data;
-    Node* next;
+    Item* next;
 };
 
 class Stack {
 private:
-    Node* topNode;
+    Item* topNode;
     uint8_t mark;
 
 public:
@@ -23,7 +18,7 @@ public:
     }
 
     void push(coord value) {
-        Node* newNode = new Node();
+        Item* newNode = new Item();
         newNode->data = value;
         newNode->next = topNode;
         topNode = newNode;
@@ -35,7 +30,7 @@ public:
             // std::cout << "Stack underflow\n";
             return;
         }
-        Node* temp = topNode;
+        Item* temp = topNode;
         topNode = topNode->next;
         delete temp;
         mark--;

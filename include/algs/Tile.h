@@ -14,13 +14,17 @@ constexpr uint8_t kCheckpointBit = 7;
 
 constexpr uint8_t kNumberOfDirections = 4;
 
+constexpr uint8_t kWallTileWeight = 100; // max weight
+//constexpr uint8_t kBlackTileWeight = 100; // no pass
 constexpr uint8_t kWhiteTileWeight = 1;// min weight
-constexpr uint8_t kBlueTileWeight = 3; // 5 seconds
-constexpr uint8_t kRampWeight = 5;
+constexpr uint8_t kBlueTileWeight = 3; // 5 seconds - 3 tiles
+constexpr uint8_t kRampWeight = 7; 
 
 constexpr coord kInvalidPosition = coord{255,255,255};
 constexpr uint8_t kMaxInt = 255;
-constexpr uint8_t kMaxSize = 50;
+constexpr uint8_t kMaxSize = 70;
+constexpr uint8_t kMaxStackSize = 10;
+constexpr uint8_t kBaseCoord = 128;
 
 class Tile{
     public:
@@ -31,7 +35,7 @@ class Tile{
         char data_;
         Tile();
         Tile(const coord& position);
-        void addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall);
+        void addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall, const bool blue);
         void setPosition(const coord& position);
         void setWall(const TileDirection direction, const bool wall);
         bool hasWall(const TileDirection direction) const;

@@ -3,15 +3,16 @@
 #define Encoder_h
 
 #include <Arduino.h>
-#include "Motors.h"
-#include "Pins.h"
-
+#include "motors.h"
+#include "Pins_ID.h"
+#include "Jetson.h"
 extern motors robot;
-namespace Encoder {
+namespace Interrups {
     void backRightEncoder();
     void backLeftEncoder();
     void frontRightEncoder();
     void frontLeftEncoder();
+    void lackOfProgress();
     extern int deltaTics[4];
 };
 

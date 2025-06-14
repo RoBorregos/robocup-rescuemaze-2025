@@ -63,10 +63,16 @@ bool Tile::hasCheckpoint() const {
     return this->data_ & (1 << kCheckpointBit);
 }
 
-void Tile::addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall) {
+void Tile::addAdjacentTile(const TileDirection direction, Tile *tile, const bool wall, const bool blue) {
     adjacentTiles_[static_cast<int>(direction)] = tile;
-    weights_[static_cast<int>(direction)] = kWhiteTileWeight;
     this->setWall(direction, wall);
+    if(wall){
+        weights_[static_cast<int>(direction)] = kWallTileWeight;
+    } else if(blue){
+        weights_[static_cast<int>(direction)] = kBlueTileWeight;
+    }else {
+        weights_[static_cast<int>(direction)] = kWhiteTileWeight;
+    }
 }
 
 void Tile::setPosition(const coord& position) {
