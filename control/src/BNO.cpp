@@ -1,11 +1,10 @@
 #include "BNO.h"
-float z_rotation;//angulo de rotacion
+float z_rotation;
 float angle;
-#define SDA_PIN 23
-#define SCL_PIN 13
+
 BNO::BNO() {
     this->event_ = {0};
-    this->bno_ = Adafruit_BNO055(55, 0x28, &Wire);
+    this->bno_ = Adafruit_BNO055(sensorID, I2CAddress, &Wire);
 }
 void BNO::setupBNO() {
     adafruit_bno055_opmode_t mode = OPERATION_MODE_IMUPLUS;
