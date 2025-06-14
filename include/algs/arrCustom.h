@@ -1,4 +1,3 @@
-// CustomArray.h
 template <typename T>
 class arrCustom {
 private:
@@ -29,20 +28,23 @@ public:
         }
     }
     uint8_t getIndex(T value){
-        for(uint8_t i = 0; i < size; i++){
-            if(positions[i] == value){
-                return i;
+        for(uint8_t j = 0; j < i; j++){ // ← usa i en lugar de size
+            if(positions[j] == value){
+                return j;
             }
         }
         return 255;
     }
     T& getValue(size_t index) const {
+        
         if (index < size && index >= 0) {
             return positions[index];
         }
         else{
             Serial.println("Index out of bounds");
+            return positions[size-1]; // o maneja el error de otra manera
         }
+        
     }
     size_t getSize() const {
         return size;
@@ -55,10 +57,17 @@ public:
             for (uint8_t j = 0; j < size; j++) {
                 temp[j] = positions[j];
             }
+            delete[] positions;
             positions = temp;
             size++;
         }
         positions[i] = position;
         i++;
+    }
+    void reset() {
+        i = 0;
+        for (uint8_t j = 0; j < size; j++) {
+            positions[j] = T();
+        }        
     }
 };

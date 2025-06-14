@@ -7,7 +7,9 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 #include <SPI.h>
-extern float z_rotation;//angulo de rotacion
+#define SDA_PIN 23
+#define SCL_PIN 13
+extern float z_rotation;
 extern float angle;
 class BNO {
     private:
@@ -15,17 +17,19 @@ class BNO {
         sensors_event_t event_;
         float phaseCorrection_ = 0.0;
         float phaseCorrectionY_=0.0;
+        const uint8_t I2CAddress = 0x28;
+        const int32_t sensorID = 55;
     public:
-        // TODO: Add more comments on how it works
         float angle_initial;
         BNO();
         void setupBNO();
         void updateBNO(sensors_event_t &event);
         float getOrientationX();
         float getOrientationY();
-        void setPhaseCorrection(const float phaseCorrection);
-        void setPhaseCorrectionY(const float phaseCorrectionY);
+        void setPhaseCorrection(float phaseCorrection);
+        void setPhaseCorrectionY(float phaseCorrectionY);
         void resetOrientation();
+        void resetOrientationX();
 };
 
 #endif
