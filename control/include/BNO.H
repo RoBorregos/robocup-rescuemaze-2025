@@ -17,8 +17,8 @@ class BNO {
         sensors_event_t event_;
         float phaseCorrection_ = 0.0;
         float phaseCorrectionY_=0.0;
-        uint8_t I2CAddress = 0x28;
-        int32_t sensorID = 55;
+        const uint8_t I2CAddress = 0x28;
+        const int32_t sensorID = 55;
     public:
         float angle_initial;
         BNO();
