@@ -42,12 +42,3 @@ detection = labels.get(result, "unknown")
 print(detection)
 
 
-#jetson7
-# B:[[0.7608235    # H
-# C: [[ 0.5551442    #U
-# R:[[0.63808465  #H
-
-# Jetson6
-# B:[[6.8416601e-01   # H
-# C: [[ 0.47970143  #S
-# R:[[6.1034465e-01   #H

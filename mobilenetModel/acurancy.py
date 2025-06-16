@@ -8,7 +8,6 @@ from tensorflow.keras.utils import custom_object_scope
 import tensorflow_hub as hub
 import numpy as np
 model = tf.keras.models.load_model("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\HSU_FinalP.h5")
-# folder_path="C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\fotos\\test1\\H2"
 folder_path="C:\\Users\\ferna\\Downloads\\none5"
 
 image_list=os.listdir(folder_path)
