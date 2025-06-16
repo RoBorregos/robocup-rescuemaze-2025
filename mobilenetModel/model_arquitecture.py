@@ -23,9 +23,9 @@ datagen=ImageDataGenerator(
 )
 #generadores para sets de entrenamiento y pruebas
 #datasets using google images
-data_gen_train=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\tmr3Dataset",target_size=(224,224),
+data_gen_train=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\RoBorregos\\robocup-rescuemaze-2025-4\\tmr3Dataset",target_size=(224,224),
                                            batch_size=16,shuffle=True,subset="training")
-data_gen_test=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\robocup-rescuemaze-2025-4\\tmr3Dataset",target_size=(224,224),
+data_gen_test=datagen.flow_from_directory("C:\\Users\\ferna\\Documents\\RoBorregos\\robocup-rescuemaze-2025-4\\tmr3Dataset",target_size=(224,224),
                                            batch_size=16,shuffle=True,subset="validation")
 #import mobileNet from its url using kerasLayer
 mobilenet_url = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4"
